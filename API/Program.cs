@@ -76,6 +76,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Add CORS policy to allow all origins
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Global exception handling middleware
@@ -104,6 +115,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication(); // <-- Add this before UseAuthorization
 app.UseAuthorization();
+app.UseCors("AllowAll"); // Use CORS before authentication/authorization
 
 app.MapControllers();
 
