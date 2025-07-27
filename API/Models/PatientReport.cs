@@ -17,5 +17,10 @@ namespace ClinicManager.Models
         public int? PatientID { get; set; }
         [ForeignKey("PatientID")]
         public Patient? Patient { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
+        public bool IsActive { get; set; }
     }
 }

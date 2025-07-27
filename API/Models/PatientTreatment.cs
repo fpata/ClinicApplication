@@ -11,6 +11,11 @@ namespace ClinicManager.Models
         public string? Observation { get; set; }
         public string TreatmentPlan { get; set; } = string.Empty;
         public int? PatientID { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
+        public bool IsActive { get; set; }
 
         [ForeignKey("UserID")]
         public User? User { get; set; }
