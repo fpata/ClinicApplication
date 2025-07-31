@@ -8,7 +8,7 @@ export interface Address {
   PermCity?: string;
   PermCountry?: string;
   AddressType: string;
-  ZipCode?: string;
+  PermZipCode?: string;
   UserID?: number;
   IsActive?: boolean;
   CreatedDate?: string;
@@ -20,6 +20,6 @@ export interface Address {
   CorrCity?: string;
   CorrState?: string;
   CorrCountry?: string;
-  CorrZipCOde?: string;
+  CorrZipCode?: string;
   user?: User;
 }

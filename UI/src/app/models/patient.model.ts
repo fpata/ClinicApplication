@@ -15,7 +15,7 @@ export interface Patient {
   ModifiedDate?: string;
   ModifiedBy?: number;
   user?: User;
-  appointments?: PatientAppointment[];
-  reports?: PatientReport[];
-  treatments?: PatientTreatment[];
+  Appointments?: PatientAppointment[];
+  Reports?: PatientReport[];
+  Treatments?: PatientTreatment[];
 }

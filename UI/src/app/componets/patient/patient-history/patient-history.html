@@ -1,1 +1,42 @@
-<p>patient-history works!</p>
+<div class="container-fluid">
+    <br />
+    <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+    
+    <div class="row">
+        <div class="col-2">
+            <label for="txtMedications" class="form-label">Medications</label>
+        </div>
+        <div class="col-10">
+            <textarea id="txtMedications" class="form-control" row="2" [(ngModel)]="this.patient.Medications"></textarea>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-2">
+            <label for="txtAllergies" class="form-label">Allergies & Reactions</label>
+        </div>
+        <div class="col-10">
+            <textarea id="txtAllergies" class="form-control" row="2" [(ngModel)]="this.patient.Allergies"  required></textarea>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-2">
+            <label for="txtFatherHistory" class="form-label">Father Medical History</label>
+        </div>
+        <div class="col-10">
+            <textarea id="txtFatherHistory" class="form-control" row="2" [(ngModel)]="this.patient.FatherHistory"></textarea>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-2">
+            <label for="txtMotherHistory" class="form-label">Mother Medical History</label>
+        </div>
+        <div class="col-10">
+            <textarea id="txtMotherHistory" class="form-control" row="2" [(ngModel)]="this.patient.MotherHistory"></textarea>
+        </div>
+    </div>
+</div>
+</div>
+

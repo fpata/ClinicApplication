@@ -14,7 +14,7 @@ export interface User {
   DOB?: string;
   Age?: number;
   LastLoginDate?: string;
-  address: Address;
-  contacts?: Contact;
-  patients?: Patient[];
+  Address: Address;
+  Contact?: Contact;
+  Patients?: Patient[];
 }
