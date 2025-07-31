@@ -7,8 +7,6 @@ namespace ClinicManager.Models
     {
         public int ID { get; set; }
         public int? UserID { get; set; }
-        [ForeignKey("UserID")]
-        public User? User { get; set; }
         public string? Allergies { get; set; }
         public string? Medications { get; set; }
         public string? FatherHistory { get; set; }
@@ -18,5 +16,12 @@ namespace ClinicManager.Models
         public int CreatedBy { get; set; }
         public int ModifiedBy { get; set; }
         public bool IsActive { get; set; }
+        public virtual ICollection<PatientAppointment>? Appointments { get; set; }
+
+        public virtual ICollection<PatientReport>? PatientReports{ get; set; }
+
+        public virtual ICollection<PatientTreatment>? PatientTreatments { get; set; }
+
+        public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; }
     }
 }

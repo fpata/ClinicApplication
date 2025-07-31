@@ -45,6 +45,52 @@ namespace ClinicManager.Controllers
             return entity;
         }
 
+        [HttpGet("Complete/{id}")]
+        public async Task<ActionResult<User>> GetComplete(int id)
+        {
+            _logger.LogInformation($"Fetching patient with ID: {id}");
+
+            User? user =null;
+            Patient? patient = await _context.Patients.FindAsync(id) as Patient;
+          
+
+            if (patient == null)
+            {
+                _logger.LogWarning($"Patient with ID: {id} not found");
+                return NotFound();
+            }
+            else
+            {
+                user = await _context.Users.FindAsync(patient.UserID);
+                if(user.Patients==null) user.Patients = new List<Patient>();
+                user?.Patients?.Add(patient);
+
+                user.Address = await _context.Addresses
+                .Where(a => a.UserID == patient.UserID)
+                .FirstOrDefaultAsync();
+
+                user.Contact = await _context.Contacts.
+                Where(c => c.UserID == patient.UserID)
+                .FirstOrDefaultAsync();
+                
+                patient.Appointments = await _context.PatientAppointments
+                    .Where(a => a.PatientID == id)
+                    .ToListAsync();
+                patient.PatientReports = await _context.PatientReports
+                    .Where(r => r.PatientID == id)
+                    .ToListAsync();
+                patient.PatientTreatments = await _context.PatientTreatments
+                    .Where(t => t.PatientID == id)
+                    .ToListAsync();
+                patient.PatientTreatmentDetails = await _context.PatientTreatmentDetails
+                    .Where(td => td.PatientID == id)
+                    .ToListAsync();
+                _logger.LogInformation($"Fetched full details for patient with ID: {id}");
+
+            }
+            return user;
+        }
+
         [HttpPost]
         public async Task<ActionResult<Patient>> Post(Patient patient)
         {

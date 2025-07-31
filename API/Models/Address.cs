@@ -19,8 +19,6 @@ namespace ClinicManager.Models
         public string? CorrCountry { get; set; }
         public string? CorrZipCode { get; set; }
         public int? UserID { get; set; }
-        [ForeignKey("UserID")]
-        public User? User { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public int CreatedBy { get; set; }

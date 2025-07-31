@@ -21,5 +21,11 @@ namespace ClinicManager.Models
         public int CreatedBy { get; set; }
         public int ModifiedBy { get; set; }
         public bool IsActive { get; set; }
+
+        public virtual Address? Address { get; set; }
+
+        public virtual ICollection<Patient>? Patients { get; set; }
+
+        public virtual Contact? Contact { get; set; }
     }
 }

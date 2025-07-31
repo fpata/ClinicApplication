@@ -17,10 +17,6 @@ namespace ClinicManager.Models
         public int ModifiedBy { get; set; }
         public bool IsActive { get; set; }
 
-        [ForeignKey("UserID")]
-        public User? User { get; set; }
-
-        [ForeignKey("PatientID")]
-        public Patient? Patient { get; set; }
+       public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; }
     }
 }

@@ -15,8 +15,6 @@ namespace ClinicManager.Models
         public string? RelativePhone { get; set; }
         public string? RelativeEmail { get; set; }
         public int? UserID { get; set; }
-        [ForeignKey("UserID")]
-        public User? User { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public int CreatedBy { get; set; }

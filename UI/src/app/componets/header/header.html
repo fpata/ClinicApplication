@@ -1,0 +1,36 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">CM-Clinic Manager</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="#" id="navDashBoard"
+            routerLink="/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="navPatient" routerLink="/patient">Patient</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" tabindex="-1" id="navReports">Reports</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="navBilling">Billing</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false" id="navbarDropdownMenuLink" ><i class="bi bi-person-fill"></i>User</a>
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="#">Username</a>
+            <a class="dropdown-item" href="#">Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

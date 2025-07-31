@@ -1,0 +1,121 @@
+<form class="was-validated">
+<div class="conatiner-fluid">
+  <!--Visible on medium and large screens only-->
+  <div class="d-none d-md-block d-lg-block">
+    <ul class="nav nav-tabs nav-justified flex-column flex-sm-row" id="tbpatient" role="tablist">
+      <li class="nav-item" role="presentation" id="navPatientSearch" >
+        <button class="nav-link active" id="tbPatientSearch-tab" data-bs-toggle="tab" data-bs-target="#tbPatientSearch"
+          type="button" role="tab" aria-controls="tbPatientSearch" aria-selected="true" (click)="tabSelectedEvent($event)" >Search</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tbPersonalInfo-tab" data-bs-toggle="tab" data-bs-target="#tbPersonalInfo"
+          type="button" role="tab" aria-controls="tbPersonalInfo" aria-selected="false" (click)="tabSelectedEvent($event)">Perosnal Information</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tbPatientHistory-tab" data-bs-toggle="tab" data-bs-target="#tbPatientHistory"
+          type="button" role="tab" aria-controls="tbPatientHistory" aria-selected="false" (click)="tabSelectedEvent($event)">Patient History</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tbPatientTreatment-tab" data-bs-toggle="tab" data-bs-target="#tbPatientTreatment"
+          type="button" role="tab" aria-controls="tbPatientTreatment" aria-selected="false" (click)="tabSelectedEvent($event)">Patient Treatment</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tbPatientAppointment-tab" data-bs-toggle="tab" data-bs-target="#tbPatientAppointment"
+          type="button" role="tab" aria-controls="tbPatientAppointment" aria-selected="false" (click)="tabSelectedEvent($event)">Patient Appointment</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tbPatientReports-tab" data-bs-toggle="tab" data-bs-target="#tbPatientReport"
+          type="button" role="tab" aria-controls="tbPatientReport" aria-selected="false" (click)="tabSelectedEvent($event)">Patient Reports
+          Documents</button>
+      </li>
+    </ul>
+  </div>
+<!--Visible on Small screens only-->
+  <div class="d-xs-block d-sm-block d-md-none d-lg-none">
+    <ul class="nav nav-tabs nav-justified flex-column flex-sm-row" id="tbpatient" role="tablist">
+      <li class="nav-item dropdown" role="presentation">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Patient</a>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" id="tbPatientSearch-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientSearch"
+             aria-controls="tbPatientSearch" aria-selected="true">Search</a>
+          </li>
+          <li>
+            <a class="nav-link" id="tbPersonalInfo-tab1" data-bs-toggle="tab" data-bs-target="#tbPersonalInfo"
+          aria-controls="tbPersonalInfo" aria-selected="false">Perosnal Information</a>
+          </li>
+          <li>
+            <a class="nav-link" id="tbPatientHistory-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientHistory"
+             aria-controls="tbPatientHistory" aria-selected="false">Patient History</a>
+          </li>
+          <li>
+            <a class="nav-link" id="tbPatientTreatment-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientTreatment"
+          aria-controls="tbPatientTreatment" aria-selected="false">Patient Treatment</a>
+          </li>
+          <li>
+            <a class="nav-link" id="tbPatientAppointment-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientAppointment"
+           aria-controls="tbPatientAppointment" aria-selected="false">Patient Appointment</a>
+          </li>
+          <li>
+            <a class="nav-link" id="tbPatientReports-tab" data-bs-toggle="tab" data-bs-target="#tbPatientReport" 
+            aria-controls="tbPatientReport" aria-selected="false">Patient Reports
+            Documents</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+ 
+    <div class="tab-content" id="nav-tabContentPatientInfo">
+      <div class="tab-pane fade show active" id="tbPatientSearch" role="tabpanel" aria-labelledby="tbPatientSearch-tab">
+        <app-patient-search></app-patient-search>
+      </div>
+      
+      <div class="tab-pane fade" id="tbPersonalInfo" role="tabpanel" aria-labelledby="tbPersonalInfo-tab">
+       <app-patient-info></app-patient-info>
+      </div>
+  
+  
+      <div class="tab-pane fade" id="tbPatientHistory" role="tabpanel" aria-labelledby="tbPatientHistory-tab">
+        <app-patient-history></app-patient-history>
+      </div>
+  
+      <div class="tab-pane fade" id="tbPatientTreatment" role="tabpanel" aria-labelledby="tbPatientTreatment-tab">
+        <app-patient-treatment></app-patient-treatment>
+      </div>
+  
+      <div class="tab-pane fade" id="tbPatientAppointment" role="tabpanel" aria-labelledby="tbPatientAppointment-tab">
+        <app-patient-appointment></app-patient-appointment>
+      </div>
+  
+      <div class="tab-pane fade" id="tbPatientReport" role="tabpanel" aria-labelledby="tbPatientReport-tab">
+        <app-patient-report></app-patient-report>
+      </div>
+    </div>
+  </div>
+  <br/>
+  <div class="conatiner-fluid">
+    @if(!isSearchTabSelected) {
+    <div class="row"  >
+      <div class="col">
+        <button type="submit" id="btnPatientSave" class="btn btn-primary" style="width: 25%;" (click)="SavePatientInformation()">Save</button>
+      </div>
+      <div class="col">
+        <button type="button" id="btnPatientClear" class="btn btn-secondary" style="width: 25%;" (click)="ClearPatientInformation()">Clear</button>
+      </div>
+      <div class="col">
+        <button type="button" id="btnPatientDelete" class="btn btn-secondary" style="width: 25%;" (click)="DeletePatientInformation()">Delete</button>
+      </div>
+    </div>
+  }
+    <div class="row">
+       @if(isSearchTabSelected) {
+      <div class="col" >
+        <button type="button" id="btnNewPatient" class="btn btn-primary" style="width: 25%;" (click)="AddNewPatient()">New Patient</button>
+      </div>
+    }
+    </div>
+    <br/>
+  </div>
+</form>
+  <br />
