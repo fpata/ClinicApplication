@@ -10,7 +10,6 @@ export interface LoginResponse {
     UserType: string;
     FirstName: string;
     LastName: string;
-    Gender?: string;
     DOB?: string;
     LastLoginDate?: string;
   };

@@ -1,1 +1,109 @@
-<p>patient-appointment works!</p>
+<div class="container-fluid">
+    <br />
+    <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+    <div class="row">
+        <div class="col">
+          <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th style="text-align: right;"><button type="button" class="btn btn-primary"
+                        data-bs-toggle="modal" data-bs-target="#addAppointmentModal">Add Row</button></th>
+                    </tr>
+                    <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Doctor</th>
+                    <th>Procedure</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    @for(appointment of appointments; track appointment.ID) {
+                    <tr>
+                        <td>{{appointment.ApptDate}}</td>
+                        <td>{{appointment.ApptTime}}</td>
+                        <td>{{appointment.DoctorName}}</td>
+                        <td>{{appointment.TreatmentName}}</td>
+                        <td> 
+                          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal" (click)="EditAppointment(appointment.ID)">&nbsp;Edit</button>
+                          &nbsp;&nbsp;<button class="btn btn-secondary" (click)="DeleteAppointment(appointment.ID)">&nbsp;Delete</button>
+                         </td>  
+                    </tr>
+                }
+                </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+  </div>
+  <br />
+  <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+    <div class="row">
+      <div class="col">
+       Calendar control here
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static"  id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <br />
+                <div class="row">
+                    <div class="col">
+                      <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
+                    </div>
+                    <div class="col">
+                      <input type="date" id="txtAppointmentDate" class="form-control"  min="2024-01-01" max="2025-12-31">
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col">
+                      <label for="txtAppointmentTime" class="form-label">Appointment Time</label>
+                    </div>
+                    <div class="col">
+                      <input type="time" id="txtAppointmentTime" class="form-control">
+                    </div>
+                  </div>
+                  <br />
+                  <div class="row">
+                    <div class="col">
+                      <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
+                    </div>
+                    <div class="col">
+                      <input type="text" id="txtApptDoctorName" class="form-control">
+                    </div>
+                  </div>
+                  <br />
+                  <div class="row">
+                    <div class="col">
+                      <label for="txtApptProcedure" class="form-label">Procedure</label>
+                    </div>
+                    <div class="col">
+                      <input type="text" id="txtApptProcedure" class="form-control">
+                    </div>
+                  </div>
+                  <br />
+                  <div><input type="hidden" value="" id="hdAppointmentId" /></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

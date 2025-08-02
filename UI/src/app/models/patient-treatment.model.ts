@@ -16,5 +16,5 @@ export interface PatientTreatment {
   TreatmentDate?: string;
   user?: User;
   patient?: Patient;
-  details?: PatientTreatmentDetail[];
+  PatientTreatmentDetails?: PatientTreatmentDetail[];
 }

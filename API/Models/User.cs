@@ -12,7 +12,7 @@ namespace ClinicManager.Models
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string UserType { get; set; } = "Patient";
-        public string? Gender { get; set; } = "Male";
+        public string? Gender { get; set; } = "male";
         public DateTime? DOB { get; set; }
         public int? Age { get; set; }
         public DateTime? LastLoginDate { get; set; }

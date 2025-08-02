@@ -1,1 +1,149 @@
-<p>patient-treatment works!</p>
+
+<div class="accordion" id="accTreatmentPlan">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accPatientTreatmentPlan"
+            aria-expanded="true" aria-controls="accPatientTreatmentPlan">
+            Chief Complaint-Treament Plan
+          </button>
+        </h2>
+        <div id="accPatientTreatmentPlan" class="accordion-collapse collapse show" data-bs-parent="#accPatientTreatmentPlan">
+          <div class="accordion-body">
+            <div class="container-fluid">
+              <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+              <div class="row">
+                <div class="col">
+                    <label for="txtChiefComplaint" class="form-label">Chief Complaint</label>
+                </div>
+                <div class="col-10">
+                    <textarea id="txtChiefComplaint" class="form-control" row="2" [(ngModel)]="treatment.ChiefComplaint"></textarea>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col">
+                    <label for="txtOservationFindings" class="form-label">Observations/ Finding</label>
+                </div>
+                <div class="col-10">
+                    <textarea id="txtOservationFindings" class="form-control" row="2" [(ngModel)]="treatment.Observation"></textarea>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col">
+                    <label for="txtTreatmentPlan" class="form-label">Treatment Plan</label>
+                </div>
+                <div class="col-10">
+                    <textarea id="txtTreatmentPlan" class="form-control" row="2" [(ngModel)]="treatment.TreatmentPlan"></textarea>
+                </div>
+            </div>
+            <div>
+              <input type="hidden" id="txtTreatmentID" value="-1" [ngModel]="treatment.ID">
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                              <th></th>  
+                              <th></th>
+                                <th></th>
+                                <th></th>
+                                <th style="text-align: right;"><button type="button" class="btn btn-primary"
+                                        data-bs-toggle="modal" data-bs-target="#addTreatmentModal" data-id="{{-1}}">Add Row</button></th>
+                            </tr>
+                            <tr>
+                              <th></th>  
+                              <th>Date</th>
+                                <th>Tooth</th>
+                                <th>Procedure</th>
+                                <th>Advice/Medications</th>
+                                <th>ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (treatmentdetail of treatment.PatientTreatmentDetails;track treatmentdetail.ID){
+                            <tr> 
+                                                       <td>
+                               <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addTreatmentModal" (click)="EditTreatmentDetails(treatmentdetail.ID)">&nbsp;Edit</button>
+                               &nbsp;&nbsp;<button class="btn btn-secondary" type="button" (click)="DeleteTreatmentDetails(treatmentdetail.ID)">&nbsp;Delete</button>
+                              </td>  
+                                <td>{{treatmentdetail.TreatmentDate}}</td>
+                                <td>{{treatmentdetail.Tooth}}</td>
+                                <td>{{treatmentdetail.Procedure}}</td>
+                                <td>{{treatmentdetail.Advice}}</td>
+                                <td>{{treatmentdetail.PatientTreatmentID}}</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+<br>
+
+<!-- Modal Add Treatment -->
+<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static"  id="addTreatmentModal" tabindex="-1" aria-labelledby="addTreatmentModal" >
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Treatment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <br />
+                <div class="row">
+                    <div class="col">
+                      <label for="txtTreatmentDate" class="form-label">Treatment Date</label>
+                    </div>
+                    <div class="col">
+                      <input type="date" id="txtTreatmentDate" class="form-control" min="2024-01-01" max="2025-12-31">
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col">
+                      <label for="txtTooth" class="form-label">Tooth Number</label>
+                    </div>
+                    <div class="col">
+                      <input type="text" id="txtTooth" class="form-control">
+                    </div>
+                  </div>
+                  <br />
+                  <div class="row">
+                    <div class="col">
+                      <label for="txtProcedure" class="form-label">Tooth Procedure</label>
+                    </div>
+                    <div class="col">
+                      <input type="text" id="txtProcedure" class="form-control">
+                    </div>
+                  </div>
+                  <br />
+                  <div class="row">
+                    <div class="col">
+                      <label for="txtAdvice" class="form-label">Advice Medication</label>
+                    </div>
+                    <div class="col">
+                      <textArea id="txtAdvice" class="form-control" row="2"></textArea>
+                    </div>
+                  </div>
+                  <div>
+                    <input type="hidden" id="hdtreatmentid" value="">
+                    <input type="hidden" id="hdtreatmentdetailid" value="">
+                  </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveTreatmentDetails()" >Save Treatment</button>
+            </div>
+        </div>
+    </div>
+</div>

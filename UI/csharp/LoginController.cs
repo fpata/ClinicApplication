@@ -73,7 +73,6 @@ namespace ClinicManager.Controllers
                     user.UserType,
                     user.FirstName,
                     user.LastName,
-                    user.Gender,
                     user.DOB,
                     user.LastLoginDate
                 }

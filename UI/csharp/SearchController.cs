@@ -34,8 +34,7 @@ namespace ClinicManager.Controllers
                 query = query.Where(u => u.UserName.Contains(model.UserName));
             if (!string.IsNullOrEmpty(model.UserType))
                 query = query.Where(u => u.UserType.Contains(model.UserType));
-            if (!string.IsNullOrEmpty(model.Gender))
-                query = query.Where(u => u.Gender != null && u.Gender.Contains(model.Gender));
+
             return await query.ToListAsync();
         }
 

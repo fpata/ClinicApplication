@@ -73,16 +73,16 @@ namespace ClinicManager.Controllers
                 Where(c => c.UserID == patient.UserID)
                 .FirstOrDefaultAsync();
                 
-                patient.Appointments = await _context.PatientAppointments
+                patient.PatientAppointments = await _context.PatientAppointments
                     .Where(a => a.PatientID == id)
                     .ToListAsync();
                 patient.PatientReports = await _context.PatientReports
                     .Where(r => r.PatientID == id)
                     .ToListAsync();
-                patient.PatientTreatments = await _context.PatientTreatments
+                patient.PatientTreatment = await _context.PatientTreatments
                     .Where(t => t.PatientID == id)
-                    .ToListAsync();
-                patient.PatientTreatmentDetails = await _context.PatientTreatmentDetails
+                    .FirstOrDefaultAsync();
+               if(patient.PatientTreatment !=null) patient.PatientTreatment.PatientTreatmentDetails = await _context.PatientTreatmentDetails
                     .Where(td => td.PatientID == id)
                     .ToListAsync();
                 _logger.LogInformation($"Fetched full details for patient with ID: {id}");

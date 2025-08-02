@@ -44,12 +44,7 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  OnGenderChanged(gender: string) {
-    if (this.user) {
-      this.user.Gender = gender;
-      console.log(this.user.Gender);
-    }
-  }
+ 
 
   CopyAddress() {
     if (this.user && this.user.Address) {

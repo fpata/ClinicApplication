@@ -23,7 +23,7 @@ export class PatientReportComponent {
     this.userSubscription = this.dataService.user$.subscribe({
       next: (user: User) => {
         this.user = user;
-        this.reports = this.user.Patients[0].Reports || []; // Assuming Reports is part of the user model
+        this.reports = this.user.Patients[0].PatientReports || []; // Assuming Reports is part of the user model
 
         console.log('User updated:', user);
       },
