@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Address } from '../models/address.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AddressService {
-  private apiUrl = '/api/addresses';
+
+private apiUrl = `${environment.API_BASE_URL}/Address`; // Adjust as needed
 
   constructor(private http: HttpClient) {}
 

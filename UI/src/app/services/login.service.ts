@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
   token: string;
@@ -17,7 +18,7 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
-  private apiUrl = 'https://localhost:7230/api/login';
+  private apiUrl = `${environment.API_BASE_URL}/login`;
 
   constructor(private http: HttpClient) {}
 

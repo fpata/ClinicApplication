@@ -30,8 +30,8 @@ namespace ClinicManager.Controllers
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
-           
-                return appointments;
+
+            return appointments;
         }
 
         [HttpGet("{id}")]
@@ -99,5 +99,36 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Deleted patient appointment with ID: {id}");
             return NoContent();
         }
+
+        [HttpGet("doctor/{doctorId}")]
+        public async Task<IActionResult> GetByDoctor(int doctorID)
+        {
+            _logger.LogInformation($"Get all appointments for Doctor ID: {doctorID}");
+            var appointments = await _context.PatientAppointments
+                .Where(a => a.DoctorID == doctorID)
+                .ToListAsync();
+            if (appointments.Count == 0)
+            {
+                _logger.LogInformation($"No appointments found for doctor ID: {doctorID}");
+                return NotFound();
+            }
+            return Ok(appointments);
+        }
+        [HttpGet("patient/{patientID}")]
+        public async Task<IActionResult> GetByPatient(int patientID)
+        {
+            _logger.LogInformation($"Get all appointments for Doctor ID: {patientID}");
+            var appointments = await _context.PatientAppointments
+                .Where(a => a.PatientID == patientID)
+                .ToListAsync();
+            if (appointments.Count == 0)
+            {
+                _logger.LogInformation($"No appointments found for patient ID: {patientID}");
+                return NotFound();
+            }
+            return Ok(appointments);
+        }
     }
+
+
 }

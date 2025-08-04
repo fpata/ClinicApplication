@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PatientAppointment } from '../models/patient-appointment.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PatientAppointmentService {
-  private apiUrl = '/api/patient-appointments';
 
+  private apiUrl = `${environment.API_BASE_URL}/PatientAppointment`;
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
@@ -32,5 +33,13 @@ export class PatientAppointmentService {
 
   deletePatientAppointment(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
+  }
+
+  getPatientAppointmentsByPatientId(patientId: number): Observable<PatientAppointment[]> {
+    return this.http.get<PatientAppointment[]>(`${this.apiUrl}/patient/${patientId}`, { headers: this.getAuthHeaders() });
+  }
+
+  getPatientAppointmentsByDoctorId(doctorId: number): Observable<PatientAppointment[]> {
+    return this.http.get<PatientAppointment[]>(`${this.apiUrl}/doctor/${doctorId}`, { headers: this.getAuthHeaders() });
   }
 }
