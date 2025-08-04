@@ -8,7 +8,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'patient', component: PatientMasterComponent },
   { path: 'scheduler', component: SchedulerComponent },
-  { path: '', redirectTo: '/scheduler', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'dashboard', component: Dashboard },
   // Add other routes here
 ];

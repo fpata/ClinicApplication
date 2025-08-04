@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LoginService, LoginResponse } from '../../services/login.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-login',
@@ -16,13 +17,14 @@ export class LoginComponent {
   password = '';
   error = '';
 
-  constructor(private loginService: LoginService, private router: Router) {}
+  constructor(private loginService: LoginService, private router: Router, private dataService: DataService) {}
 
   login() {
     return this.loginService.login(this.username, this.password).subscribe({
       next: (res: LoginResponse) => {
         if (res && res.token) {
           localStorage.setItem('token', res.token);
+          this.dataService.setLoginUser(res);
           this.router.navigate(['/patient']);
         } else {
           this.error = 'Invalid username or password';

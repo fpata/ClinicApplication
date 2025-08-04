@@ -4,6 +4,7 @@ import { Patient } from '../models/patient.model';
 import { User } from '../models/user.model';
 import { DayPilotCalendarComponent, DayPilotModule } from '@daypilot/daypilot-lite-angular';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
+import { LoginResponse } from './login.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +12,13 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 export class DataService {
   private patientSource = new BehaviorSubject<Patient | null>(null);
   private userSource = new BehaviorSubject<User | null>(null);
-  private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]); 
+
   patient$ = this.patientSource.asObservable();
   user$ = this.userSource.asObservable();
+  private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]); 
   calendarEvents$ = this.calendarEvents.asObservable(); 
+  private loginUser: LoginResponse | null = null;
+  $loginUser = new BehaviorSubject<LoginResponse | null>(null);
 
   setPatient(patient: Patient) {
     this.patientSource.next(patient);
@@ -38,5 +42,14 @@ export class DataService {
   
   setCalendarEvents(events: DayPilot.EventData[]) {
     this.calendarEvents.next(events);
+  }
+
+  getLoginUser(): LoginResponse | null {
+    return this.loginUser;
+  }
+
+  setLoginUser(user: LoginResponse) {
+    this.loginUser = user;
+    this.$loginUser.next(user);
   }
 }
