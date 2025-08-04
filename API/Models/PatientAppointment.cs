@@ -7,8 +7,8 @@ namespace ClinicManager.Models
     {
         public int ID { get; set; }
         public int? UserID { get; set; }
-        public DateTime? ApptDate { get; set; }
-        public TimeSpan? ApptTime { get; set; }
+        public DateTime? StartApptDate { get; set; }
+        public DateTime? EndApptDate { get; set; }
         public string? TreatmentName { get; set; }
         public int? DoctorID { get; set; }
 

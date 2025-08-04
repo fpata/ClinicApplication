@@ -3,14 +3,14 @@ import { Patient } from './patient.model';
 export interface PatientAppointment {
   ID: number;
   UserID?: number;
-  ApptDate?: string;
-  ApptTime?: string;
+  StartApptDate?: Date;
+  EndApptDate?: Date;
   TreatmentName?: string;
   DoctorID?: number;
   DoctorName?: string;
   ApptStatus?: string;
   PatientID?: number;
-  PAtientName?: string;
+  PatientName?: string;
   IsActive?: boolean;
   CreatedDate?: string;
   CreatedBy?: number;

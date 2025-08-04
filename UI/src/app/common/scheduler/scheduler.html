@@ -1,0 +1,20 @@
+<div class="scheduler-container">
+
+   
+  <div class="view-controls">
+    <button class="btn btn-secondary" (click)="switchToDayView()" type="button">Day</button>
+    <button class="btn btn-secondary" (click)="switchToWorkWeekView()" type="button">Work Week</button>
+    <button class="btn btn-secondary" (click)="switchToWeekView()" type="button">Week</button>
+     <div class="scheduler-controls">
+      <button class="btn btn-primary" (click)="navigateToPrevious()" type="button">← Previous Week</button>
+      <button class="btn btn-primary" (click)="navigateToToday()" type="button">Today</button>
+      <button class="btn btn-primary" (click)="navigateToNext()" type="button">Next Week →</button>
+      <button class="btn btn-success" (click)="addAppointment()" type="button">Add Appointment</button>
+    </div>
+  </div>
+
+  <div class="scheduler-wrapper">
+    <daypilot-calendar #calendar [config]="config">
+    </daypilot-calendar>
+  </div>
+</div>

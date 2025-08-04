@@ -7,7 +7,7 @@
             <label for="txtMedications" class="form-label">Medications</label>
         </div>
         <div class="col-10">
-            <textarea id="txtMedications" class="form-control" row="2" [(ngModel)]="this.patient.Medications"></textarea>
+            <textarea id="txtMedications" class="form-control" row="2" [ngModel]="this.patient?.Medications" (ngModelChange)="this.patient.Medications = $event"></textarea>
         </div>
     </div>
     <br />
@@ -16,7 +16,7 @@
             <label for="txtAllergies" class="form-label">Allergies & Reactions</label>
         </div>
         <div class="col-10">
-            <textarea id="txtAllergies" class="form-control" row="2" [(ngModel)]="this.patient.Allergies"  required></textarea>
+            <textarea id="txtAllergies" class="form-control" row="2" [ngModel]="this.patient?.Allergies" (ngModelChange)="this.patient.Allergies = $event" required></textarea>
         </div>
     </div>
     <br />
@@ -25,7 +25,7 @@
             <label for="txtFatherHistory" class="form-label">Father Medical History</label>
         </div>
         <div class="col-10">
-            <textarea id="txtFatherHistory" class="form-control" row="2" [(ngModel)]="this.patient.FatherHistory"></textarea>
+            <textarea id="txtFatherHistory" class="form-control" row="2" [ngModel]="this.patient?.FatherHistory" (ngModelChange)="this.patient.FatherHistory = $event"></textarea>
         </div>
     </div>
     <br />
@@ -34,7 +34,7 @@
             <label for="txtMotherHistory" class="form-label">Mother Medical History</label>
         </div>
         <div class="col-10">
-            <textarea id="txtMotherHistory" class="form-control" row="2" [(ngModel)]="this.patient.MotherHistory"></textarea>
+            <textarea id="txtMotherHistory" class="form-control" row="2" [ngModel]="this.patient?.MotherHistory" (ngModelChange)="this.patient.MotherHistory = $event"></textarea>
         </div>
     </div>
 </div>

@@ -31,7 +31,9 @@ export class PatientTreatmentComponent {
     this.userSubscription = this.dataService.user$.subscribe({
       next: (user) => {
         this.user = user;
-        this.treatment = this.user.Patients[0].PatientTreatment;
+        if (this.user && this.user.Patients && this.user.Patients.length > 0 && this.user.Patients[0].PatientTreatment) {
+          this.treatment = this.user.Patients[0].PatientTreatment;
+        }
 
         console.log('User updated:', user);
       },
@@ -48,9 +50,9 @@ export class PatientTreatmentComponent {
     }
   }
 
-  
+
   EditTreatmentDetails(treatmentdetailID: number) {
-    if (this.treatment && this.treatment.PatientTreatmentDetails) {
+    if (this.treatment && this.treatment.PatientTreatmentDetails && this.treatment.PatientTreatmentDetails.length > 0) {
       const index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === treatmentdetailID);
       if (index > -1) {
         const treatmentDetail: PatientTreatmentDetail = this.treatment.PatientTreatmentDetails[index];

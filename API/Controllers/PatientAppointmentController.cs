@@ -22,14 +22,16 @@ namespace ClinicManager.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PatientAppointment>>> Get(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<PatientAppointment>>> Get(int patientID, int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Fetching patient appointments page {pageNumber} with size {pageSize}");
             var appointments = await _context.PatientAppointments
+                .Where(a => a.PatientID == patientID)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
-            return appointments;
+           
+                return appointments;
         }
 
         [HttpGet("{id}")]

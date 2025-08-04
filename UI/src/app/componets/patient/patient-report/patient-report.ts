@@ -23,8 +23,12 @@ export class PatientReportComponent {
     this.userSubscription = this.dataService.user$.subscribe({
       next: (user: User) => {
         this.user = user;
-        this.reports = this.user.Patients[0].PatientReports || []; // Assuming Reports is part of the user model
-
+        if (this.user && this.user.Patients && this.user.Patients.length > 0 && this.user.Patients[0].PatientReports && this.user.Patients[0].PatientReports.length > 0) {
+          this.reports = this.user.Patients[0].PatientReports || []; // Assuming Reports is part of the user model
+        }
+        else {
+          this.reports = []; // Ensure reports is initialized to an empty array if no reports are
+        }
         console.log('User updated:', user);
       },
       error: (error) => {

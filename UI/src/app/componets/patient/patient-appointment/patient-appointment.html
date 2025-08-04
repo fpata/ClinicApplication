@@ -16,8 +16,8 @@
                         data-bs-toggle="modal" data-bs-target="#addAppointmentModal">Add Row</button></th>
                     </tr>
                     <tr>
-                    <th>Date</th>
-                    <th>Time</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
                     <th>Doctor</th>
                     <th>Procedure</th>
                     <th></th>
@@ -26,8 +26,8 @@
                 <tbody>
                     @for(appointment of appointments; track appointment.ID) {
                     <tr>
-                        <td>{{appointment.ApptDate}}</td>
-                        <td>{{appointment.ApptTime}}</td>
+                        <td>{{appointment.StartApptDate}}</td>
+                        <td>{{appointment.EndApptDate}}</td>
                         <td>{{appointment.DoctorName}}</td>
                         <td>{{appointment.TreatmentName}}</td>
                         <td> 
@@ -46,7 +46,7 @@
   <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
     <div class="row">
       <div class="col">
-       Calendar control here
+       <app-scheduler></app-scheduler>
       </div>
     </div>
   </div>
@@ -73,10 +73,16 @@
                 <br />
                 <div class="row">
                     <div class="col">
-                      <label for="txtAppointmentTime" class="form-label">Appointment Time</label>
+                      <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
                     </div>
                     <div class="col">
                       <input type="time" id="txtAppointmentTime" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
+                    </div>
+                    <div class="col">
+                      <input type="time" id="txtAppointmentEndTime" class="form-control">
                     </div>
                   </div>
                   <br />

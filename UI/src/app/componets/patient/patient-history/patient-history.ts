@@ -23,9 +23,9 @@ user:User | null = null; // Assuming user is defined and has the necessary prope
     this.userSubscription = this.dataService.user$.subscribe({
       next: (user) => {
         this.user = user;
-        this.patient = this.user.Patients ? this.user.Patients[0]:null; // Assuming the first patient is the one we want to display
+        if(this.user && this.user.Patients && this.user.Patients.length > 0)
+        this.patient = this.user.Patients[0]; // Assuming the first patient is the one we want to display
         
-        console.log('User updated:', user);
       },
       error: (error) => {
         console.error('Error subscribing to user changes:', error);

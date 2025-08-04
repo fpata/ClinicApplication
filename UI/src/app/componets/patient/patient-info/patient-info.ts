@@ -27,9 +27,10 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
     this.userSubscription = this.dataService.user$.subscribe({
       next: (user) => {
         this.user = user;
-        this.address = this.user.Address; 
-        this.contact = this.user.Contact; // Assuming contact details are part of the user model
-        console.log('User updated:', user);
+        if (this.user && this.user.Address)  this.address = this.user.Address;
+      
+        if (this.user && this.user.Contact)    this.contact = this.user.Contact;
+       
       },
       error: (error) => {
         console.error('Error subscribing to user changes:', error);

@@ -16,7 +16,7 @@
                     <label for="txtChiefComplaint" class="form-label">Chief Complaint</label>
                 </div>
                 <div class="col-10">
-                    <textarea id="txtChiefComplaint" class="form-control" row="2" [(ngModel)]="treatment.ChiefComplaint"></textarea>
+                    <textarea id="txtChiefComplaint" class="form-control" row="2" [ngModel]="treatment?.ChiefComplaint" (ngModelChange)="treatment.ChiefComplaint = $event"></textarea>
                 </div>
             </div>
             <br />
@@ -25,7 +25,7 @@
                     <label for="txtOservationFindings" class="form-label">Observations/ Finding</label>
                 </div>
                 <div class="col-10">
-                    <textarea id="txtOservationFindings" class="form-control" row="2" [(ngModel)]="treatment.Observation"></textarea>
+                    <textarea id="txtOservationFindings" class="form-control" row="2" [ngModel]="treatment?.Observation" (ngModelChange)="treatment.Observation = $event"></textarea>
                 </div>
             </div>
             <br />
@@ -34,11 +34,11 @@
                     <label for="txtTreatmentPlan" class="form-label">Treatment Plan</label>
                 </div>
                 <div class="col-10">
-                    <textarea id="txtTreatmentPlan" class="form-control" row="2" [(ngModel)]="treatment.TreatmentPlan"></textarea>
+                    <textarea id="txtTreatmentPlan" class="form-control" row="2" [ngModel]="treatment?.TreatmentPlan" (ngModelChange)="treatment.TreatmentPlan = $event"></textarea>
                 </div>
             </div>
             <div>
-              <input type="hidden" id="txtTreatmentID" value="-1" [ngModel]="treatment.ID">
+              <input type="hidden" id="txtTreatmentID" value="-1" [ngModel]="treatment?.ID">
             </div>
             <br />
             <div class="row">
@@ -64,7 +64,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for (treatmentdetail of treatment.PatientTreatmentDetails;track treatmentdetail.ID){
+                            @for (treatmentdetail of treatment?.PatientTreatmentDetails;track treatmentdetail.ID){
                             <tr> 
                                                        <td>
                                <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addTreatmentModal" (click)="EditTreatmentDetails(treatmentdetail.ID)">&nbsp;Edit</button>
