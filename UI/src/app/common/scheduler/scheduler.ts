@@ -12,16 +12,17 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 })
 export class SchedulerComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar') calendar!: DayPilotCalendarComponent;
-  calendarEvents: DayPilot.Event[] = [];
+  calendarEvents: DayPilot.EventData[] = [];
   config: DayPilot.CalendarConfig = {
-    startDate: DayPilot.Date.today(),
-    days: 7,
+    startDate: DayPilot.Date.today().firstDayOfWeek(1), //1= Monday
+    days: 6,// Show 6 days in the week view
     businessBeginsHour: 9,
     businessEndsHour: 20,
     timeRangeSelectedHandling: 'Enabled',
     eventMoveHandling: 'Update',
     eventResizeHandling: 'Update',
-    events:[],
+    events: this.calendarEvents,
+
     onTimeRangeSelected: (args: any) => {
       this.onTimeRangeSelected(args);
     },
@@ -97,11 +98,11 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
     }
   }
 
-  addEvents(events:DayPilot.Event[]):void {
+  addEvents(events:DayPilot.EventData[]):void {
     this.calendar.control.events.list = [];
-    events.forEach(event => {
-      this.calendar.control.events.add(event);
-    });
+    this.config.events.push(...events);
+    this.calendarEvents = events;
+    this.calendar.control.update(this.config);
   }
 
   addAppointment(): void {
@@ -126,34 +127,53 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
 
   navigateToToday(): void {
     this.config.startDate = DayPilot.Date.today();
+    this.config.events = this.calendarEvents;
     this.calendar.control.update(this.config);
-    this.addEvents(this.calendarEvents);
+
   }
 
-  navigateToPrevious(): void {
+  navigateToPreviousDay(): void {
+    const currentStart = new DayPilot.Date(this.config.startDate);
+    this.config.startDate = currentStart.addDays(-1);
+    this.config.events = this.calendarEvents;
+    this.calendar.control.update(this.config);
+  }
+
+  navigateToNextDay(): void {
+    const currentStart = new DayPilot.Date(this.config.startDate);
+    this.config.startDate = currentStart.addDays(1);
+    this.config.events = this.calendarEvents;
+    this.calendar.control.update(this.config);
+  }
+
+  navigateToPreviousWeek(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(-7);
     this.calendar.control.update(this.config);
   }
 
-  navigateToNext(): void {
+  navigateToNextWeek(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(7);
+      this.config.events = this.calendarEvents;
     this.calendar.control.update(this.config);
   }
 
   switchToWeekView(): void {
     this.config.days = 7;
+      this.config.events = this.calendarEvents;
     this.calendar.control.update(this.config);
   }
 
   switchToDayView(): void {
     this.config.days = 1;
+    this.config.events = this.calendarEvents;
+    this.config.startDate = DayPilot.Date.today();
     this.calendar.control.update(this.config);
   }
 
   switchToWorkWeekView(): void {
-    this.config.days = 5;
+    this.config.days = 6; // Assuming work week is Monday to Saturday
     this.calendar.control.update(this.config);
   }
 }
