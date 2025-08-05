@@ -29,7 +29,8 @@ namespace ClinicManager.Controllers
             string query = "Select user.FirstName as FirstName, user.LastName as LastName, user.ID as UserID," +
                 " user.UserName as UserName, user.UserType as UserType, " +
                 " MAX(patient.ID) as PatientID, address.PermCity as PermCity, " +
-                " contact.PrimaryEmail as PrimaryEmail, contact.PrimaryPhone as PrimaryPhone from User " +
+                " contact.PrimaryEmail as PrimaryEmail, contact.PrimaryPhone as PrimaryPhone , 0 as DoctorID , '' as DoctorName, " +
+                " user.CreatedDate as StartDate, user.ModifiedDate as EndDate from User " +
                 " Inner join Patient on patient.UserID = user.ID " +
                 " Inner join Address on address.UserID = user.ID " +
                 " Inner Join Contact on contact.UserID = user.ID " +
@@ -44,6 +45,10 @@ namespace ClinicManager.Controllers
                 query = query + " And contact.PrimaryPhone like '%" + model.PrimaryPhone + "%' ";
             if (!string.IsNullOrWhiteSpace(model.PermCity))
                 query = query + " And address.PermCity like '%" + model.PermCity + "%' ";
+            if (model.DoctorID > 0)
+                query = query + " And pa.DoctorID = " + model.DoctorID + " ";
+            if (model.PatientID > 0)
+                query = query + " And pa.PatientID = " + model.PatientID + " ";
             query = query + " group by user.FirstName, user.LastName,UserID, PermCity, PrimaryEmail, PrimaryPhone";
             Console.WriteLine(query);
 

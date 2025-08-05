@@ -30,7 +30,11 @@ export class PatientSearchComponent {
       PrimaryEmail: '',
       PermCity: '',
       UserName: '',
-      UserType: ''
+      UserType: '',
+      DoctorID: 0,
+      DoctorName: '',
+      EndDate: new Date().toISOString().split('T')[0], // Default to today
+      StartDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // Default to 365 days ago
     }
     this.searchResult = [];
   }
