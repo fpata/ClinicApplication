@@ -8,8 +8,8 @@
           type="button" role="tab" aria-controls="tbPatientSearch" aria-selected="true" (click)="tabSelectedEvent($event)" >Search</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tbPersonalInfo-tab" data-bs-toggle="tab" data-bs-target="#tbPersonalInfo"
-          type="button" role="tab" aria-controls="tbPersonalInfo" aria-selected="false" (click)="tabSelectedEvent($event)">Perosnal Information</button>
+        <button class="nav-link" id="tbPreviousInfo-tab" data-bs-toggle="tab" data-bs-target="#tbPreviousInfo"
+          type="button" role="tab" aria-controls="tbPreviousInfo" aria-selected="false" (click)="tabSelectedEvent($event)">Previous Treatments</button>
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="tbPatientHistory-tab" data-bs-toggle="tab" data-bs-target="#tbPatientHistory"
@@ -41,8 +41,8 @@
              aria-controls="tbPatientSearch" aria-selected="true">Search</a>
           </li>
           <li>
-            <a class="nav-link" id="tbPersonalInfo-tab1" data-bs-toggle="tab" data-bs-target="#tbPersonalInfo"
-          aria-controls="tbPersonalInfo" aria-selected="false">Perosnal Information</a>
+            <a class="nav-link" id="tbPreviousInfo-tab1" data-bs-toggle="tab" data-bs-target="#tbPreviousInfo"
+          aria-controls="tbPreviousInfo" aria-selected="false">Paient Information</a>
           </li>
           <li>
             <a class="nav-link" id="tbPatientHistory-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientHistory"
@@ -71,8 +71,8 @@
         <app-patient-search></app-patient-search>
       </div>
       
-      <div class="tab-pane fade" id="tbPersonalInfo" role="tabpanel" aria-labelledby="tbPersonalInfo-tab">
-       <app-patient-info></app-patient-info>
+      <div class="tab-pane fade" id="tbPreviousInfo" role="tabpanel" aria-labelledby="tbPreviousInfo-tab">
+      previous treatments will come here
       </div>
   
   
@@ -112,6 +112,9 @@
        @if(isSearchTabSelected) {
       <div class="col" >
         <button type="button" id="btnNewPatient" class="btn btn-primary" style="width: 25%;" (click)="AddNewPatient()">New Patient</button>
+      </div>
+      <div class="col">
+        <button type="button" id="btnSearchPatient" class="btn btn-secondary" style="width: 25%;" (click)="QuickCreatePatient()">Search Patient</button>
       </div>
     }
     </div>

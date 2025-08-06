@@ -1,20 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DataService } from '../../../services/data.service';
+import { Component } from '@angular/core';
 import { User } from '../../../models/user.model';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { Contact } from '../../../models/contact.model';
 import { Address } from '../../../models/address.model';
+import { Contact } from '../../../models/contact.model';
+import { DataService } from '../../../services/data.service';
+import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-patient-info',
-  imports: [CommonModule, FormsModule],
-  templateUrl: './patient-info.html',
-  styleUrl: './patient-info.css'
+  selector: 'app-user-info',
+  imports: [FormsModule],
+  templateUrl: './user-info.html',
+  styleUrl: './user-info.css'
 })
-export class PatientInfoComponent implements OnInit, OnDestroy {
-  user: User | null = null;
+export class UserInfoComponent {
+
+ user: User | null = null;
   address:Address |null = null;
   contact: Contact | null = null; // Assuming Contact is a model for contact details
   // Subscription to handle user changes
@@ -45,9 +45,7 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
     }
   }
 
- 
-
-  CopyAddress() {
+   CopyAddress() {
     if (this.user && this.user.Address) {
       this.user.Address.CorrAddress1 = this.user.Address.PermAddress1;
       this.user.Address.CorrAddress2 = this.user.Address.PermAddress2;
@@ -57,5 +55,5 @@ export class PatientInfoComponent implements OnInit, OnDestroy {
       this.user.Address.CorrZipCode = this.user.Address .PermZipCode;
     }
   }
-}
 
+}

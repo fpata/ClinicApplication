@@ -1,0 +1,293 @@
+<div class="accordion" id="accQuickCreateUser">
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accUserPersonalInfo"
+        aria-expanded="true" aria-controls="accUserPersonalInfo">
+        Personal Information
+      </button>
+    </h2>
+    <div id="accUserPersonalInfo" class="accordion-collapse collapse show" data-bs-parent="#accQuickCreateUser">
+      <div class="accordion-body">
+        <div class="container">
+          <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+            <form [formGroup]="quickCreateForm" (ngSubmit)="onQuickCreateSubmit()" class="needs-validation" novalidate>
+              
+              <!-- User Information -->
+              <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="firstName" class="form-label">First Name</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="firstName" 
+                    formControlName="firstName" 
+                    [class.is-invalid]="quickCreateForm.get('firstName')?.invalid && quickCreateForm.get('firstName')?.touched"
+                    placeholder="First Name"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('firstName')?.invalid && quickCreateForm.get('firstName')?.touched">
+                    First Name is required.
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="lastName" class="form-label">Last Name</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="lastName" 
+                    formControlName="lastName" 
+                    [class.is-invalid]="quickCreateForm.get('lastName')?.invalid && quickCreateForm.get('lastName')?.touched"
+                    placeholder="Last Name"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('lastName')?.invalid && quickCreateForm.get('lastName')?.touched">
+                    Last Name is required.
+                  </div>
+                </div>
+              </div>
+              
+              <br />
+              <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="userName" class="form-label">Username</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="userName" 
+                    formControlName="userName" 
+                    [class.is-invalid]="quickCreateForm.get('userName')?.invalid && quickCreateForm.get('userName')?.touched"
+                    placeholder="Username"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('userName')?.invalid && quickCreateForm.get('userName')?.touched">
+                    Username is required.
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="password" class="form-label">Password</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password" 
+                    formControlName="password" 
+                    [class.is-invalid]="quickCreateForm.get('password')?.invalid && quickCreateForm.get('password')?.touched"
+                    placeholder="Password"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('password')?.invalid && quickCreateForm.get('password')?.touched">
+                    Password is required.
+                  </div>
+                </div>
+              </div>
+
+              <br />
+              <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="userType" class="form-label">User Type</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <select 
+                    class="form-select" 
+                    id="userType" 
+                    formControlName="userType" 
+                    [class.is-invalid]="quickCreateForm.get('userType')?.invalid && quickCreateForm.get('userType')?.touched"
+                    required>
+                    <option value="">Select User Type</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Doctor">Doctor</option>
+                    <option value="Nurse">Nurse</option>
+                    <option value="Receptionist">Receptionist</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('userType')?.invalid && quickCreateForm.get('userType')?.touched">
+                    User Type is required.
+                  </div>
+                </div>
+              </div>
+            </form>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse"
+        data-bs-target="#accUserAddress" aria-expanded="false" aria-controls="accUserAddress">
+        Address Information
+      </button>
+    </h2>
+    <div id="accUserAddress" class="accordion-collapse collapse show" data-bs-parent="#accQuickCreateUser">
+      <div class="accordion-body">
+        <div class="container">
+          <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+            <form [formGroup]="quickCreateForm">
+              <div class="row">
+                <div class="col-2">
+                  <label for="address1" class="form-label">Address Line 1</label>
+                </div>
+                <div class="col-9">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="address1" 
+                    formControlName="address1" 
+                    [class.is-invalid]="quickCreateForm.get('address1')?.invalid && quickCreateForm.get('address1')?.touched"
+                    placeholder="Address Line 1"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('address1')?.invalid && quickCreateForm.get('address1')?.touched">
+                    Address is required.
+                  </div>
+                </div>
+              </div>
+              
+              <br />
+              <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="city" class="form-label">City</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="city" 
+                    formControlName="city" 
+                    [class.is-invalid]="quickCreateForm.get('city')?.invalid && quickCreateForm.get('city')?.touched"
+                    placeholder="City"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('city')?.invalid && quickCreateForm.get('city')?.touched">
+                    City is required.
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="state" class="form-label">State</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="state" 
+                    formControlName="state" 
+                    [class.is-invalid]="quickCreateForm.get('state')?.invalid && quickCreateForm.get('state')?.touched"
+                    placeholder="State"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('state')?.invalid && quickCreateForm.get('state')?.touched">
+                    State is required.
+                  </div>
+                </div>
+              </div>
+              
+              <br />
+              <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="country" class="form-label">Country</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="country" 
+                    formControlName="country" 
+                    [class.is-invalid]="quickCreateForm.get('country')?.invalid && quickCreateForm.get('country')?.touched"
+                    placeholder="Country"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('country')?.invalid && quickCreateForm.get('country')?.touched">
+                    Country is required.
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="zipCode" class="form-label">Zip Code</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="zipCode" 
+                    formControlName="zipCode"
+                    placeholder="Zip Code">
+                </div>
+              </div>
+            </form>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse"
+        data-bs-target="#accUserContact" aria-expanded="false" aria-controls="accUserContact">
+        Contact Information
+      </button>
+    </h2>
+    <div id="accUserContact" class="accordion-collapse collapse show" data-bs-parent="#accQuickCreateUser">
+      <div class="accordion-body">
+        <div class="container">
+          <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+            <form [formGroup]="quickCreateForm">
+              <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="primaryPhone" class="form-label">Primary Phone</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="tel" 
+                    class="form-control" 
+                    id="primaryPhone" 
+                    formControlName="primaryPhone" 
+                    [class.is-invalid]="quickCreateForm.get('primaryPhone')?.invalid && quickCreateForm.get('primaryPhone')?.touched"
+                    placeholder="Primary Phone"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('primaryPhone')?.invalid && quickCreateForm.get('primaryPhone')?.touched">
+                    Primary Phone is required.
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="primaryEmail" class="form-label">Primary Email</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input 
+                    type="email" 
+                    class="form-control" 
+                    id="primaryEmail" 
+                    formControlName="primaryEmail" 
+                    [class.is-invalid]="quickCreateForm.get('primaryEmail')?.invalid && quickCreateForm.get('primaryEmail')?.touched"
+                    placeholder="Primary Email"
+                    required>
+                  <div class="invalid-feedback" *ngIf="quickCreateForm.get('primaryEmail')?.invalid && quickCreateForm.get('primaryEmail')?.touched">
+                    <div *ngIf="quickCreateForm.get('primaryEmail')?.errors?.['required']">Primary Email is required.</div>
+                    <div *ngIf="quickCreateForm.get('primaryEmail')?.errors?.['email']">Please enter a valid email address.</div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="accordion-item">
+    <div class="accordion-body">
+      <div class="container">
+        <div class="row mt-3">
+          <div class="col">
+            <button type="button" class="btn btn-primary" (click)="onQuickCreateSubmit()" [disabled]="!quickCreateForm.valid">Create User</button>
+            <button type="button" class="btn btn-secondary ms-2" (click)="onClear()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

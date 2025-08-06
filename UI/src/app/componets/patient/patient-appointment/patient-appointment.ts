@@ -4,11 +4,11 @@ import { Subscription } from 'rxjs';
 import { DataService } from '../../../services/data.service';
 import { User } from '../../../models/user.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
-import { DayPilot } from '@daypilot/daypilot-lite-angular';
+import { DayPilotModule, DayPilot } from '@daypilot/daypilot-lite-angular';
 
 @Component({
   selector: 'app-patient-appointment',
-  imports: [SchedulerComponent],
+  imports: [SchedulerComponent, DayPilotModule],
   templateUrl: './patient-appointment.html',
   styleUrl: './patient-appointment.css'
 })
@@ -60,19 +60,20 @@ export class PatientAppointmentComponent {
     }
   }
 
-  AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
-    var events: DayPilot.Event[] = [];
+  AddEventsToScheduler(appointments: PatientAppointment[]) {
+    var events: DayPilot.EventData[] = [];
     appointments.forEach(appointment => {
-      events.push(new DayPilot.Event({
+      events.push({
         id: appointment.ID.toString(),
         text: appointment.PatientName || 'Unknown Patient',
         start: new DayPilot.Date(appointment.StartApptDate),
         end: new DayPilot.Date(appointment.EndApptDate),
         resource: appointment.DoctorName || 'General',
-        backColor: '#3c8dbc',
-      }));
+        backColor: '#3c8dbc', 
+      });
     });
     this.scheduler.addEvents(events);
+
   }
 
 }

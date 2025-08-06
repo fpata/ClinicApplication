@@ -62,7 +62,7 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
       const resource = prompt('Resource (Doctor/Room):') || 'General';
       const colors = ['#3c8dbc', '#00a65a', '#f56954', '#f39c12', '#9b59b6', '#34495e'];
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      
+
       const event = {
         id: DayPilot.guid(),
         start: args.start,
@@ -98,21 +98,20 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
     }
   }
 
-  addEvents(events:DayPilot.EventData[]):void {
-    this.calendar.control.events.list = [];
-    this.config.events.push(...events);
+  addEvents(events: DayPilot.EventData[]): void {
     this.calendarEvents = events;
+    this.calendar.config.events = this.calendarEvents || [];
     this.calendar.control.update(this.config);
   }
 
   addAppointment(): void {
     const name = prompt('Appointment name:');
     const resource = prompt('Resource (Doctor/Room):') || 'General';
-    
+
     if (name) {
       const colors = ['#3c8dbc', '#00a65a', '#f56954', '#f39c12', '#9b59b6', '#34495e'];
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      
+
       const event = {
         id: DayPilot.guid(),
         start: DayPilot.Date.today().addHours(9),
@@ -127,7 +126,7 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
 
   navigateToToday(): void {
     this.config.startDate = DayPilot.Date.today();
-    this.config.events = this.calendarEvents;
+    this.config.events.push(...this.calendarEvents);
     this.calendar.control.update(this.config);
 
   }
@@ -155,13 +154,13 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
   navigateToNextWeek(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(7);
-      this.config.events = this.calendarEvents;
+    this.config.events = this.calendarEvents;
     this.calendar.control.update(this.config);
   }
 
   switchToWeekView(): void {
     this.config.days = 7;
-      this.config.events = this.calendarEvents;
+    this.config.events = this.calendarEvents;
     this.calendar.control.update(this.config);
   }
 

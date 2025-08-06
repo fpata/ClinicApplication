@@ -91,16 +91,16 @@ searchLengthConstraintError: any;
   }
   
  AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
-    var events: DayPilot.Event[] = [];
+    var events: DayPilot.EventData[] = [];
     appointments.forEach(appointment => {
-      events.push(new DayPilot.Event({
+      events.push({
         id: appointment.ID.toString(),
         text: appointment.PatientName || 'Unknown Patient',
         start: new DayPilot.Date(appointment.StartApptDate),
         end: new DayPilot.Date(appointment.EndApptDate),
         resource: appointment.DoctorName || 'General',
         backColor: '#3c8dbc',
-      }));
+      });
     });
     this.scheduler.addEvents(events);
   }
