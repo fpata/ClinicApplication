@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { UserSearch } from "../user-search/user-search";
 import { UserInfoComponent } from "../user-info/user-info";
 import { UserQuickCreateComponent } from "../user-quick-create/user-quick-create";
 import { DataService } from '../../../services/data.service';
 import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/user.model';
+import { Address } from '../../../models/address.model';
+import { Contact } from '../../../models/contact.model';
 
 @Component({
   selector: 'app-user-master',
@@ -13,7 +16,9 @@ import { UserService } from '../../../services/user.service';
 })
 export class UserMasterComponent {
 
-isSearchTabSelected: any;
+isSearchTabSelected: boolean = true;
+selectedTab: string = 'tbUserSearch';
+@ViewChild (UserQuickCreateComponent) quickCreateComponent!: UserQuickCreateComponent;
 
 constructor(private dataService: DataService, private userService: UserService) { }
 
@@ -25,6 +30,7 @@ tabSelectedEvent(event: MouseEvent) {
     } else {
       this.isSearchTabSelected = false;
     }
+    this.selectedTab = targetId;
   }
  
   ClearUserInformation() {
@@ -55,12 +61,22 @@ tabSelectedEvent(event: MouseEvent) {
   
   AddNewUser() {
     this.ClearUserInformation();
+    var user:User = new User();
+    user.Address = new Address();
+    user.Contact = new Contact();
+    this.dataService.setUser(user);
     this.isSearchTabSelected = false;
+    document.getElementById('tbPersonalInfo-tab')?.click();
   }
 
   SaveUserInformation() {
-    const currentUser = this.dataService.getUser();
-    
+     var currentUser:User; 
+    if(this.selectedTab.startsWith('tbQuickCreate')) {
+      currentUser = this.quickCreateComponent.user
+    }
+    else {
+      currentUser = this.dataService.getUser();
+    }
     if (!currentUser) {
       console.warn('No user data to save');
       return;
@@ -107,3 +123,5 @@ tabSelectedEvent(event: MouseEvent) {
 
 
 }
+
+

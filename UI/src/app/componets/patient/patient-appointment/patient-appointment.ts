@@ -5,6 +5,7 @@ import { DataService } from '../../../services/data.service';
 import { User } from '../../../models/user.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilotModule, DayPilot } from '@daypilot/daypilot-lite-angular';
+import { Patient } from '../../../models/patient.model';
 
 @Component({
   selector: 'app-patient-appointment',
@@ -24,39 +25,40 @@ export class PatientAppointmentComponent {
   SaveAppointment() {
     throw new Error('Method not implemented.');
   }
-  user: User | null = null;
+  patient: Patient | null = null;
   appointments: PatientAppointment[] | null = null;
 
-  // Subscription to handle user changes
-  private userSubscription: Subscription = new Subscription();
+  // Subscription to handle patient changes
+  private patientSubscription: Subscription = new Subscription();
 
   constructor(private dataService: DataService) { }
 
   ngOnInit() {
-    // Subscribe to user changes from the data service
-    this.userSubscription = this.dataService.user$.subscribe({
-      next: (user) => {
-        this.user = user;
-        if (this.user && this.user.Patients && this.user.Patients.length > 0 && this.user.Patients[0].PatientAppointments && this.user.Patients[0].PatientAppointments.length > 0) 
-        this.appointments = this.user.Patients[0].PatientAppointments;
+    // Subscribe to patient changes from the data service
+    this.patientSubscription = this.dataService.patient$.subscribe({
+      next: (_newPatient: Patient) => {
+        this.patient = _newPatient;
+        if (_newPatient && _newPatient.PatientAppointments && _newPatient.PatientAppointments.length > 0) {
+          this.appointments = _newPatient.PatientAppointments;
+        }
         if (this.scheduler && this.appointments) {
           this.AddEventsToScheduler(this.appointments);
           console.log('Events added to scheduler:');
           // Pass the appointments to the scheduler component
 
         }
-        console.log('User updated:', user);
+        console.log('Patient updated:', _newPatient);
       },
       error: (error) => {
-        console.error('Error subscribing to user changes:', error);
+        console.error('Error subscribing to patient changes:', error);
       }
     });
   }
 
   ngOnDestroy() {
     // Clean up subscription to prevent memory leaks
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
+    if (this.patientSubscription) {
+      this.patientSubscription.unsubscribe();
     }
   }
 

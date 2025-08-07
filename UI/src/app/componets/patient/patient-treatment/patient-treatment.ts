@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { DataService } from '../../../services/data.service';
-import { User } from '../../../models/user.model';
 import { Subscription } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { PatientTreatmentDetail } from '../../../models/patient-treatment-detail.model';
+import { Patient } from '../../../models/patient.model';
 
 @Component({
   selector: 'app-patient-treatment',
@@ -15,38 +15,38 @@ import { PatientTreatmentDetail } from '../../../models/patient-treatment-detail
 })
 export class PatientTreatmentComponent {
 
-  user: User | null = null;
+  patient: Patient | null = null;
   treatment: PatientTreatment | null = null;
   isModalOpen = false;
   editingTreatmentId: number | null = null;
   originalTreatmentData: any = null;
 
-  // Subscription to handle user changes
-  private userSubscription: Subscription = new Subscription();
+  // Subscription to handle patient changes
+  private patientSubscription: Subscription = new Subscription();
 
   constructor(private dataService: DataService) { }
 
   ngOnInit() {
-    // Subscribe to user changes from the data service
-    this.userSubscription = this.dataService.user$.subscribe({
-      next: (user) => {
-        this.user = user;
-        if (this.user && this.user.Patients && this.user.Patients.length > 0 && this.user.Patients[0].PatientTreatment) {
-          this.treatment = this.user.Patients[0].PatientTreatment;
+    // Subscribe to patient changes from the data service
+    this.patientSubscription = this.dataService.patient$.subscribe({
+      next: (newPatient: Patient) => {
+        this.patient = newPatient;
+        if (newPatient && newPatient.PatientTreatment) {
+          this.treatment = newPatient.PatientTreatment;
         }
 
-        console.log('User updated:', user);
+        console.log('Patient updated:', this.patient);
       },
       error: (error) => {
-        console.error('Error subscribing to user changes:', error);
+        console.error('Error subscribing to patient changes:', error);
       }
     });
   }
 
   ngOnDestroy() {
     // Clean up subscription to prevent memory leaks
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
+    if (this.patientSubscription) {
+      this.patientSubscription.unsubscribe();
     }
   }
 

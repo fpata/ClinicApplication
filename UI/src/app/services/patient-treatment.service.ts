@@ -6,7 +6,8 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PatientTreatmentService {
-  private apiUrl = `${environment.API_BASE_URL}/patient-treatments`;
+
+  private apiUrl = `${environment.API_BASE_URL}/patienttreatment`;
 
   constructor(private http: HttpClient) {}
 
@@ -33,5 +34,9 @@ export class PatientTreatmentService {
 
   deletePatientTreatment(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
+  }
+
+  getAllTreatmentsForUser(userId: number): Observable<PatientTreatment[]> {
+    return this.http.get<PatientTreatment[]>(`${this.apiUrl}/user/${userId}`, { headers: this.getAuthHeaders() });
   }
 }

@@ -33,17 +33,34 @@
                 <label for="txtAge" class="form-label">Age</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="number" id="txtAge" class="form-control" required [ngModel]="this.user?.Age" (ngModelChange)="this.user.Age = $event"  min="0" max="150">
+                <input type="number" id="txtAge" min="1" max="105" class="form-control" required [ngModel]="this.user?.Age" (ngModelChange)="this.user.Age = $event"  min="0" max="150">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="rdGenderMale" class="form-label">Gender</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="male" >
+                <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="male" [ngModel]="this.user?.Gender" (ngModelChange)="this.user.Gender = $event">
                 <label class="form-check-label" for="rdGenderMale">Male</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="female" >
+                <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="female" [ngModel]="this.user?.Gender" (ngModelChange)="this.user.Gender = $event">
                 <label class="form-check-label" for="rdGenderFemale">Female</label>
+              </div>
+            </div>
+            <br />
+             <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtUserName" class="form-label">User Name</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtUserName" class="form-control"  placeholder="UserName" [ngModel]="this.user?.UserName" (ngModelChange)="this.user.UserName = $event" minlength="3" maxlength="50" required=""> 
+                <div class="invalid-feedback">Please fill out this field.</div>
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtPassword" class="form-label">Password</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="password" id="txtPassword" name="txtPassword" class="form-control" required [ngModel]="this.user?.Password" (ngModelChange)="this.user.Password = $event"  minlength="3" maxlength="50">
               </div>
             </div>
             </fieldset>

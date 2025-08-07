@@ -1,92 +1,27 @@
-<div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchFirstName" class="form-label">First Name</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchFirstName" class="form-control" [(ngModel)]="this.searchPatient.FirstName" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchLastName" class="form-label">Last Name</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchLastName" class="form-control" [(ngModel)]="this.searchPatient.LastName" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchPhone" class="form-label">Phone</label>
-      </div>
-      <div class="ccol-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchPhone" class="form-control" [(ngModel)]="this.searchPatient.PrimaryPhone" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchEmailAddress" class="form-label">Email Address</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchEmailAddress" class="form-control" [(ngModel)]="this.searchPatient.PrimaryEmail" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchPatientID" class="form-label">Patient ID</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="number" id="txtSearchPatientID" class="form-control" [(ngModel)]="this.searchPatient.PatientID">
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchCity" class="form-label">City</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchCity" class="form-control" [(ngModel)]="this.searchPatient.PermCity" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-xs-12 col-sm-6 col-md-6 text-center">
-        <button type="button" id="btnSaerchPatient" class="btn btn-primary" (click)="SearchPatient()">Search Patient</button>
-      </div>
-      <div class="col-xs-12 col-sm-6 col-md-6 text-center">
-        <button type="button" id="btnSaerchPatient" class="btn btn-secondary" (click)="clearSearch()">Clear Search</button>
-      </div>
-    </div>
-    <br>
-    @if(searchLengthConstraintError) {
-    <div  class="row">
-      <div class="col-12" style="background-color: cornflowerblue;color: white"><label class="align-center" >Search Error: Atleast 3 characters should be entered in any one field</label></div>
-    </div>
-  }
-  </div>
-<br />
+
 <div class="container-fluid">
   <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
     <div class="table-responsive">
     <table class="table table-striped table-bordered" style="color: black;">
       <thead>
         <th>ID</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>City</th>
-        <th>Email</th>
-        <th>Phone Number</th>
+        <th>Chief Complaint</th>
+        <th>Observations</th>
+        <th>Treatment Plan</th>
+        <th>Treatment Date</th>
+       
       </thead>
       <tbody>
-        @for (result of searchResult; track $index){
+        @for (treatment of patientTreatments; track $index){
         <tr>
-          <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(result.PatientID)">{{result.PatientID}}</a></td>
-          <td>{{result.FirstName}}</td>
-          <td>{{result.LastName}}</td>
-          <td>{{result.PermCity}}</td>
-          <td>{{result.PrimaryEmail}}</td>
-          <td>{{result.PrimaryPhone}}</td>
+          <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(treatment.PatientID)">{{treatment.PatientID}}</a></td>
+          <td>{{treatment.ChiefComplaint}}</td>
+          <td>{{treatment.Observation}}</td>
+          <td>{{treatment.TreatmentPlan}}</td>
+          <td>{{treatment.TreatmentDate}}</td>
         </tr>
        }
-       @if (searchResult != undefined && searchResult.length == 0 && clearSearchClicked==false){
+       @if (patientTreatments != undefined && patientTreatments.length == 0 ){
         <tr >
           <td colspan="6"><label id="lblNoRecordsError">No record found matching the search criteria</label></td>
         </tr>

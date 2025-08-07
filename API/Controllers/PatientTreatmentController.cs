@@ -97,5 +97,18 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Deleted patient treatment with ID: {id}");
             return NoContent();
         }
+
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetbybyUserId(int id)
+        {
+            _logger.LogInformation($"Fetching patient treatment with User ID: {id}");
+            var entity = await _context.PatientTreatments.Where(x=> x.UserID == id).ToListAsync();
+            if (entity == null)
+            {
+                _logger.LogWarning($"Patient treatment with User ID: {id} not found");
+                return NotFound();
+            }
+            return Ok(entity);
+        }
     }
 }

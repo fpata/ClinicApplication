@@ -17,6 +17,8 @@ namespace ClinicManager.Models
         public int ModifiedBy { get; set; }
         public bool IsActive { get; set; }
 
-       public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; }
+        public DateTime? TreatmentDate { get; set; }
+
+        public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; }
     }
 }

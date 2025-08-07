@@ -1,7 +1,8 @@
 import { User } from './user.model';
 
-export interface Address {
-  ID: number;
+export class Address {
+
+  ID: number =0;
   PermAddress1?: string;
   PermAddress2?: string;
   PermState?: string;
@@ -9,12 +10,12 @@ export interface Address {
   PermCountry?: string;
   AddressType: string;
   PermZipCode?: string;
-  UserID?: number;
-  IsActive?: boolean;
-  CreatedDate?: string;
-  CreatedBy?: number;
-  ModifiedDate?: string;
-  ModifiedBy?: number;
+  UserID?: number =0;
+  IsActive?: boolean = true;
+  CreatedDate?: Date = new Date();
+  CreatedBy?: number = 1;
+  ModifiedDate?: Date = new Date();
+  ModifiedBy?: number = 1;
   CorrAddress1?: string;
   CorrAddress2?: string;
   CorrCity?: string;
@@ -22,4 +23,5 @@ export interface Address {
   CorrCountry?: string;
   CorrZipCode?: string;
   user?: User;
+
 }

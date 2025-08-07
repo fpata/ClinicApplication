@@ -1,7 +1,7 @@
 import { User } from './user.model';
 
-export interface Contact {
-  ID: number;
+export class Contact {
+  ID: number =0;
   PrimaryPhone: string;
   SecondaryPhone?: string;
   PrimaryEmail: string;
@@ -11,10 +11,10 @@ export interface Contact {
   RelativePhone?: string;
   RelativeEmail?: string;
   UserID?: number;
-  IsActive?: boolean;
-  CreatedDate?: string;
-  CreatedBy?: number;
-  ModifiedDate?: string;
-  ModifiedBy?: number;
+  IsActive?: boolean = true;
+  CreatedDate?: Date = new Date();
+  CreatedBy?: number = 1;
+  ModifiedDate?: Date = new Date();
+  ModifiedBy?: number =1;
   user?: User;
 }

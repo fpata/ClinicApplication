@@ -18,22 +18,9 @@ export class UserSearch {
   clearSearchClicked: boolean = false;
 
   constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService) {
-
-    this.searchPatient = {
-      PatientID: 0,
-      UserID: 0,
-      FirstName: '',
-      LastName: '',
-      PrimaryPhone: '',
-      PrimaryEmail: '',
-      PermCity: '',
-      UserName: '',
-      UserType: '',
-      DoctorID: 0,
-      DoctorName: '',
-      EndDate: new Date().toISOString().split('T')[0], // Default to today
-      StartDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // Default to 365 days ago
-    }
+    this.searchPatient = new PatientSearchModel();
+    this.searchPatient.EndDate = new Date().toISOString().split('T')[0]; // Default to today
+    this.searchPatient.StartDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Default to 365 days ago
     this.searchResult = [];
   }
 
@@ -71,15 +58,8 @@ validateSearchInput() {
 
   clearSearch() {
     this.searchLengthConstraintError = false;
-    this.searchPatient.FirstName = '';
-    this.searchPatient.LastName = '';
-    this.searchPatient.PatientID = 0;
-    this.searchPatient.PermCity = '';
-    this.searchPatient.PrimaryEmail = '';
-    this.searchPatient.PrimaryPhone = '';
-    this.searchPatient.UserID = 0;
-    this.searchPatient.UserName = '';
-    this.searchPatient.UserType = '';
+    this.searchPatient = new PatientSearchModel();
+
     this.searchResult = [];
     this.clearSearchClicked = true;
   }

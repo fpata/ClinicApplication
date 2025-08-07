@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 export interface LoginResponse {
   token: string;
@@ -20,9 +22,26 @@ export interface LoginResponse {
 export class LoginService {
   private apiUrl = `${environment.API_BASE_URL}/login`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   login(UserName: string, Password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(this.apiUrl, { UserName, Password });
+    return this.http.post<LoginResponse>(this.apiUrl, { UserName, Password })
+      .pipe(
+        tap(response => {
+          if (response.token) {
+            this.authService.setToken(response.token);
+            this.authService.setUser(response.user);
+            this.router.navigate(['/dashboard']);
+          }
+        })
+      );
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

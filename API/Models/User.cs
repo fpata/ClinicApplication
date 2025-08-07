@@ -5,6 +5,7 @@ namespace ClinicManager.Models
     [Table("User")]
     public class User
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]   
         public int ID { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string? MiddleName { get; set; }
@@ -13,13 +14,16 @@ namespace ClinicManager.Models
         public string Password { get; set; } = string.Empty;
         public string UserType { get; set; } = "Patient";
         public string? Gender { get; set; } = "male";
+
+        [NotMapped]
         public DateTime? DOB { get; set; }
         public int? Age { get; set; }
         public DateTime? LastLoginDate { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
-        public int CreatedBy { get; set; }
-        public int ModifiedBy { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public int? CreatedBy { get; set; }
+        public int? ModifiedBy { get; set; }
         public bool IsActive { get; set; }
 
         public virtual Address? Address { get; set; }

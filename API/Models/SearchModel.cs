@@ -4,7 +4,7 @@ namespace ClinicManager.Models
     {
         public int UserID { get; set; } 
 
-        public int PatientID { get; set; }
+        public int? PatientID { get; set; }
         // User fields
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

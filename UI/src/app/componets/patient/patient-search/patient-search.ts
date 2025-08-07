@@ -90,6 +90,7 @@ export class PatientSearchComponent {
         // Handle the patient data as needed
         console.log('User data:', user);
         this.dataService.setUser(user);
+        this.dataService.setPatient(user?.Patients[0] || null);
       },
       error: (err) => {
         console.error('Error fetching patient data:', err);

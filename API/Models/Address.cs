@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicManager.Models
@@ -5,6 +6,7 @@ namespace ClinicManager.Models
     [Table("Address")]
     public class Address
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public string? PermAddress1 { get; set; }
         public string? PermAddress2 { get; set; }
@@ -19,10 +21,11 @@ namespace ClinicManager.Models
         public string? CorrCountry { get; set; }
         public string? CorrZipCode { get; set; }
         public int? UserID { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
-        public int CreatedBy { get; set; }
-        public int ModifiedBy { get; set; }
+      
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public int? CreatedBy { get; set; }
+        public int? ModifiedBy { get; set; }
         public bool IsActive { get; set; }
     }
 }

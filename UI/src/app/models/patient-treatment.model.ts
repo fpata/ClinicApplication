@@ -1,7 +1,7 @@
 import { User } from './user.model';
 import { Patient } from './patient.model';
 import { PatientTreatmentDetail } from './patient-treatment-detail.model';
-export interface PatientTreatment {
+export class PatientTreatment {
   ID: number;
   UserID: number;
   ChiefComplaint: string;

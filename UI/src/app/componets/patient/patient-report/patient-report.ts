@@ -3,6 +3,7 @@ import { PatientReport } from '../../../models/patient-report.model';
 import { User } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
 import { Subscription } from 'rxjs';
+import { Patient } from '../../../models/patient.model';
 
 @Component({
   selector: 'app-patient-report',
@@ -13,34 +14,34 @@ import { Subscription } from 'rxjs';
 export class PatientReportComponent {
 
   reports: PatientReport[] = []; // Initialize reports array
-  private userSubscription: Subscription = new Subscription();
-  user: User | null = null;
+  private patientSubscription: Subscription = new Subscription();
+  patient: Patient | null = null;
 
   constructor(private dataService: DataService) { }
-
+  
   ngOnInit() {
     // Subscribe to user changes from the data service
-    this.userSubscription = this.dataService.user$.subscribe({
-      next: (user: User) => {
-        this.user = user;
-        if (this.user && this.user.Patients && this.user.Patients.length > 0 && this.user.Patients[0].PatientReports && this.user.Patients[0].PatientReports.length > 0) {
-          this.reports = this.user.Patients[0].PatientReports || []; // Assuming Reports is part of the user model
+    this.patientSubscription = this.dataService.patient$.subscribe({
+      next: (newPatient: Patient) => {
+        this.patient = newPatient;
+        if (newPatient && newPatient.PatientReports && newPatient.PatientReports.length > 0) {
+          this.reports = newPatient.PatientReports || []; // Assuming Reports is part of the patient model
         }
         else {
           this.reports = []; // Ensure reports is initialized to an empty array if no reports are
         }
-        console.log('User updated:', user);
+        console.log('Patient updated:', newPatient);
       },
       error: (error) => {
-        console.error('Error subscribing to user changes:', error);
+        console.error('Error subscribing to patient changes:', error);
       }
     });
   }
 
   ngOnDestroy() {
     // Clean up subscription to prevent memory leaks
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
+    if (this.patientSubscription) {
+      this.patientSubscription.unsubscribe();
     }
   }
 

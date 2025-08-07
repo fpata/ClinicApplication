@@ -13,30 +13,28 @@ import { DataService } from '../../../services/data.service';
 })
 export class PatientHistoryComponent {
 patient: Patient; // Assuming patient is defined and has the necessary properties
-user:User | null = null; // Assuming user is defined and has the necessary properties
- private userSubscription: Subscription = new Subscription();
+
+ private patientSubscription: Subscription = new Subscription();
 
   constructor(private dataService: DataService) {}
 
   ngOnInit() {
-    // Subscribe to user changes from the data service
-    this.userSubscription = this.dataService.user$.subscribe({
-      next: (user) => {
-        this.user = user;
-        if(this.user && this.user.Patients && this.user.Patients.length > 0)
-        this.patient = this.user.Patients[0]; // Assuming the first patient is the one we want to display
+    // Subscribe to patient changes from the data service
+    this.patientSubscription = this.dataService.patient$.subscribe({
+      next: (patient:Patient) => {
+        this.patient = patient;
         
       },
-      error: (error) => {
-        console.error('Error subscribing to user changes:', error);
+      error: (error:any) => {
+        console.error('Error subscribing to patient changes:', error);
       }
     });
   }
 
   ngOnDestroy() {
     // Clean up subscription to prevent memory leaks
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
+    if (this.patientSubscription) {
+      this.patientSubscription.unsubscribe();
     }
   }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace ClinicManager.Controllers
 {
@@ -50,19 +51,41 @@ namespace ClinicManager.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> Post(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            if (user.Address != null)
+            Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction dbTransaction = _context.Database.BeginTransaction();
+            try
             {
-                user.Address.UserID = user.ID;
-                _context.Addresses.Add(user.Address);
+                _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+                if (user.Address != null)
+                {
+                    user.Address.ID = 0; // Reset ID to ensure new record is created
+                    user.Address.UserID = user.ID;
+                    _context.Addresses.Add(user.Address);
+                    await _context.SaveChangesAsync();
+                }
+                if (user.Contact != null)
+                {
+                    user.Contact.ID = 0; // Reset ID to ensure new record is created
+                    user.Contact.UserID = user.ID;
+                    _context.Contacts.Add(user.Contact);
+                    await _context.SaveChangesAsync();
+                }
+                await dbTransaction.CommitAsync();
+                _context.Entry(user).State = EntityState.Detached; // Detach to avoid tracking issues
+                if (user.Address != null)
+                {
+                    _context.Entry(user.Address).State = EntityState.Detached;
+                }
+                if (user.Contact != null)
+                {
+                    _context.Entry(user.Contact).State = EntityState.Detached;
+                }
             }
-            if (user.Contact != null)
+            catch (Exception ex)
             {
-                user.Contact.UserID = user.ID;
-                _context.Contacts.Add(user.Contact);
-                await _context.SaveChangesAsync();
+                await dbTransaction.RollbackAsync();
+                _logger.LogError(ex, "Error creating user");
+                return StatusCode(500, "Internal server error while creating user");
             }
             _logger.LogInformation($"Created new user with ID: {user.ID}");
             return CreatedAtAction(nameof(Get), new { id = user.ID }, user);

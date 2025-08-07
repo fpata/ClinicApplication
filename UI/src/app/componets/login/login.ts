@@ -22,16 +22,28 @@ export class LoginComponent {
   login() {
     return this.loginService.login(this.username, this.password).subscribe({
       next: (res: LoginResponse) => {
-        if (res && res.token) {
-          localStorage.setItem('token', res.token);
-          this.dataService.setLoginUser(res);
-          this.router.navigate(['/patient']);
-        } else {
-          this.error = 'Invalid username or password';
-        }
+        // LoginService now handles token storage and navigation
+        this.dataService.setLoginUser(res);
+        // Navigation is handled in LoginService
       },
-      error: () => {
-        this.error = 'Invalid username or password';
+      error: (err) => {
+        switch (err.status) {
+          case 401:
+            this.error = 'Invalid username or password';
+            break;
+          case 0:
+            this.error = 'Network error. Please try again later.';
+            break;
+          case 500:
+            this.error = 'Server error. Please try again later.';
+            break;
+          case 403:
+            this.error = 'Access denied. You do not have permission to access this resource.';
+            break;
+          default:
+            this.error = 'An unexpected error occurred. Please try again.';
+        }
+        console.error('Login error:', err);
       }
     });
   }

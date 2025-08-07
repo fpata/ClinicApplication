@@ -2,7 +2,7 @@ import { User } from './user.model';
 import { PatientAppointment } from './patient-appointment.model';
 import { PatientReport } from './patient-report.model';
 import { PatientTreatment } from './patient-treatment.model';
-export interface Patient {
+export class Patient {
   ID: number;
   UserID?: number;
   Allergies?: string;
