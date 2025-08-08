@@ -3,7 +3,7 @@ import { Patient } from './patient.model';
 export class PatientAppointment {
   ID: number;
   UserID?: number;
-  StartApptDate?: Date;
+  StartApptDate: Date = new Date();
   EndApptDate?: Date;
   TreatmentName?: string;
   DoctorID?: number;
@@ -11,7 +11,7 @@ export class PatientAppointment {
   ApptStatus?: string;
   PatientID?: number;
   PatientName?: string;
-  IsActive?: boolean;
+  IsActive?: boolean =true;
   CreatedDate?: string;
   CreatedBy?: number;
   ModifiedDate?: string;

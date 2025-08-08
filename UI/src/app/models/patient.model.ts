@@ -5,7 +5,7 @@ import { PatientTreatment } from './patient-treatment.model';
 export class Patient {
   ID: number;
   UserID?: number;
-  Allergies?: string;
+  Allergies: string;
   Medications?: string;
   FatherHistory?: string;
   MotherHistory?: string;

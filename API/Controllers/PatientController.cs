@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace ClinicManager.Controllers
@@ -41,6 +42,26 @@ namespace ClinicManager.Controllers
             {
                 _logger.LogWarning($"Patient with ID: {id} not found");
                 return NotFound();
+            }
+            else
+            {
+                // Optionally, you can include related data if needed
+                entity.PatientAppointments = await _context.PatientAppointments
+                    .Where(a => a.PatientID == id)
+                    .ToListAsync();
+                entity.PatientReports = await _context.PatientReports
+                    .Where(r => r.PatientID == id)
+                    .ToListAsync();
+                entity.PatientTreatment = await _context.PatientTreatments
+                    .Where(t => t.PatientID == id)
+                    .FirstOrDefaultAsync();
+                if (entity.PatientTreatment != null)
+                {
+                    entity.PatientTreatment.PatientTreatmentDetails = await _context.PatientTreatmentDetails
+                        .Where(td => td.PatientID == id)
+                        .ToListAsync();
+                }
+                    _logger.LogInformation($"Fetched patient with ID: {id}");
             }
             return entity;
         }
@@ -94,9 +115,85 @@ namespace ClinicManager.Controllers
         [HttpPost]
         public async Task<ActionResult<Patient>> Post(Patient patient)
         {
-            _context.Patients.Add(patient);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation($"Created new patient with ID: {patient.ID}");
+           IDbContextTransaction dbContextTransaction = _context.Database.BeginTransaction();
+
+            try
+            {
+                _context.Patients.Add(patient);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"Created new patient with ID: {patient.ID}");
+
+                if (patient.PatientReports != null)
+                {
+                    foreach (var report in patient.PatientReports)
+                    {
+                        report.PatientID = patient.ID;
+                        report.UserID = patient.UserID;
+                        _context.PatientReports.Add(report);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                if (patient.PatientAppointments != null)
+                {
+                    foreach (var appointment in patient.PatientAppointments)
+                    {
+                        appointment.PatientID = patient.ID;
+                        _context.PatientAppointments.Add(appointment);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                if (patient.PatientTreatment != null)
+                {
+                    patient.PatientTreatment.PatientID = patient.ID;
+                    patient.PatientTreatment.UserID = patient.UserID;
+                    _context.PatientTreatments.Add(patient.PatientTreatment);
+                    if (patient.PatientTreatment.PatientTreatmentDetails != null)
+                    {
+                        foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
+                        {
+                            detail.PatientID = patient.ID;
+                            _context.PatientTreatmentDetails.Add(detail);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                await dbContextTransaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating patient");
+                await dbContextTransaction.RollbackAsync();
+                return StatusCode(500, "Internal server error");
+            }
+            finally
+            {
+                _context.Entry(patient).State = EntityState.Detached; // Detach to avoid tracking issues
+                if (patient.PatientReports != null)
+                {
+                    foreach (var report in patient.PatientReports)
+                    {
+                        _context.Entry(report).State = EntityState.Detached;
+                    }
+                }
+                if (patient.PatientAppointments != null)
+                {
+                    foreach (var appointment in patient.PatientAppointments)
+                    {
+                        _context.Entry(appointment).State = EntityState.Detached;
+                    }
+                }
+                if (patient.PatientTreatment != null)
+                {
+                    _context.Entry(patient.PatientTreatment).State = EntityState.Detached;
+                    if (patient.PatientTreatment.PatientTreatmentDetails != null)
+                    {
+                        foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
+                        {
+                            _context.Entry(detail).State = EntityState.Detached;
+                        }
+                    }
+                }
+            }
             return CreatedAtAction(nameof(Get), new { id = patient.ID }, patient);
         }
 

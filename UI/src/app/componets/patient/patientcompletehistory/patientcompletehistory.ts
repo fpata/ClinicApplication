@@ -5,7 +5,7 @@ import { PatientTreatmentService } from '../../../services/patient-treatment.ser
 import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';
 import { PatientService } from '../../../services/patient.service';
-
+import { User } from '../../../models/user.model';
 @Component({
   selector: 'app-patientcompletehistory',
   imports: [FormsModule],
@@ -25,8 +25,11 @@ export class PatientCompleteHistoryComponent {
 
   OnPatientIdClick(patientID: number) {
     this.patientService.getPatient(patientID).subscribe({
-      next: (patient: Patient) => {
-        this.dataService.setPatient(patient);
+      next: (_newPatient: Patient) => {
+        var user: User = this.dataService.getUser();
+        user.Patients[0] = _newPatient;
+        this.dataService.setUser(user);
+        this.dataService.setPatient(_newPatient);
       },
       error: (error: any) => {
         console.error('Error fetching patient:', error);

@@ -11,12 +11,14 @@ import { Patient } from '../../../models/patient.model';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { PatientReport } from '../../../models/patient-report.model';
-
+import {PatientQuickCreateComponent} from '../patient-quick-create/patient-quick-create.component';
 @Component({
   selector: 'app-patient-master',
   templateUrl: './patient-master.html',
   styleUrl: './patient-master.css',
-  imports: [PatientAppointmentComponent, PatientHistoryComponent, PatientReportComponent, PatientSearchComponent, PatientTreatmentComponent, PatientCompleteHistoryComponent]
+  imports: [PatientAppointmentComponent, PatientHistoryComponent, PatientReportComponent,
+     PatientSearchComponent, PatientTreatmentComponent, 
+    PatientCompleteHistoryComponent, PatientQuickCreateComponent]
 })
 export class PatientMasterComponent {
 
@@ -74,6 +76,7 @@ export class PatientMasterComponent {
       });
     }
   }
+
   AddNewPatient() {
    var patient:Patient = new Patient();
    patient.UserID = this.dataService.getUser()?.ID || 0;
@@ -84,10 +87,50 @@ export class PatientMasterComponent {
   }
   
   SavePatientInformation() {
-    throw new Error('Method not implemented.');
+    const currentPatient = this.dataService.getPatient();
+    
+    if (!currentPatient) {
+      alert('No patient information to save');
+      return;
+    }
+
+    // Validate required fields
+    if (!currentPatient.UserID) {
+      alert('User ID is required');
+      return;
+    }
+
+    // Determine if this is a new patient or existing patient
+    const isNewPatient = !currentPatient.ID || currentPatient.ID === 0;
+    
+    if (isNewPatient) {
+      // Create new patient
+      this.patientService.createPatient(currentPatient).subscribe({
+        next: (savedPatient) => {
+          alert('Patient information saved successfully');
+          // Update the patient in data service with the returned patient (which includes the new ID)
+          this.dataService.setPatient(savedPatient);
+        },
+        error: (error) => {
+          console.error('Error creating patient:', error);
+          alert('Error occurred while saving patient information. Please try again.');
+        }
+      });
+    } else {
+      // Update existing patient
+      this.patientService.updatePatient(currentPatient.ID, currentPatient).subscribe({
+        next: (updatedPatient) => {
+          alert('Patient information updated successfully');
+          // Update the patient in data service with the returned updated patient
+          this.dataService.setPatient(updatedPatient);
+        },
+        error: (error) => {
+          console.error('Error updating patient:', error);
+          alert('Error occurred while updating patient information. Please try again.');
+        }
+      });
+    }
   }
 
-  QuickCreatePatient() {
-    throw new Error('Method not implemented.');
-  }
+  
 }

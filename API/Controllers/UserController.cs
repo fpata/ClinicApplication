@@ -71,6 +71,16 @@ namespace ClinicManager.Controllers
                     await _context.SaveChangesAsync();
                 }
                 await dbTransaction.CommitAsync();
+             
+            }
+            catch (Exception ex)
+            {
+                await dbTransaction.RollbackAsync();
+                _logger.LogError(ex, "Error creating user");
+                return StatusCode(500, "Internal server error while creating user");
+            }
+            finally
+            {
                 _context.Entry(user).State = EntityState.Detached; // Detach to avoid tracking issues
                 if (user.Address != null)
                 {
@@ -80,12 +90,7 @@ namespace ClinicManager.Controllers
                 {
                     _context.Entry(user.Contact).State = EntityState.Detached;
                 }
-            }
-            catch (Exception ex)
-            {
-                await dbTransaction.RollbackAsync();
-                _logger.LogError(ex, "Error creating user");
-                return StatusCode(500, "Internal server error while creating user");
+                await dbTransaction.DisposeAsync();
             }
             _logger.LogInformation($"Created new user with ID: {user.ID}");
             return CreatedAtAction(nameof(Get), new { id = user.ID }, user);

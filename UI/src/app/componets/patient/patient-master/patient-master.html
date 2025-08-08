@@ -3,9 +3,13 @@
   <!--Visible on medium and large screens only-->
   <div class="d-none d-md-block d-lg-block">
     <ul class="nav nav-tabs nav-justified flex-column flex-sm-row" id="tbpatient" role="tablist">
-      <li class="nav-item" role="presentation" id="navPatientSearch" >
+      <li class="nav-item" role="presentation" >
         <button class="nav-link active" id="tbPatientSearch-tab" data-bs-toggle="tab" data-bs-target="#tbPatientSearch"
           type="button" role="tab" aria-controls="tbPatientSearch" aria-selected="true" (click)="tabSelectedEvent($event)" >Search</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tbQuickCreate-tab" data-bs-toggle="tab" data-bs-target="#tbQuickCreate"
+          type="button" role="tab" aria-controls="tbQuickCreate" aria-selected="false" (click)="tabSelectedEvent($event)">Quick Create</button>
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="tbPreviousInfo-tab" data-bs-toggle="tab" data-bs-target="#tbPreviousInfo"
@@ -41,6 +45,10 @@
              aria-controls="tbPatientSearch" aria-selected="true">Search</a>
           </li>
           <li>
+            <a class="dropdown-item" id="tbQuickCreate-tab1" data-bs-toggle="tab" data-bs-target="#tbQuickCreate"
+             aria-controls="tbQuickCreate" aria-selected="false">Quick Create</a>
+          </li>
+          <li>
             <a class="nav-link" id="tbPreviousInfo-tab1" data-bs-toggle="tab" data-bs-target="#tbPreviousInfo"
           aria-controls="tbPreviousInfo" aria-selected="false">Paient Information</a>
           </li>
@@ -70,7 +78,9 @@
       <div class="tab-pane fade show active" id="tbPatientSearch" role="tabpanel" aria-labelledby="tbPatientSearch-tab">
         <app-patient-search></app-patient-search>
       </div>
-      
+      <div class="tab-pane fade" id="tbQuickCreate" role="tabpanel" aria-labelledby="tbQuickCreate-tab">
+        <app-patient-quick-create></app-patient-quick-create>
+      </div>
       <div class="tab-pane fade" id="tbPreviousInfo" role="tabpanel" aria-labelledby="tbPreviousInfo-tab">
         <app-patientcompletehistory></app-patientcompletehistory>
       </div>
@@ -112,9 +122,6 @@
        @if(isSearchTabSelected) {
       <div class="col" >
         <button type="button" id="btnNewPatient" class="btn btn-primary" style="width: 25%;" (click)="AddNewPatient()">New Patient</button>
-      </div>
-      <div class="col">
-        <button type="button" id="btnSearchPatient" class="btn btn-secondary" style="width: 25%;" (click)="QuickCreatePatient()">Search Patient</button>
       </div>
     }
     </div>

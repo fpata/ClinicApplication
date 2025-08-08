@@ -6,7 +6,7 @@ namespace ClinicManager.Models
     public class Patient
     {
         public int ID { get; set; }
-        public int? UserID { get; set; }
+        public int UserID { get; set; }
         public string? Allergies { get; set; }
         public string? Medications { get; set; }
         public string? FatherHistory { get; set; }
