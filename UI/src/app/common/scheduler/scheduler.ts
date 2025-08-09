@@ -13,30 +13,23 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 export class SchedulerComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar') calendar!: DayPilotCalendarComponent;
   calendarEvents: DayPilot.EventData[] = [];
+  
   config: DayPilot.CalendarConfig = {
-    startDate: DayPilot.Date.today().firstDayOfWeek(1), //1= Monday
-    days: 6,// Show 6 days in the week view
+    startDate: DayPilot.Date.today().firstDayOfWeek(1),
+    days: 6,
     businessBeginsHour: 9,
     businessEndsHour: 20,
     timeRangeSelectedHandling: 'Enabled',
     eventMoveHandling: 'Update',
     eventResizeHandling: 'Update',
     events: this.calendarEvents,
-
-    onTimeRangeSelected: (args: any) => {
-      this.onTimeRangeSelected(args);
-    },
-    onEventClick: (args: any) => {
-      this.onEventClick(args);
-    },
-    onEventMoved: (args: any) => {
-      this.onEventMoved(args);
-    },
-    onEventResized: (args: any) => {
-      this.onEventResized(args);
-    }
+    onTimeRangeSelected: (args: any) => this.onTimeRangeSelected(args),
+    onEventClick: (args: any) => this.onEventClick(args),
+    onEventMoved: (args: any) => this.onEventMoved(args),
+    onEventResized: (args: any) => this.onEventResized(args)
   };
 
+  private readonly eventColors = ['#3c8dbc', '#00a65a', '#f56954', '#f39c12', '#9b59b6', '#34495e'];
 
   ngOnInit(): void {
     // Initialize component
@@ -60,8 +53,7 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
     const name = prompt('New appointment:');
     if (name) {
       const resource = prompt('Resource (Doctor/Room):') || 'General';
-      const colors = ['#3c8dbc', '#00a65a', '#f56954', '#f39c12', '#9b59b6', '#34495e'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const randomColor = this.getRandomColor();
 
       const event = {
         id: DayPilot.guid(),
@@ -109,8 +101,7 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
     const resource = prompt('Resource (Doctor/Room):') || 'General';
 
     if (name) {
-      const colors = ['#3c8dbc', '#00a65a', '#f56954', '#f39c12', '#9b59b6', '#34495e'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const randomColor = this.getRandomColor();
 
       const event = {
         id: DayPilot.guid(),
@@ -126,81 +117,55 @@ End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
 
   navigateToToday(): void {
     this.config.startDate = DayPilot.Date.today();
-    this.config.events.push(...this.calendarEvents);
-    this.calendar.control.update(this.config);
-
+    this.updateCalendar();
   }
 
   navigateToPreviousDay(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(-1);
-    this.config.events = this.calendarEvents;
-    this.calendar.control.update(this.config);
+    this.updateCalendar();
   }
 
   navigateToNextDay(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(1);
-    this.config.events = this.calendarEvents;
-    this.calendar.control.update(this.config);
+    this.updateCalendar();
   }
 
   navigateToPreviousWeek(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(-7);
-    this.calendar.control.update(this.config);
+    this.updateCalendar();
   }
 
   navigateToNextWeek(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(7);
-    this.config.events = this.calendarEvents;
-    this.calendar.control.update(this.config);
+    this.updateCalendar();
   }
 
   switchToWeekView(): void {
     this.config.days = 7;
-    this.config.events = this.calendarEvents;
-    this.calendar.control.update(this.config);
+    this.updateCalendar();
   }
 
   switchToDayView(): void {
     this.config.days = 1;
-    this.config.events = this.calendarEvents;
     this.config.startDate = DayPilot.Date.today();
-    this.calendar.control.update(this.config);
+    this.updateCalendar();
   }
 
   switchToWorkWeekView(): void {
-    this.config.days = 6; // Assuming work week is Monday to Saturday
+    this.config.days = 6;
+    this.updateCalendar();
+  }
+
+  private getRandomColor(): string {
+    return this.eventColors[Math.floor(Math.random() * this.eventColors.length)];
+  }
+
+  private updateCalendar(): void {
+    this.config.events = this.calendarEvents;
     this.calendar.control.update(this.config);
   }
 }
-/*
-events: [
-      {
-        id: '1',
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        text: 'Patient Consultation - John Doe',
-        resource: 'Dr. Smith',
-        backColor: '#3c8dbc'
-      },
-      {
-        id: '2',
-        start: DayPilot.Date.today().addHours(11),
-        end: DayPilot.Date.today().addHours(12),
-        text: 'Patient Consultation - Jane Smith',
-        resource: 'Dr. Smith',
-        backColor: '#00a65a'
-      },
-      {
-        id: '3',
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        text: 'Surgery - Michael Johnson',
-        resource: 'Dr. Johnson',
-        backColor: '#f56954'
-      }
-    ]
-*/

@@ -5,11 +5,14 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { PatientAppointmentService } from '../../../services/patient-appointment.service';
 import { PatientSearchModel } from '../../../models/patient-search.model';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+
 @Component({
   selector: 'app-doctor-appointments',
   imports: [SchedulerComponent, FormsModule],
   templateUrl: './doctorappointments.html',
-  styleUrl: './doctorappointments.css'
+  styleUrl: './doctorappointments.css',
+  providers: [ PatientAppointmentService, HttpClient]
 })
 export class DoctorAppointmentsComponent {
   clearSearchClicked: boolean;

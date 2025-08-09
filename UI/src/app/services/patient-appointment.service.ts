@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PatientAppointment } from '../models/patient-appointment.model';
-import { environment } from '../../environments/environment';
 import { PatientSearchModel } from '../models/patient-search.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PatientAppointmentService {
-  
-  
-  private apiUrl = `${environment.API_BASE_URL}/PatientAppointment`;
+  private readonly apiUrl = `${environment.API_BASE_URL}/PatientAppointment`;
+
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
@@ -45,8 +44,7 @@ export class PatientAppointmentService {
     return this.http.get<PatientAppointment[]>(`${this.apiUrl}/doctor/${doctorId}`, { headers: this.getAuthHeaders() });
   }
 
-  searchAppointmentsForDoctor(searchPatient: PatientSearchModel) {
-    return this.http.post<PatientAppointment[]>(`${this.apiUrl}/doctor/search`, searchPatient ,{ headers: this.getAuthHeaders() });
+  searchAppointmentsForDoctor(searchPatient: PatientSearchModel): Observable<PatientAppointment[]> {
+    return this.http.post<PatientAppointment[]>(`${this.apiUrl}/doctor/search`, searchPatient, { headers: this.getAuthHeaders() });
   }
-
 }

@@ -9,7 +9,8 @@ import { User } from '../../../models/user.model';
   selector: 'app-user-search',
   imports: [FormsModule],
   templateUrl: './user-search.html',
-  styleUrl: './user-search.css'
+  styleUrl: './user-search.css',
+  providers: [SearchService, DataService, UserService]
 })
 export class UserSearch {
   searchPatient: PatientSearchModel;

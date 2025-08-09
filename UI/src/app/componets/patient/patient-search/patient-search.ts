@@ -7,12 +7,14 @@ import { PatientService } from '../../../services/patient.service';
 import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';  
 import { User } from '../../../models/user.model';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-patient-search',
   imports: [CommonModule, FormsModule],
   templateUrl: './patient-search.html',
-  styleUrl: './patient-search.css'
+  styleUrl: './patient-search.css',
+  providers: [SearchService, PatientService, DataService, HttpClient]
 })
 export class PatientSearchComponent {
   searchPatient: PatientSearchModel;

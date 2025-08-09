@@ -1,27 +1,30 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { LoginResponse } from '../../services/login.service';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class Header {
- loginUser: LoginResponse | null = null;
-  constructor(private dataService: DataService ) {}
+export class Header implements OnInit, OnDestroy {
+  loginUser: LoginResponse | null = null;
+  private subscription?: Subscription;
 
- ngOnInit() {
-    this.dataService.$loginUser.subscribe(user => {
+  constructor(private dataService: DataService) {}
+
+  ngOnInit(): void {
+    this.subscription = this.dataService.loginUser$.subscribe(user => {
       this.loginUser = user;
     });
   }
 
-  ngonDestroy() {
-    this.dataService.$loginUser.unsubscribe();
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
-  
-  logout() {
+
+  logout(): void {
     localStorage.removeItem('token');
     this.dataService.setLoginUser(null);
     this.loginUser = null;

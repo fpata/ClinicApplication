@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SchedulerComponent } from "../../common/scheduler/scheduler";
 import { PatientAppointment } from '../../models/patient-appointment.model';
 import { PatientAppointmentService } from '../../services/patient-appointment.service';
@@ -8,29 +8,33 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
    selector: 'app-dashboard',
    imports: [SchedulerComponent],
    templateUrl: './dashboard.html',
-   styleUrl: './dashboard.css'
+   styleUrl: './dashboard.css',
+   providers: [PatientAppointmentService]
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
    appointments: PatientAppointment[] = [];
    @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
+
    constructor(private patientAppointmentService: PatientAppointmentService) { }
 
-   ngOnInit() {
-      // Initialize appointments or fetch from a service if needed
+   ngOnInit(): void {
+      this.loadAppointments();
+   }
+
+   private loadAppointments(): void {
       this.patientAppointmentService.getPatientAppointmentsByDoctorId(1)
          .subscribe({
             next: (appointments: PatientAppointment[]) => {
                this.appointments = appointments;
-               this.AddEventsToScheduler(appointments);
+               this.addEventsToScheduler(appointments);
             },
-            error: (error: any) => {
+            error: (error) => {
                console.error('Error fetching appointments:', error);
             }
          });
    }
 
-   AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
-      //var events: DayPilot.EventData[] = [];
+   private addEventsToScheduler(appointments: PatientAppointment[]): void {
       const events: DayPilot.EventData[] = appointments.map(appointment => ({
          id: appointment.ID.toString(),
          text: appointment.PatientName || 'Unknown Patient',

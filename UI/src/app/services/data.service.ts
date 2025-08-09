@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Patient } from '../models/patient.model';
 import { User } from '../models/user.model';
-import { DayPilotCalendarComponent, DayPilotModule } from '@daypilot/daypilot-lite-angular';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { LoginResponse } from './login.service';
 
@@ -10,17 +9,17 @@ import { LoginResponse } from './login.service';
   providedIn: 'root'
 })
 export class DataService {
-  private patientSource = new BehaviorSubject<Patient | null>(null);
-  private userSource = new BehaviorSubject<User | null>(null);
+  private readonly patientSource = new BehaviorSubject<Patient | null>(null);
+  private readonly userSource = new BehaviorSubject<User | null>(null);
+  private readonly calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
+  private readonly loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
 
-  patient$ = this.patientSource.asObservable();
-  user$ = this.userSource.asObservable();
-  private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]); 
-  calendarEvents$ = this.calendarEvents.asObservable(); 
-  private loginUser: LoginResponse | null = null;
-  $loginUser = new BehaviorSubject<LoginResponse | null>(null);
+  readonly patient$: Observable<Patient | null> = this.patientSource.asObservable();
+  readonly user$: Observable<User | null> = this.userSource.asObservable();
+  readonly calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
+  readonly loginUser$: Observable<LoginResponse | null> = this.loginUserSource.asObservable();
 
-  setPatient(patient: Patient) {
+  setPatient(patient: Patient | null): void {
     this.patientSource.next(patient);
   }
 
@@ -28,7 +27,7 @@ export class DataService {
     return this.patientSource.value;
   }
 
-  setUser(user: User) {
+  setUser(user: User | null): void {
     this.userSource.next(user);
   }
 
@@ -39,17 +38,16 @@ export class DataService {
   getCalendarEvents(): DayPilot.EventData[] {
     return this.calendarEvents.value;
   }
-  
-  setCalendarEvents(events: DayPilot.EventData[]) {
+
+  setCalendarEvents(events: DayPilot.EventData[]): void {
     this.calendarEvents.next(events);
   }
 
   getLoginUser(): LoginResponse | null {
-    return this.loginUser;
+    return this.loginUserSource.value;
   }
 
-  setLoginUser(user: LoginResponse) {
-    this.loginUser = user;
-    this.$loginUser.next(user);
+  setLoginUser(user: LoginResponse | null): void {
+    this.loginUserSource.next(user);
   }
 }

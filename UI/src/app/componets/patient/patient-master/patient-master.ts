@@ -12,13 +12,15 @@ import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { PatientReport } from '../../../models/patient-report.model';
 import {PatientQuickCreateComponent} from '../patient-quick-create/patient-quick-create.component';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-patient-master',
   templateUrl: './patient-master.html',
   styleUrl: './patient-master.css',
   imports: [PatientAppointmentComponent, PatientHistoryComponent, PatientReportComponent,
      PatientSearchComponent, PatientTreatmentComponent, 
-    PatientCompleteHistoryComponent, PatientQuickCreateComponent]
+    PatientCompleteHistoryComponent, PatientQuickCreateComponent],
+    providers: [DataService, PatientService, HttpClient]  
 })
 export class PatientMasterComponent {
 

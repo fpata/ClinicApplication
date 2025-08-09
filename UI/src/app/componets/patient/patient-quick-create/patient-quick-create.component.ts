@@ -14,7 +14,8 @@ import { UserService } from '../../../services/user.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './patient-quick-create.component.html',
-  styleUrls: ['./patient-quick-create.component.css']
+  styleUrls: ['./patient-quick-create.component.css'],
+  providers: [DataService, PatientService, UserService]
 })
 export class PatientQuickCreateComponent implements OnInit {
   patient: Patient = new Patient();

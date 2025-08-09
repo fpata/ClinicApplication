@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PatientService {
-  private apiUrl = `${environment.API_BASE_URL}/patient`;
+  private readonly apiUrl = `${environment.API_BASE_URL}/patient`;
 
   constructor(private http: HttpClient) {}
 
@@ -24,7 +24,7 @@ export class PatientService {
     return this.http.get<Patient>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
-   getCompletePatient(id: number): Observable<User> {
+  getCompletePatient(id: number): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/Complete/${id}`, { headers: this.getAuthHeaders() });
   }
 

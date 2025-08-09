@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { Patientcompletehistory } from './patientcompletehistory';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PatientCompleteHistoryComponent } from './patientcompletehistory';
 
 describe('Patientcompletehistory', () => {
-  let component: Patientcompletehistory;
-  let fixture: ComponentFixture<Patientcompletehistory>;
+  let component: PatientCompleteHistoryComponent;
+  let fixture: ComponentFixture<PatientCompleteHistoryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Patientcompletehistory]
+      imports: [PatientCompleteHistoryComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Patientcompletehistory);
+    fixture = TestBed.createComponent(PatientCompleteHistoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

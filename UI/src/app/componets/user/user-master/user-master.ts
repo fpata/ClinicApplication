@@ -7,12 +7,14 @@ import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-user-master',
   imports: [UserSearch, UserInfoComponent, UserQuickCreateComponent],
   templateUrl: './user-master.html',
-  styleUrl: './user-master.css'
+  styleUrl: './user-master.css',
+  providers: [DataService, UserService, HttpClient]
 })
 export class UserMasterComponent {
 
