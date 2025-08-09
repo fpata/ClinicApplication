@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ClinicManager.Controllers
 {
@@ -16,6 +16,9 @@ namespace ClinicManager.Controllers
     {
         private readonly ClinicDbContext _context;
         private readonly ILogger<UserController> _logger;
+       
+        private const int CACHE_EXPIRY_MINUTES = 10;
+
         public UserController(ClinicDbContext context, ILogger<UserController> logger)
         {
             _context = context;
@@ -23,55 +26,108 @@ namespace ClinicManager.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get()
+        public async Task<ActionResult<IEnumerable<User>>> Get(int pageNumber = 1, int pageSize = 20)
         {
-            _logger.LogInformation("Fetching all users");
-            return await _context.Users.ToListAsync();
+            _logger.LogInformation($"Fetching users page {pageNumber} with size {pageSize}");
+            var users = await _context.Users
+                .AsNoTracking()
+                .Where(u => u.IsActive)
+                .OrderBy(u => u.FirstName)
+                .ThenBy(u => u.LastName)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return users;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(int id)
         {
             _logger.LogInformation($"Fetching user with ID: {id}");
-            User entity = await _context.Users.FindAsync(id);
+         
 
-            if (entity == null)
-            {
-                _logger.LogWarning($"User with ID: {id} not found");
-                return NotFound();
-            }
-            else
-            {
-                entity.Address = await _context.Addresses.FirstOrDefaultAsync(a => a.UserID == entity.ID);
-                entity.Contact = await _context.Contacts.FirstOrDefaultAsync(c => c.UserID == entity.ID);
-            }
+            // Use single query with Include to solve N+1 problem
+           var entity = await _context.Users
+                .AsNoTracking()
+                .Where(u => u.ID == id && u.IsActive)
+                .Select(u => new User
+                {
+                    ID = u.ID,
+                    FirstName = u.FirstName,
+                    MiddleName = u.MiddleName,
+                    LastName = u.LastName,
+                    UserName = u.UserName,
+                    Password = u.Password,
+                    UserType = u.UserType,
+                    Gender = u.Gender,
+                    DOB = u.DOB,
+                    Age = u.Age,
+                    LastLoginDate = u.LastLoginDate,
+                    CreatedDate = u.CreatedDate,
+                    ModifiedDate = u.ModifiedDate,
+                    CreatedBy = u.CreatedBy,
+                    ModifiedBy = u.ModifiedBy,
+                    IsActive = u.IsActive,
+                    Address = _context.Addresses
+                        .Where(a => a.UserID == u.ID && a.IsActive)
+                        .FirstOrDefault(),
+                    Contact = _context.Contacts
+                        .Where(c => c.UserID == u.ID && c.IsActive)
+                        .FirstOrDefault()
+                })
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+            
             return entity;
         }
 
         [HttpPost]
         public async Task<ActionResult<User>> Post(User user)
         {
-            Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction dbTransaction = _context.Database.BeginTransaction();
+            using var dbTransaction = await _context.Database.BeginTransactionAsync();
             try
             {
+                // Set timestamps
+                user.CreatedDate = DateTime.UtcNow;
+                user.ModifiedDate = DateTime.UtcNow;
+                user.IsActive = true;
+
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+
+                // Process related entities in batch
+                var entitiesToAdd = new List<object>();
+
                 if (user.Address != null)
                 {
                     user.Address.ID = 0; // Reset ID to ensure new record is created
                     user.Address.UserID = user.ID;
-                    _context.Addresses.Add(user.Address);
-                    await _context.SaveChangesAsync();
+                    user.Address.CreatedDate = DateTime.UtcNow;
+                    user.Address.ModifiedDate = DateTime.UtcNow;
+                    user.Address.IsActive = true;
+                    entitiesToAdd.Add(user.Address);
                 }
+
                 if (user.Contact != null)
                 {
                     user.Contact.ID = 0; // Reset ID to ensure new record is created
                     user.Contact.UserID = user.ID;
-                    _context.Contacts.Add(user.Contact);
+                    user.Contact.CreatedDate = DateTime.UtcNow;
+                    user.Contact.ModifiedDate = DateTime.UtcNow;
+                    user.Contact.IsActive = true;
+                    entitiesToAdd.Add(user.Contact);
+                }
+
+                // Add all related entities in batch
+                if (entitiesToAdd.Any())
+                {
+                    _context.AddRange(entitiesToAdd);
                     await _context.SaveChangesAsync();
                 }
+
                 await dbTransaction.CommitAsync();
-             
             }
             catch (Exception ex)
             {
@@ -79,56 +135,99 @@ namespace ClinicManager.Controllers
                 _logger.LogError(ex, "Error creating user");
                 return StatusCode(500, "Internal server error while creating user");
             }
-            finally
-            {
-                _context.Entry(user).State = EntityState.Detached; // Detach to avoid tracking issues
-                if (user.Address != null)
-                {
-                    _context.Entry(user.Address).State = EntityState.Detached;
-                }
-                if (user.Contact != null)
-                {
-                    _context.Entry(user.Contact).State = EntityState.Detached;
-                }
-                await dbTransaction.DisposeAsync();
-            }
+
             _logger.LogInformation($"Created new user with ID: {user.ID}");
-            return CreatedAtAction(nameof(Get), new { id = user.ID }, user);
+            // Clear cache for all users
+           
+            user =  Get(user.ID).Result.Value!; // Refresh user to get full details including related entities
+
+            return Created("Get",user);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, User user)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             if (id != user.ID)
             {
                 _logger.LogWarning($"User ID mismatch: {id} != {user.ID}");
                 return BadRequest();
             }
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            if(user.Address != null)
+
+
+            try
             {
-                _context.Entry(user.Address).State = EntityState.Modified;
+                user.ModifiedDate = DateTime.UtcNow;
+
+                // Update user
+                _context.Entry(user).State = EntityState.Modified;
+
+                // Update related entities if they exist
+                if (user.Address != null)
+                {
+                    user.Address.ModifiedDate = DateTime.UtcNow;
+                    if (user.Address.ID > 0)
+                    {
+                        _context.Entry(user.Address).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        user.Address.UserID = user.ID;
+                        user.Address.CreatedDate = DateTime.UtcNow;
+                        user.Address.IsActive = true;
+                        _context.Addresses.Add(user.Address);
+                    }
+                }
+
+                if (user.Contact != null)
+                {
+                    user.Contact.ModifiedDate = DateTime.UtcNow;
+                    if (user.Contact.ID > 0)
+                    {
+                        _context.Entry(user.Contact).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        user.Contact.UserID = user.ID;
+                        user.Contact.CreatedDate = DateTime.UtcNow;
+                        user.Contact.IsActive = true;
+                        _context.Contacts.Add(user.Contact);
+                    }
+                }
+              
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                _logger.LogInformation($"Updated user with ID: {id}");
+                user = Get(id).Result?.Value;
+                return Ok(user);
             }
-            if(user.Contact != null)
+            catch (Exception ex)
             {
-                _context.Entry(user.Contact).State = EntityState.Modified;
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, $"Error updating user with ID: {id}");
+                return StatusCode(500, "Internal server error while updating user");
             }
-            _logger.LogInformation($"Updated user with ID: {id}");
-            return NoContent();
+
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(int id, JsonPatchDocument<User> patchDoc)
         {
-            var entity = await _context.Users.FindAsync(id);
+            var entity = await _context.Users
+                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive)
+                .ConfigureAwait(false);
+                
             if (entity == null)
             {
                 _logger.LogWarning($"User with ID: {id} not found for patch");
                 return NotFound();
             }
+
             patchDoc.ApplyTo(entity);
+            entity.ModifiedDate = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
+                       
             _logger.LogInformation($"Patched user with ID: {id}");
             return NoContent();
         }
@@ -136,15 +235,22 @@ namespace ClinicManager.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _context.Users.FindAsync(id);
+            var entity = await _context.Users
+                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive);
+                
             if (entity == null)
             {
                 _logger.LogWarning($"User with ID: {id} not found for deletion");
                 return NotFound();
             }
-            _context.Users.Remove(entity);
+
+            // Soft delete instead of hard delete
+            entity.IsActive = false;
+            entity.ModifiedDate = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"Deleted user with ID: {id}");
+                        
+            _logger.LogInformation($"Soft deleted user with ID: {id}");
             return NoContent();
         }
     }

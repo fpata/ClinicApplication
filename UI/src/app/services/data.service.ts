@@ -9,17 +9,17 @@ import { LoginResponse } from './login.service';
   providedIn: 'root'
 })
 export class DataService {
-  private readonly patientSource = new BehaviorSubject<Patient | null>(null);
-  private readonly userSource = new BehaviorSubject<User | null>(null);
-  private readonly calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
-  private readonly loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
+  patientSource = new BehaviorSubject<Patient | null>(null);
+  userSource = new BehaviorSubject<User | null>(null);
+  calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
+  loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
 
-  readonly patient$: Observable<Patient | null> = this.patientSource.asObservable();
-  readonly user$: Observable<User | null> = this.userSource.asObservable();
-  readonly calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
-  readonly loginUser$: Observable<LoginResponse | null> = this.loginUserSource.asObservable();
+  patient$: Observable<Patient> = this.patientSource.asObservable();
+  user$: Observable<User> = this.userSource.asObservable();
+  calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
+  loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
 
-  setPatient(patient: Patient | null): void {
+  setPatient(patient: Patient): void {
     this.patientSource.next(patient);
   }
 
@@ -27,7 +27,7 @@ export class DataService {
     return this.patientSource.value;
   }
 
-  setUser(user: User | null): void {
+  setUser(user: User): void {
     this.userSource.next(user);
   }
 
@@ -43,11 +43,11 @@ export class DataService {
     this.calendarEvents.next(events);
   }
 
-  getLoginUser(): LoginResponse | null {
+  getLoginUser(): LoginResponse {
     return this.loginUserSource.value;
   }
 
-  setLoginUser(user: LoginResponse | null): void {
+  setLoginUser(user: LoginResponse): void {
     this.loginUserSource.next(user);
   }
 }

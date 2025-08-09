@@ -16,6 +16,9 @@ namespace ClinicManager.Controllers
     {
         private readonly ClinicDbContext _context;
         private readonly ILogger<PatientController> _logger;
+
+        private const int CACHE_EXPIRY_MINUTES = 10;
+
         public PatientController(ClinicDbContext context, ILogger<PatientController> logger)
         {
             _context = context;
@@ -26,10 +29,18 @@ namespace ClinicManager.Controllers
         public async Task<ActionResult<IEnumerable<Patient>>> Get(int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Fetching patients page {pageNumber} with size {pageSize}");
+            
+            var cacheKey = $"patients_page_{pageNumber}_size_{pageSize}";
+           
             var patients = await _context.Patients
+                .AsNoTracking()
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.ID)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync()
+                .ConfigureAwait(false);
+           
             return patients;
         }
 
@@ -37,126 +48,162 @@ namespace ClinicManager.Controllers
         public async Task<ActionResult<Patient>> Get(int id)
         {
             _logger.LogInformation($"Fetching patient with ID: {id}");
-            var entity = await _context.Patients.FindAsync(id);
+            
+            var cacheKey = $"patient_{id}";
+         
+            // Use Include to solve N+1 problem with single query
+            var entity = await _context.Patients
+                .AsNoTracking()
+                .Include(p => p.PatientAppointments)
+                .Include(p => p.PatientReports)
+                .Include(p => p.PatientTreatment)
+                    .ThenInclude(pt => pt!.PatientTreatmentDetails)
+                .FirstOrDefaultAsync(p => p.ID == id && p.IsActive);
+
             if (entity == null)
             {
                 _logger.LogWarning($"Patient with ID: {id} not found");
                 return NotFound();
             }
-            else
-            {
-                // Optionally, you can include related data if needed
-                entity.PatientAppointments = await _context.PatientAppointments
-                    .Where(a => a.PatientID == id)
-                    .ToListAsync();
-                entity.PatientReports = await _context.PatientReports
-                    .Where(r => r.PatientID == id)
-                    .ToListAsync();
-                entity.PatientTreatment = await _context.PatientTreatments
-                    .Where(t => t.PatientID == id)
-                    .FirstOrDefaultAsync();
-                if (entity.PatientTreatment != null)
-                {
-                    entity.PatientTreatment.PatientTreatmentDetails = await _context.PatientTreatmentDetails
-                        .Where(td => td.PatientID == id)
-                        .ToListAsync();
-                }
-                    _logger.LogInformation($"Fetched patient with ID: {id}");
-            }
+            _logger.LogInformation($"Fetched patient with ID: {id}");
             return entity;
         }
 
         [HttpGet("Complete/{id}")]
         public async Task<ActionResult<User>> GetComplete(int id)
         {
-            _logger.LogInformation($"Fetching patient with ID: {id}");
+            _logger.LogInformation($"Fetching complete patient data with ID: {id}");
 
-            User? user =null;
-            Patient? patient = await _context.Patients.FindAsync(id) as Patient;
-          
+            var cacheKey = $"patient_complete_{id}";
+           
 
-            if (patient == null)
+            // Optimize with single query using projection to avoid loading unnecessary data
+            var userData = await (from _patient in _context.Patients
+                                  join _user in _context.Users on _patient.UserID equals _user.ID
+                                  where _patient.ID == id && _patient.IsActive && _user.IsActive
+                                  select new
+                                  {
+                                      User = _user,
+                                      Patient = _patient,
+                                      Address = _context.Addresses
+                                          .Where(a => a.UserID == _user.ID && a.IsActive)
+                                          .FirstOrDefault(),
+                                      Contact = _context.Contacts
+                                          .Where(c => c.UserID == _user.ID && c.IsActive)
+                                          .FirstOrDefault(),
+                                      PatientAppointments = _context.PatientAppointments
+                                          .Where(pa => pa.PatientID == id)
+                                          .ToList(),
+                                      PatientReports = _context.PatientReports
+                                          .Where(pr => pr.PatientID == id)
+                                          .ToList(),
+                                      PatientTreatment = _context.PatientTreatments
+                                          .Where(pt => pt.PatientID == id)
+                                          .FirstOrDefault(),
+                                      PatientTreatmentDetails = _context.PatientTreatmentDetails
+                                          .Where(ptd => ptd.PatientID == id)
+                                          .ToList()
+                                  })
+                                 .AsNoTracking()
+                                 .FirstOrDefaultAsync();
+
+            if (userData == null)
             {
                 _logger.LogWarning($"Patient with ID: {id} not found");
                 return NotFound();
             }
-            else
+
+            // Construct the result
+            var user = userData.User;
+            user.Address = userData.Address;
+            user.Contact = userData.Contact;
+            
+            var patient = userData.Patient;
+            patient.PatientAppointments = userData.PatientAppointments;
+            patient.PatientReports = userData.PatientReports;
+            patient.PatientTreatment = userData.PatientTreatment;
+            
+            if (patient.PatientTreatment != null)
             {
-                user = await _context.Users.FindAsync(patient.UserID);
-                if(user.Patients==null) user.Patients = new List<Patient>();
-                user?.Patients?.Add(patient);
-
-                user.Address = await _context.Addresses
-                .Where(a => a.UserID == patient.UserID)
-                .FirstOrDefaultAsync();
-
-                user.Contact = await _context.Contacts.
-                Where(c => c.UserID == patient.UserID)
-                .FirstOrDefaultAsync();
-                
-                patient.PatientAppointments = await _context.PatientAppointments
-                    .Where(a => a.PatientID == id)
-                    .ToListAsync();
-                patient.PatientReports = await _context.PatientReports
-                    .Where(r => r.PatientID == id)
-                    .ToListAsync();
-                patient.PatientTreatment = await _context.PatientTreatments
-                    .Where(t => t.PatientID == id)
-                    .FirstOrDefaultAsync();
-               if(patient.PatientTreatment !=null) patient.PatientTreatment.PatientTreatmentDetails = await _context.PatientTreatmentDetails
-                    .Where(td => td.PatientID == id)
-                    .ToListAsync();
-                _logger.LogInformation($"Fetched full details for patient with ID: {id}");
-
+                patient.PatientTreatment.PatientTreatmentDetails = userData.PatientTreatmentDetails;
             }
+
+            user.Patients = new List<Patient> { patient };
+           
+            _logger.LogInformation($"Fetched complete patient data with ID: {id}");
+
             return user;
         }
 
         [HttpPost]
         public async Task<ActionResult<Patient>> Post(Patient patient)
         {
-           IDbContextTransaction dbContextTransaction = _context.Database.BeginTransaction();
+            using var dbContextTransaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
+                // Set timestamps
+                patient.CreatedDate = DateTime.UtcNow;
+                patient.ModifiedDate = DateTime.UtcNow;
+                patient.IsActive = true;
+
                 _context.Patients.Add(patient);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"Created new patient with ID: {patient.ID}");
 
-                if (patient.PatientReports != null)
+                // Process related entities in batch
+                var entitiesToAdd = new List<object>();
+
+                if (patient.PatientReports?.Any() == true)
                 {
                     foreach (var report in patient.PatientReports)
                     {
                         report.PatientID = patient.ID;
                         report.UserID = patient.UserID;
-                        _context.PatientReports.Add(report);
+                        report.CreatedDate = DateTime.UtcNow;
+                        report.ModifiedDate = DateTime.UtcNow;
+                        entitiesToAdd.Add(report);
                     }
-                    await _context.SaveChangesAsync();
                 }
-                if (patient.PatientAppointments != null)
+
+                if (patient.PatientAppointments?.Any() == true)
                 {
                     foreach (var appointment in patient.PatientAppointments)
                     {
                         appointment.PatientID = patient.ID;
-                        _context.PatientAppointments.Add(appointment);
+                        appointment.CreatedDate = DateTime.UtcNow;
+                        appointment.ModifiedDate = DateTime.UtcNow;
+                        entitiesToAdd.Add(appointment);
                     }
-                    await _context.SaveChangesAsync();
                 }
+
                 if (patient.PatientTreatment != null)
                 {
                     patient.PatientTreatment.PatientID = patient.ID;
                     patient.PatientTreatment.UserID = patient.UserID;
-                    _context.PatientTreatments.Add(patient.PatientTreatment);
-                    if (patient.PatientTreatment.PatientTreatmentDetails != null)
+                    patient.PatientTreatment.CreatedDate = DateTime.UtcNow;
+                    patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
+                    entitiesToAdd.Add(patient.PatientTreatment);
+
+                    if (patient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
                     {
                         foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
                         {
                             detail.PatientID = patient.ID;
-                            _context.PatientTreatmentDetails.Add(detail);
+                            detail.CreatedDate = DateTime.UtcNow;
+                            detail.ModifiedDate = DateTime.UtcNow;
+                            entitiesToAdd.Add(detail);
                         }
-                        await _context.SaveChangesAsync();
                     }
                 }
+
+                // Add all entities in batch and save once
+                if (entitiesToAdd.Any())
+                {
+                    _context.AddRange(entitiesToAdd);
+                    await _context.SaveChangesAsync();
+                }
+
                 await dbContextTransaction.CommitAsync();
             }
             catch (Exception ex)
@@ -165,35 +212,7 @@ namespace ClinicManager.Controllers
                 await dbContextTransaction.RollbackAsync();
                 return StatusCode(500, "Internal server error");
             }
-            finally
-            {
-                _context.Entry(patient).State = EntityState.Detached; // Detach to avoid tracking issues
-                if (patient.PatientReports != null)
-                {
-                    foreach (var report in patient.PatientReports)
-                    {
-                        _context.Entry(report).State = EntityState.Detached;
-                    }
-                }
-                if (patient.PatientAppointments != null)
-                {
-                    foreach (var appointment in patient.PatientAppointments)
-                    {
-                        _context.Entry(appointment).State = EntityState.Detached;
-                    }
-                }
-                if (patient.PatientTreatment != null)
-                {
-                    _context.Entry(patient.PatientTreatment).State = EntityState.Detached;
-                    if (patient.PatientTreatment.PatientTreatmentDetails != null)
-                    {
-                        foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
-                        {
-                            _context.Entry(detail).State = EntityState.Detached;
-                        }
-                    }
-                }
-            }
+
             return CreatedAtAction(nameof(Get), new { id = patient.ID }, patient);
         }
 
@@ -205,23 +224,34 @@ namespace ClinicManager.Controllers
                 _logger.LogWarning($"Patient ID mismatch: {id} != {patient.ID}");
                 return BadRequest();
             }
+
+            // Update timestamp
+            patient.ModifiedDate = DateTime.UtcNow;
+
             _context.Entry(patient).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"Updated patient with ID: {id}");
+            
+           _logger.LogInformation($"Updated patient with ID: {id}");
             return NoContent();
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(int id, JsonPatchDocument<Patient> patchDoc)
         {
-            var entity = await _context.Patients.FindAsync(id);
+            var entity = await _context.Patients
+                .FirstOrDefaultAsync(p => p.ID == id);
+                
             if (entity == null)
             {
                 _logger.LogWarning($"Patient with ID: {id} not found for patch");
                 return NotFound();
             }
+
             patchDoc.ApplyTo(entity);
+            entity.ModifiedDate = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
+            
             _logger.LogInformation($"Patched patient with ID: {id}");
             return NoContent();
         }
@@ -229,15 +259,21 @@ namespace ClinicManager.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _context.Patients.FindAsync(id);
+            var entity = await _context.Patients
+                .FirstOrDefaultAsync(p => p.ID == id);
+                
             if (entity == null)
             {
                 _logger.LogWarning($"Patient with ID: {id} not found for deletion");
                 return NotFound();
             }
-            _context.Patients.Remove(entity);
+
+            // Soft delete instead of hard delete for better performance and data integrity
+            entity.IsActive = false;
+            entity.ModifiedDate = DateTime.UtcNow;
+            
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"Deleted patient with ID: {id}");
+            _logger.LogInformation($"Soft deleted patient with ID: {id}");
             return NoContent();
         }
     }

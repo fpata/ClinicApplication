@@ -16,6 +16,7 @@ namespace ClinicManager.DAL
         public DbSet<PatientTreatmentDetail> PatientTreatmentDetails { get; set; }
         public DbSet<User> Users { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Add any custom configuration here if needed

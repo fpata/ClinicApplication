@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace ClinicManager.Controllers
 {
@@ -15,68 +14,154 @@ namespace ClinicManager.Controllers
     {
         private readonly ClinicDbContext _context;
         private readonly ILogger<SearchController> _logger;
+        private const int CACHE_EXPIRY_MINUTES = 5;
+
         public SearchController(ClinicDbContext context, ILogger<SearchController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        // Basic search for users by fields using SearchModel
+        // Optimized search using LINQ instead of raw SQL to prevent SQL injection
         [HttpPost("user")]
         public async Task<ActionResult<IEnumerable<SearchModel>>> SearchUser([FromBody] SearchModel model)
         {
             _logger.LogInformation("Searching users by fields");
-            string query = "Select user.FirstName as FirstName, user.LastName as LastName, user.ID as UserID," +
-                " user.UserName as UserName, user.UserType as UserType, " +
-                " MAX(patient.ID) as PatientID, address.PermCity as PermCity, " +
-                " contact.PrimaryEmail as PrimaryEmail, contact.PrimaryPhone as PrimaryPhone , 0 as DoctorID , '' as DoctorName, " +
-                " user.CreatedDate as StartDate, user.ModifiedDate as EndDate from User " +
-                " Left join Patient on patient.UserID = user.ID " +
-                " Left join Address on address.UserID = user.ID " +
-                " Left Join Contact on contact.UserID = user.ID " +
-                " Where user.IsActive=1 And Address.IsActive=1 and contact.IsActive=1 ";
-            if (!string.IsNullOrWhiteSpace(model.FirstName))
-                query = query + " And user.FirstName like '%" + model.FirstName + "%' ";
-            if (!string.IsNullOrWhiteSpace(model.LastName))
-                query = query + " And user.LastName like '%" + model.LastName + "%' ";
-            if (!string.IsNullOrWhiteSpace(model.PrimaryEmail))
-                query = query + " And contact.PrimaryEmail like '%" + model.PrimaryEmail + "%' ";
-            if (!string.IsNullOrWhiteSpace(model.PrimaryPhone))
-                query = query + " And contact.PrimaryPhone like '%" + model.PrimaryPhone + "%' ";
-            if (!string.IsNullOrWhiteSpace(model.PermCity))
-                query = query + " And address.PermCity like '%" + model.PermCity + "%' ";
-            if (model.DoctorID > 0)
-                query = query + " And pa.DoctorID = " + model.DoctorID + " ";
-            if (model.PatientID > 0)
-                query = query + " And patient.PatientID = " + model.PatientID + " ";
-            query = query + " group by user.FirstName, user.LastName,UserID, PermCity, PrimaryEmail, PrimaryPhone";
-            Console.WriteLine(query);
+            try
+            {
+                // Use LINQ with proper parameterization instead of raw SQL
+                var query = from user in _context.Users
+                           join patient in _context.Patients on user.ID equals patient.UserID into patientGroup
+                           from patient in patientGroup.DefaultIfEmpty()
+                           join address in _context.Addresses on user.ID equals address.UserID into addressGroup
+                           from address in addressGroup.DefaultIfEmpty()
+                           join contact in _context.Contacts on user.ID equals contact.UserID into contactGroup
+                           from contact in contactGroup.DefaultIfEmpty()
+                           where user.IsActive == true && 
+                                 (address == null || address.IsActive == true) && 
+                                 (contact == null || contact.IsActive == true)
+                           select new { user, patient, address, contact };
 
-            var results = await _context.Database.SqlQueryRaw<SearchModel>(query).ToListAsync();
+                // Apply filters using parameterized queries
+                if (!string.IsNullOrWhiteSpace(model.FirstName))
+                    query = query.Where(x => x.user.FirstName.Contains(model.FirstName));
 
-            return Ok(results);
+                if (!string.IsNullOrWhiteSpace(model.LastName))
+                    query = query.Where(x => x.user.LastName.Contains(model.LastName));
+
+                if (!string.IsNullOrWhiteSpace(model.PrimaryEmail))
+                    query = query.Where(x => x.contact != null && x.contact.PrimaryEmail!.Contains(model.PrimaryEmail));
+
+                if (!string.IsNullOrWhiteSpace(model.PrimaryPhone))
+                    query = query.Where(x => x.contact != null && x.contact.PrimaryPhone!.Contains(model.PrimaryPhone));
+
+                if (!string.IsNullOrWhiteSpace(model.PermCity))
+                    query = query.Where(x => x.address != null && x.address.PermCity!.Contains(model.PermCity));
+
+                if (model.PatientID > 0)
+                    query = query.Where(x => x.patient != null && x.patient.ID == model.PatientID);
+
+                // Group and project to SearchModel
+                var groupedQuery = query
+                    .GroupBy(x => new { 
+                        x.user.ID, 
+                        x.user.FirstName, 
+                        x.user.LastName, 
+                        x.user.UserName,
+                        x.user.UserType,
+                        x.user.CreatedDate,
+                        x.user.ModifiedDate,
+                        PermCity = x.address != null ? x.address.PermCity : null,
+                        PrimaryEmail = x.contact != null ? x.contact.PrimaryEmail : null,
+                        PrimaryPhone = x.contact != null ? x.contact.PrimaryPhone : null
+                    })
+                    .Select(g => new SearchModel
+                    {
+                        UserID = g.Key.ID,
+                        FirstName = g.Key.FirstName,
+                        LastName = g.Key.LastName,
+                        UserName = g.Key.UserName,
+                        UserType = g.Key.UserType,
+                        PatientID = g.Max(x => x.patient != null ? (int?)x.patient.ID : null),
+                        PermCity = g.Key.PermCity,
+                        PrimaryEmail = g.Key.PrimaryEmail,
+                        PrimaryPhone = g.Key.PrimaryPhone,
+                        DoctorID = 0,
+                        DoctorName = string.Empty,
+                        StartDate = g.Key.CreatedDate,
+                        EndDate = g.Key.ModifiedDate
+                    });
+
+                var results = await groupedQuery
+                    .AsNoTracking()
+                    .Take(100) // Limit results for performance
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+              
+                _logger.LogInformation($"Found {results.Count} users matching search criteria");
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error performing user search");
+                return StatusCode(500, "An error occurred while searching users");
+            }
         }
 
-        //// Advanced search across all models using SearchModel
-        //[HttpPost("advanced")]
-        //public async Task<ActionResult> AdvancedSearch([FromBody] SearchModel model)
-        //{
-        //    _logger.LogInformation("Performing advanced search");
-        //    var users = _context.Users.AsQueryable();
-        //    if (!string.IsNullOrEmpty(model.UserName))
-        //        users = users.Where(u => u.UserName.Contains(model.UserName));
-        //    if (!string.IsNullOrEmpty(model.FirstName))
-        //        users = users.Where(u => u.FirstName.Contains(model.FirstName));
-        //    if (!string.IsNullOrEmpty(model.LastName))
-        //        users = users.Where(u => u.LastName.Contains(model.LastName));
+        // Advanced search using LINQ with optimizations
+        [HttpPost("advanced")]
+        public async Task<ActionResult<IEnumerable<SearchModel>>> AdvancedSearch([FromBody] SearchModel model)
+        {
+            _logger.LogInformation("Performing advanced search");
 
+            try
+            {
+                // Use compiled query for better performance if this is a frequent operation
+                var query = _context.Users.AsNoTracking();
 
+                // Apply filters efficiently
+                if (!string.IsNullOrEmpty(model.UserName))
+                    query = query.Where(u => u.UserName.Contains(model.UserName));
 
-        //    // Collect results
-        //    var result =        
-        //        Users = await users.ToListAsync();
-        
-        //    return Ok(result);
-        //}
+                if (!string.IsNullOrEmpty(model.FirstName))
+                    query = query.Where(u => u.FirstName.Contains(model.FirstName));
+
+                if (!string.IsNullOrEmpty(model.LastName))
+                    query = query.Where(u => u.LastName.Contains(model.LastName));
+
+                if (!string.IsNullOrEmpty(model.UserType))
+                    query = query.Where(u => u.UserType == model.UserType);
+
+                // Always filter active users
+                query = query.Where(u => u.IsActive);
+
+                // Project to SearchModel to avoid loading unnecessary data
+                var results = await query
+                    .Select(u => new SearchModel
+                    {
+                        UserID = u.ID,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        UserName = u.UserName,
+                        UserType = u.UserType,
+                        StartDate = u.CreatedDate,
+                        EndDate = u.ModifiedDate
+                    })
+                    .OrderBy(u => u.FirstName)
+                    .ThenBy(u => u.LastName)
+                    .Take(100) // Limit results
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                
+                _logger.LogInformation($"Advanced search found {results.Count} results");
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error performing advanced search");
+                return StatusCode(500, "An error occurred while performing advanced search");
+            }
+        }
     }
 }

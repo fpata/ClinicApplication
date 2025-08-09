@@ -14,23 +14,21 @@ import { FormsModule } from '@angular/forms';
 })
 export class UserInfoComponent {
 
- user: User | null = null;
-  address:Address |null = null;
+  user: User | null = null;
+  address: Address | null = null;
   contact: Contact | null = null; // Assuming Contact is a model for contact details
   // Subscription to handle user changes
   private userSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService) { }
 
   ngOnInit() {
     // Subscribe to user changes from the data service
     this.userSubscription = this.dataService.user$.subscribe({
-      next: (user) => {
+      next: (user: User) => {
         this.user = user;
-        if (this.user && this.user.Address)  this.address = this.user.Address;
-      
-        if (this.user && this.user.Contact)    this.contact = this.user.Contact;
-       
+        if (this.user && this.user.Address) this.address = this.user.Address;
+        if (this.user && this.user.Contact) this.contact = this.user.Contact;
       },
       error: (error) => {
         console.error('Error subscribing to user changes:', error);
@@ -45,16 +43,14 @@ export class UserInfoComponent {
     }
   }
 
-   CopyAddress() {
+  CopyAddress() {
     if (this.user && this.user.Address) {
       this.user.Address.CorrAddress1 = this.user.Address.PermAddress1;
       this.user.Address.CorrAddress2 = this.user.Address.PermAddress2;
       this.user.Address.CorrCity = this.user.Address.PermCity;
       this.user.Address.CorrState = this.user.Address.PermState;
       this.user.Address.CorrCountry = this.user.Address.PermCountry;
-      this.user.Address.CorrZipCode = this.user.Address .PermZipCode;
+      this.user.Address.CorrZipCode = this.user.Address.PermZipCode;
     }
   }
-
-  
 }

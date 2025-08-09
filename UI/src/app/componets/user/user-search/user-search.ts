@@ -67,9 +67,7 @@ validateSearchInput() {
 
   OnUserIdClick(userId: number) {
     this.userService.getUser(userId).subscribe({
-      next: (user: User) => {
-        // Handle the patient data as needed
-        console.log('User data:', user);
+      next: (user: User) => {      
         this.dataService.setUser(user);
       },
       error: (err:any) => {
