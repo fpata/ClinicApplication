@@ -13,12 +13,12 @@ export class User {
   Gender?: string;
   DOB?: string | null;
   Age?: number;
-  LastLoginDate?: string;
-  CreatedDate?: string;
-  ModifiedDate?: string;
-  CreatedBy?: number;
-  ModifiedBy?: number;
-  IsActive?: number;
+  LastLoginDate?: string= new Date().toISOString();
+  CreatedDate?: string= new Date().toISOString();
+  ModifiedDate?: string= new Date().toISOString();
+  CreatedBy?: number= 1;
+  ModifiedBy?: number= 1;
+  IsActive?: number= 1;
   Address?: Address;
   Patients?: any;
   Contact?: Contact;

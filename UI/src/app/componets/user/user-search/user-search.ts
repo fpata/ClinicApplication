@@ -49,6 +49,9 @@ validateSearchInput() {
       next: (result:any) => {
         this.searchResult = result;
         this.clearSearchClicked = false;
+        if (this.searchResult.length === 1) {
+          this.OnUserIdClick(this.searchResult[0].UserID);
+        }
       },
       error: (err:any) => {
         // Optionally handle error
@@ -74,6 +77,7 @@ validateSearchInput() {
     this.userService.getUser(userId).subscribe({
       next: (user: User) => {
         this.dataService.setUser(user);
+          document.getElementById('tbPersonalInfo-tab')?.click();
       },
       error: (err: any) => {
         console.error('Error fetching user data:', err);
