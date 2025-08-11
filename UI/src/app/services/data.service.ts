@@ -4,6 +4,8 @@ import { Patient } from '../models/patient.model';
 import { User } from '../models/user.model';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { LoginResponse } from './login.service';
+import { Contact } from '../models/contact.model';
+import { Address } from '../models/address.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +29,8 @@ export class DataService {
     return this.patientSource.value;
   }
 
-  setUser(user: User): void {
-    this.userSource.next(user);
+  setUser(newUser: User): void {
+    this.userSource.next(newUser);
   }
 
   getUser(): User | null {

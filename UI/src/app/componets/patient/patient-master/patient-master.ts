@@ -15,12 +15,13 @@ import {PatientQuickCreateComponent} from '../patient-quick-create/patient-quick
 import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-patient-master',
+  standalone: true,
   templateUrl: './patient-master.html',
   styleUrl: './patient-master.css',
   imports: [PatientAppointmentComponent, PatientHistoryComponent, PatientReportComponent,
      PatientSearchComponent, PatientTreatmentComponent, 
     PatientCompleteHistoryComponent, PatientQuickCreateComponent],
-    providers: [DataService, PatientService, HttpClient]  
+    providers: [HttpClient]  
 })
 export class PatientMasterComponent {
 

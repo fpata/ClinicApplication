@@ -1,20 +1,18 @@
-import { User } from './user.model';
-
 export class Contact {
-  ID: number =0;
-  PrimaryPhone: string;
+  ID?: number;
+  PrimaryPhone?: string;
   SecondaryPhone?: string;
-  PrimaryEmail: string;
+  PrimaryEmail?: string;
   SecondaryEmail?: string;
   RelativeName?: string;
   RelativeRealtion?: string;
   RelativePhone?: string;
   RelativeEmail?: string;
   UserID?: number;
-  IsActive?: number = 1;
-  CreatedDate?: string = new Date().toISOString();
-  CreatedBy?: number = 1;
-  ModifiedDate?: string = new Date().toISOString();
-  ModifiedBy?: number =1;
-  user?: User;
+  CreatedDate?: string;
+  ModifiedDate?: string;
+  CreatedBy?: number;
+  ModifiedBy?: number;
+  IsActive?: number;
+  user?: any; // Avoid circular reference
 }

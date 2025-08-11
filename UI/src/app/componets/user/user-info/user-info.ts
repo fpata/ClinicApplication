@@ -5,6 +5,7 @@ import { Contact } from '../../../models/contact.model';
 import { DataService } from '../../../services/data.service';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { AddressService } from '../../../services/address.service';
 
 
 @Component({
@@ -16,25 +17,27 @@ import { FormsModule } from '@angular/forms';
 export class UserInfoComponent {
 
   user: User | null = null;
+  address: Address | null = null;
+  contact: Contact | null = null;
 
   private userSubscription: Subscription;
 
 
   constructor(private dataService: DataService) { 
-    this.user = new User();
+    // Don't initialize with new objects - wait for actual data
+    this.user = null;
   }
 
     ngOnInit() {
     this.userSubscription = this.dataService.user$.subscribe({
       next:(updatedUser: User | null | undefined) => {
         if (!updatedUser) { 
-          console.log('No user data available');
           return; 
         }
+        // Simply assign the updated user without overriding nested objects
         this.user = updatedUser;
-        this.user.Address = updatedUser.Address ?? null;
-        this.user.Contact = updatedUser.Contact ?? null;
-        console.log('User data updated:', this.user);
+        this.address = this.user.Address;
+        this.contact = this.user.Contact;
       },
       error: (err: Error) => {
         console.error('Error occurred while updating user data:', err);
@@ -43,7 +46,6 @@ export class UserInfoComponent {
         console.log('User subscription completed');
       }
     });
-    console.log('User subscription initialized', this.userSubscription);
   }
 
   ngOnDestroy() {

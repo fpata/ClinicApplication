@@ -48,12 +48,14 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Fetching user with ID: {id}");
 
             // Use single query with Include to solve N+1 problem
-           var entity = await _context.Users
+            var entity = _context.Users
+                .AsNoTracking()
+                .Where(u => u.ID == id && u.IsActive == 1)
                 .Include(u => u.Address)
                 .Include(u => u.Contact)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive==1)
-                .ConfigureAwait(false);
+                .FirstOrDefault();
+           
+            Console.WriteLine($"Fetched user with ID: {id}, Address: {entity?.Address?.ID}, Contact: {entity?.Contact?.ID}");
             return entity;
         }
 

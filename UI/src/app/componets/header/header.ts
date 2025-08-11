@@ -5,6 +5,7 @@ import { LoginResponse } from '../../services/login.service';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
   templateUrl: './header.html',
   styleUrl: './header.css'
 })

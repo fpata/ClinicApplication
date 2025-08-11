@@ -1,27 +1,23 @@
-import { User } from './user.model';
-
 export class Address {
-
-  ID: number =0;
+  ID?: number;
   PermAddress1?: string;
   PermAddress2?: string;
   PermState?: string;
   PermCity?: string;
   PermCountry?: string;
-  AddressType: string;
   PermZipCode?: string;
-  UserID?: number =0;
-  IsActive?: number = 1;
-  CreatedDate?: string = new Date().toISOString();
-  CreatedBy?: number = 1;
-  ModifiedDate?: string = new Date().toISOString();
-  ModifiedBy?: number = 1;
   CorrAddress1?: string;
   CorrAddress2?: string;
   CorrCity?: string;
   CorrState?: string;
   CorrCountry?: string;
   CorrZipCode?: string;
-  user?: User;
-
+  AddressType?: string;
+  UserID?: number;
+  CreatedDate?: string;
+  ModifiedDate?: string;
+  CreatedBy?: number;
+  ModifiedBy?: number;
+  IsActive?: number;
+  user?: any; // Avoid circular reference
 }

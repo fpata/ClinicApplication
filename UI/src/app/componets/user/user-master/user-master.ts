@@ -11,10 +11,11 @@ import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-user-master',
+  standalone: true,
   imports: [UserSearch, UserInfoComponent, UserQuickCreateComponent],
   templateUrl: './user-master.html',
   styleUrl: './user-master.css',
-  providers: [DataService, UserService, HttpClient]
+  providers: [HttpClient]
 })
 export class UserMasterComponent {
 

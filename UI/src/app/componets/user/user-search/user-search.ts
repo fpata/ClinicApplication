@@ -5,12 +5,15 @@ import { SearchService } from '../../../services/search.service';
 import { DataService } from '../../../services/data.service';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
+import { Address } from '../../../models/address.model';
+import { Contact } from '../../../models/contact.model';
 @Component({
   selector: 'app-user-search',
+  standalone: true,
   imports: [FormsModule],
   templateUrl: './user-search.html',
   styleUrl: './user-search.css',
-  providers: [SearchService, DataService, UserService]
+  providers: [SearchService, UserService]
 })
 export class UserSearch {
   searchPatient: PatientSearchModel;
@@ -65,14 +68,59 @@ validateSearchInput() {
     this.clearSearchClicked = true;
   }
 
+  
+
   OnUserIdClick(userId: number) {
     this.userService.getUser(userId).subscribe({
-      next: (user: User) => {      
+      next: (user: User) => {
         this.dataService.setUser(user);
       },
-      error: (err:any) => {
-        console.error('Error fetching patient data:', err);
+      error: (err: any) => {
+        console.error('Error fetching user data:', err);
       }
     });
   }
+
+  
+
+  
 }
+/*
+private mapToUserModel(response: any): User {
+    const user = new User();
+    
+    // Map basic properties
+    user.ID = response.ID;
+    user.FirstName = response.FirstName;
+    user.MiddleName = response.MiddleName;
+    user.LastName = response.LastName;
+    user.UserName = response.UserName;
+    user.Password = response.Password;
+    user.UserType = response.UserType;
+    user.Gender = response.Gender;
+    user.DOB = response.DOB;
+    user.Age = response.Age;
+    user.LastLoginDate = response.LastLoginDate;
+    user.CreatedDate = response.CreatedDate;
+    user.ModifiedDate = response.ModifiedDate;
+    user.CreatedBy = response.CreatedBy;
+    user.ModifiedBy = response.ModifiedBy;
+    user.IsActive = response.IsActive;
+    user.Patients = response.Patients;
+    
+    // Map Address if present
+    if (response.Address) {
+      const address = new Address();
+      Object.assign(address, response.Address);
+      user.Address = address;
+    }
+    
+    // Map Contact if present
+    if (response.Contact) {
+      const contact = new Contact();
+      Object.assign(contact, response.Contact);
+      user.Contact = contact;
+    }
+    
+    return user;
+  }*/

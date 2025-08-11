@@ -9,7 +9,7 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
    imports: [SchedulerComponent],
    templateUrl: './dashboard.html',
    styleUrl: './dashboard.css',
-   providers: [PatientAppointmentService]
+   providers: []
 })
 export class Dashboard implements OnInit {
    appointments: PatientAppointment[] = [];

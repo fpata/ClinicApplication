@@ -11,10 +11,11 @@ import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-patient-search',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './patient-search.html',
   styleUrl: './patient-search.css',
-  providers: [SearchService, PatientService, DataService, HttpClient]
+  providers: [HttpClient]
 })
 export class PatientSearchComponent {
   searchPatient: PatientSearchModel;

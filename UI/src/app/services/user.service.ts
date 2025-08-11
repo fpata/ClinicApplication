@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { User } from '../models/user.model';
 import { environment } from '../../environments/environment';
 
@@ -19,9 +19,10 @@ export class UserService {
     return this.http.get<User[]>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
-  getUser(id: number): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
-  }
+ // Check your UserService method looks something like this:
+getUser(userId: number): Observable<User> {
+  return this.http.get<User>(`${this.apiUrl}/${userId}`, { headers: this.getAuthHeaders() });
+}
 
   createUser(user: User): Observable<User> {
     return this.http.post<User>(this.apiUrl, user, { headers: this.getAuthHeaders() });
