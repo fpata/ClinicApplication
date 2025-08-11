@@ -19,13 +19,14 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UserMasterComponent {
 
-isSearchTabSelected: boolean = true;
-selectedTab: string = 'tbUserSearch';
-@ViewChild (UserQuickCreateComponent) quickCreateComponent!: UserQuickCreateComponent;
+  isSearchTabSelected: boolean = true;
+  selectedTab: string = 'tbUserSearch';
+  @ViewChild(UserQuickCreateComponent) quickCreateComponent!: UserQuickCreateComponent;
+  @ViewChild(UserInfoComponent) userInfoComponent!: UserInfoComponent;
 
-constructor(private dataService: DataService, private userService: UserService) { }
+  constructor(private dataService: DataService, private userService: UserService) { }
 
-tabSelectedEvent(event: MouseEvent) {
+  tabSelectedEvent(event: MouseEvent) {
     // Logic to handle tab selection
     var targetId = (event.currentTarget as Element).id;
     if (targetId.startsWith('tbUserSearch')) {
@@ -35,19 +36,19 @@ tabSelectedEvent(event: MouseEvent) {
     }
     this.selectedTab = targetId;
   }
- 
+
   ClearUserInformation() {
-   this.dataService.setUser(null);
+    this.dataService.setUser(null);
   }
 
   DeleteUserInformation() {
     const currentUser = this.dataService.getUser();
-    
+
     if (!currentUser || !currentUser.ID) {
       console.warn('No user selected for deletion');
       return;
     }
-    
+
     if (confirm(`Are you sure you want to delete user: ${currentUser.FirstName} ${currentUser.LastName}?`)) {
       this.userService.deleteUser(currentUser.ID).subscribe({
         next: () => {
@@ -61,10 +62,10 @@ tabSelectedEvent(event: MouseEvent) {
       });
     }
   }
-  
+
   AddNewUser() {
     this.ClearUserInformation();
-    var user:User = new User();
+    var user: User = new User();
     user.Address = new Address();
     user.Contact = new Contact();
     this.dataService.setUser(user);
@@ -73,18 +74,21 @@ tabSelectedEvent(event: MouseEvent) {
   }
 
   SaveUserInformation() {
-     var currentUser:User; 
-    if(this.selectedTab.startsWith('tbQuickCreate')) {
+    var currentUser: User;
+    if (this.selectedTab.startsWith('tbQuickCreate')) {
       currentUser = this.quickCreateComponent.user
     }
     else {
+
       currentUser = this.dataService.getUser();
+      currentUser.Address = this.userInfoComponent.address;
+      currentUser.Contact = this.userInfoComponent.contact;
     }
     if (!currentUser) {
       console.warn('No user data to save');
       return;
     }
-    
+
     if (!currentUser.ID || currentUser.ID === 0) {
       // Create new user (POST)
       this.userService.createUser(currentUser).subscribe({
