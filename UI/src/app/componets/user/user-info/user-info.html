@@ -100,7 +100,7 @@
                     <label for="txtPermAddress1" class="form-label">Address Line 1</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtPermAddress1" class="form-control" [ngModel]="this.address?.PermAddress1" (ngModelChange)="this.address.PermAddress1 = $event">
+                    <input type="text" id="txtPermAddress1" class="form-control" [ngModel]="this.user?.Address?.PermAddress1" (ngModelChange)="this.user.Address.PermAddress1 = $event">
                   </div>
                 </div>
                <br />
@@ -109,7 +109,7 @@
                     <label for="txtPermAddress2" class="form-label">Address Line 2</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtPermAddress2" class="form-control" [ngModel]="this.address?.PermAddress2" (ngModelChange)="this.address.PermAddress2 = $event">
+                    <input type="text" id="txtPermAddress2" class="form-control" [ngModel]="this.user?.Address?.PermAddress2" (ngModelChange)="this.user.Address.PermAddress2 = $event">
                   </div>
                 </div>
                 <br/>
@@ -118,14 +118,14 @@
                     <label for="txtPermCity" class="form-label">City</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermCity" class="form-control" [ngModel]="this.address?.PermCity" (ngModelChange)="this.address.PermCity = $event">
+                    <input type="text" id="txtPermCity" class="form-control" [ngModel]="this.user?.Address?.PermCity" (ngModelChange)="this.user.Address.PermCity = $event">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
                     <label for="txtPermState" class="form-label">State</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermState" class="form-control" [ngModel]="this.address?.PermState" (ngModelChange)="this.address.PermState = $event">
+                    <input type="text" id="txtPermState" class="form-control" [ngModel]="this.user?.Address?.PermState" (ngModelChange)="this.user.Address.PermState = $event">
                   </div>
                 </div>
                 <br />
@@ -134,14 +134,14 @@
                     <label for="txtPermCountry" class="form-label">Country</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermCountry" class="form-control" [ngModel]="this.address?.PermCountry" (ngModelChange)="this.address.PermCountry = $event">
+                    <input type="text" id="txtPermCountry" class="form-control" [ngModel]="this.user?.Address?.PermCountry" (ngModelChange)="this.user.Address.PermCountry = $event">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
                     <label for="txtPermZipCode" class="form-label">Zip Code</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermZipCode" class="form-control" [ngModel]="this.address?.PermZipCode" (ngModelChange)="this.address.PermZipCode = $event">
+                    <input type="text" id="txtPermZipCode" class="form-control" [ngModel]="this.user?.Address?.PermZipCode" (ngModelChange)="this.user.Address.PermZipCode = $event">
                   </div>
                 </div>
               </div>
@@ -159,7 +159,7 @@
                     <label for="txtCorsAddress1" class="form-label">Address Line 1</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtCorsAddress1" class="form-control" [ngModel]="address?.CorrAddress1" (ngModelChange)="address.CorrAddress1 = $event">
+                    <input type="text" id="txtCorsAddress1" class="form-control" [ngModel]="this.user?.Address?.CorrAddress1" (ngModelChange)="this.user.Address.CorrAddress1 = $event">
                   </div>
                 </div>
                 <br />
@@ -168,7 +168,7 @@
                     <label for="txtCorsAddress2" class="form-label">Address Line 2</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtCorsAddress2" class="form-control" [ngModel]="address?.CorrAddress2" (ngModelChange)="address.CorrAddress2 = $event">
+                    <input type="text" id="txtCorsAddress2" class="form-control" [ngModel]="this.user?.Address?.CorrAddress2" (ngModelChange)="this.user.Address.CorrAddress2 = $event">
                   </div>
                 </div>
                 <br />
@@ -177,14 +177,14 @@
                     <label for="txtCorsCity" class="form-label">City</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsCity" class="form-control" [ngModel]="address?.CorrCity" (ngModelChange)="address.CorrCity = $event">
+                    <input type="text" id="txtCorsCity" class="form-control" [ngModel]="this.user?.Address?.CorrCity" (ngModelChange)="this.user.Address.CorrCity = $event">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
                     <label for="txtCorsState" class="form-label" >State</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsState" class="form-control" [ngModel]="address?.CorrState" (ngModelChange)="address.CorrState = $event">
+                    <input type="text" id="txtCorsState" class="form-control" [ngModel]="this.user?.Address?.CorrState" (ngModelChange)="this.user.Address.CorrState = $event">
                   </div>
                 </div>
                 <br />
@@ -193,14 +193,14 @@
                     <label for="txtCorsCountry" class="form-label">Country</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsCountry" class="form-control" [ngModel]="address?.CorrCountry" (ngModelChange)="address.CorrCountry = $event">
+                    <input type="text" id="txtCorsCountry" class="form-control" [ngModel]="this.user?.Address?.CorrCountry" (ngModelChange)="this.user.Address.CorrCountry = $event">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
                     <label for="txtCorsZipCode" class="form-label">Zip Code</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsZipCode" class="form-control" [ngModel]="address?.CorrZipCode" (ngModelChange)="address.CorrZipCode = $event">
+                    <input type="text" id="txtCorsZipCode" class="form-control" [ngModel]="this.user?.Address?.CorrZipCode" (ngModelChange)="this.user.Address.CorrZipCode = $event">
                   </div>
                 </div>
               </div>
@@ -226,14 +226,14 @@
                 <label for="txtPrimaryPhone" class="form-label">Primary Phone</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtPrimaryPhone" class="form-control" [ngModel]="contact?.PrimaryPhone" (ngModelChange)="contact.PrimaryPhone = $event" required>
+                <input type="text" id="txtPrimaryPhone" class="form-control" [ngModel]="this.user?.Contact?.PrimaryPhone" (ngModelChange)="this.user.Contact.PrimaryPhone = $event" required>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtSecondaryPhone" class="form-label">Secondary Phone</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtSecondaryPhone" class="form-control" [ngModel]="contact?.SecondaryPhone" (ngModelChange)="contact.SecondaryPhone = $event">
+                <input type="text" id="txtSecondaryPhone" class="form-control" [ngModel]="this.user?.Contact?.SecondaryPhone" (ngModelChange)="this.user.Contact.SecondaryPhone = $event">
               </div>
             </div>
             <br />
@@ -242,14 +242,14 @@
                 <label for="txtPrimaryEmail" class="form-label">Primary Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtPrimaryEmail" class="form-control" [ngModel]="contact?.PrimaryEmail" (ngModelChange)="contact.PrimaryEmail = $event">
+                <input type="email" id="txtPrimaryEmail" class="form-control" [ngModel]="this.user?.Contact?.PrimaryEmail" (ngModelChange)="this.user.Contact.PrimaryEmail = $event">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtSecondaryEmail" class="form-label">Secondary Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtSecondaryEmail" class="form-control" [ngModel]="contact?.SecondaryEmail" (ngModelChange)="contact.SecondaryEmail = $event">
+                <input type="email" id="txtSecondaryEmail" class="form-control" [ngModel]="this.user?.Contact?.SecondaryEmail" (ngModelChange)="this.user.Contact.SecondaryEmail = $event">
               </div>
             </div>
             </fieldset>
@@ -273,14 +273,14 @@
                 <label for="txtEmemergencyContactName" class="form-label">Emmergency Contact Name</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactName" class="form-control" [ngModel]="contact?.RelativeName" (ngModelChange)="contact.RelativeName = $event">
+                <input type="text" id="txtEmemergencyContactName" class="form-control" [ngModel]="this.user?.Contact?.RelativeName" (ngModelChange)="this.user.Contact.RelativeName = $event">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtEmemergencyContactRelation" class="form-label">Ememergency Contact Relation</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactRelation" class="form-control" [ngModel]="contact?.RelativeRealtion" (ngModelChange)="contact.RelativeRealtion = $event">
+                <input type="text" id="txtEmemergencyContactRelation" class="form-control" [ngModel]="this.user?.Contact?.RelativeRealtion" (ngModelChange)="this.user.Contact.RelativeRealtion = $event">
               </div>
             </div>
             <br />
@@ -289,14 +289,14 @@
                 <label for="txtEmemergencyContactEmail" class="form-label">Emmergency Contact Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactEmail" class="form-control" [ngModel]="contact?.RelativeEmail" (ngModelChange)="contact.RelativeEmail = $event">
+                <input type="text" id="txtEmemergencyContactEmail" class="form-control" [ngModel]="this.user?.Contact?.RelativeEmail" (ngModelChange)="this.user.Contact.RelativeEmail = $event">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtEmemergencyContactPhone" class="form-label">Ememergency Contact Phone</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactPhone" class="form-control" [ngModel]="contact?.RelativePhone" (ngModelChange)="contact.RelativePhone = $event">
+                <input type="text" id="txtEmemergencyContactPhone" class="form-control" [ngModel]="this.user?.Contact?.RelativePhone" (ngModelChange)="this.user.Contact.RelativePhone = $event">
               </div>
             </div>
           </div>

@@ -9,18 +9,18 @@ import { LoginResponse } from './login.service';
   providedIn: 'root'
 })
 export class DataService {
-  patientSource = new BehaviorSubject<Patient | null>(null);
-  userSource = new BehaviorSubject<User | null>(null);
-  calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
-  loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
+  private patientSource = new BehaviorSubject<Patient | null>(null);
+  private userSource = new BehaviorSubject<User | null>(null);
+  private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
+  private loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
 
-  patient$: Observable<Patient> = this.patientSource.asObservable();
-  user$: Observable<User> = this.userSource.asObservable();
-  calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
-  loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
+  readonly patient$: Observable<Patient> = this.patientSource.asObservable();
+  readonly user$: Observable<User> = this.userSource.asObservable();
+  readonly calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
+  readonly loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
 
-  setPatient(patient: Patient): void {
-    this.patientSource.next(patient);
+ setPatient(patient: Patient): void {
+        this.patientSource.next(patient);
   }
 
   getPatient(): Patient | null {
@@ -28,8 +28,7 @@ export class DataService {
   }
 
   setUser(user: User): void {
-    const newUser = { ...user };
-    this.userSource.next(newUser);
+    this.userSource.next(user);
   }
 
   getUser(): User | null {

@@ -6,34 +6,44 @@ import { DataService } from '../../../services/data.service';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 
+
 @Component({
   selector: 'app-user-info',
   imports: [FormsModule],
   templateUrl: './user-info.html',
-  styleUrl: './user-info.css'
+  styleUrls: ['./user-info.css']
 })
 export class UserInfoComponent {
 
   user: User | null = null;
-  address: Address | null = null;
-  contact: Contact | null = null; // Assuming Contact is a model for contact details
-  // Subscription to handle user changes
-  private userSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService) { }
+  private userSubscription: Subscription;
 
-  ngOnInit() {
-    // Subscribe to user changes from the data service
+
+  constructor(private dataService: DataService) { 
+    this.user = new User();
+  }
+
+    ngOnInit() {
     this.userSubscription = this.dataService.user$.subscribe({
-      next: (user: User) => {
-        this.user = user;
-        if (this.user && this.user.Address) this.address = this.user.Address;
-        if (this.user && this.user.Contact) this.contact = this.user.Contact;
+      next:(updatedUser: User | null | undefined) => {
+        if (!updatedUser) { 
+          console.log('No user data available');
+          return; 
+        }
+        this.user = updatedUser;
+        this.user.Address = updatedUser.Address ?? null;
+        this.user.Contact = updatedUser.Contact ?? null;
+        console.log('User data updated:', this.user);
       },
-      error: (error) => {
-        console.error('Error subscribing to user changes:', error);
+      error: (err: Error) => {
+        console.error('Error occurred while updating user data:', err);
+      },
+      complete: () => {
+        console.log('User subscription completed');
       }
     });
+    console.log('User subscription initialized', this.userSubscription);
   }
 
   ngOnDestroy() {
