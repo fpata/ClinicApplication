@@ -11,10 +11,10 @@ export class Contact {
   RelativePhone?: string;
   RelativeEmail?: string;
   UserID?: number;
-  IsActive?: boolean = true;
-  CreatedDate?: Date = new Date();
+  IsActive?: number = 1;
+  CreatedDate?: string = new Date().toISOString();
   CreatedBy?: number = 1;
-  ModifiedDate?: Date = new Date();
+  ModifiedDate?: string = new Date().toISOString();
   ModifiedBy?: number =1;
   user?: User;
 }

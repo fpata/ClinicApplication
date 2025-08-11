@@ -11,10 +11,10 @@ export class Address {
   AddressType: string;
   PermZipCode?: string;
   UserID?: number =0;
-  IsActive?: boolean = true;
-  CreatedDate?: Date = new Date();
+  IsActive?: number = 1;
+  CreatedDate?: string = new Date().toISOString();
   CreatedBy?: number = 1;
-  ModifiedDate?: Date = new Date();
+  ModifiedDate?: string = new Date().toISOString();
   ModifiedBy?: number = 1;
   CorrAddress1?: string;
   CorrAddress2?: string;

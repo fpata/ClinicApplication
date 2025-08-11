@@ -37,9 +37,9 @@ namespace ClinicManager.Controllers
                            from address in addressGroup.DefaultIfEmpty()
                            join contact in _context.Contacts on user.ID equals contact.UserID into contactGroup
                            from contact in contactGroup.DefaultIfEmpty()
-                           where user.IsActive == true && 
-                                 (address == null || address.IsActive == true) && 
-                                 (contact == null || contact.IsActive == true)
+                           where user.IsActive == 1 && 
+                                 (address == null || address.IsActive == 1) && 
+                                 (contact == null || contact.IsActive == 1)
                            select new { user, patient, address, contact };
 
                 // Apply filters using parameterized queries
@@ -133,7 +133,7 @@ namespace ClinicManager.Controllers
                     query = query.Where(u => u.UserType == model.UserType);
 
                 // Always filter active users
-                query = query.Where(u => u.IsActive);
+                query = query.Where(u => u.IsActive==1);
 
                 // Project to SearchModel to avoid loading unnecessary data
                 var results = await query

@@ -28,7 +28,8 @@ export class DataService {
   }
 
   setUser(user: User): void {
-    this.userSource.next(user);
+    const newUser = { ...user };
+    this.userSource.next(newUser);
   }
 
   getUser(): User | null {

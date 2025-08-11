@@ -9,11 +9,11 @@ export class PatientTreatmentDetail {
   Advice?: string;
   TreatmentDate?: string;
   PatientID?: number;
-  IsActive?: boolean = true;
-  CreatedDate?: string;
-  CreatedBy?: number;
-  ModifiedDate?: string;
-  ModifiedBy?: number;
+  IsActive?: number = 1;
+  CreatedDate?: string = new Date().toISOString();
+  CreatedBy?: number = 1;
+  ModifiedDate?: string = new Date().toISOString();
+  ModifiedBy?: number = 1;
   user?: User;
   patientTreatment?: PatientTreatment;
 }

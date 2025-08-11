@@ -197,9 +197,9 @@ namespace ClinicManager.Controllers
                            from address in addressGroup.DefaultIfEmpty()
                            join contact in _context.Contacts on user.ID equals contact.UserID into contactGroup
                            from contact in contactGroup.DefaultIfEmpty()
-                           where user.IsActive == true && 
-                                 (address == null || address.IsActive == true) && 
-                                 (contact == null || contact.IsActive == true)
+                           where user.IsActive == 1 && 
+                                 (address == null || address.IsActive == 1) && 
+                                 (contact == null || contact.IsActive == 1)
                            select new { appointment, user, address, contact };
 
                 // Apply filters

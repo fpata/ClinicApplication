@@ -9,11 +9,11 @@ export class Patient {
   Medications?: string;
   FatherHistory?: string;
   MotherHistory?: string;
-  IsActive?: boolean;
-  CreatedDate?: string;
-  CreatedBy?: number;
-  ModifiedDate?: string;
-  ModifiedBy?: number;
+  IsActive?: number = 1;
+  CreatedDate?: string = new Date().toISOString();
+  CreatedBy?: number = 1;
+  ModifiedDate?: string = new Date().toISOString();
+  ModifiedBy?: number = 1;
   user?: User;
   PatientAppointments?: PatientAppointment[];
   PatientReports?: PatientReport[];

@@ -31,7 +31,7 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Fetching users page {pageNumber} with size {pageSize}");
             var users = await _context.Users
                 .AsNoTracking()
-                .Where(u => u.IsActive)
+                .Where(u => u.IsActive == 1)
                 .OrderBy(u => u.FirstName)
                 .ThenBy(u => u.LastName)
                 .Skip((pageNumber - 1) * pageSize)
@@ -46,40 +46,14 @@ namespace ClinicManager.Controllers
         public async Task<ActionResult<User>> Get(int id)
         {
             _logger.LogInformation($"Fetching user with ID: {id}");
-         
 
             // Use single query with Include to solve N+1 problem
            var entity = await _context.Users
+                .Include(u => u.Address)
+                .Include(u => u.Contact)
                 .AsNoTracking()
-                .Where(u => u.ID == id && u.IsActive)
-                .Select(u => new User
-                {
-                    ID = u.ID,
-                    FirstName = u.FirstName,
-                    MiddleName = u.MiddleName,
-                    LastName = u.LastName,
-                    UserName = u.UserName,
-                    Password = u.Password,
-                    UserType = u.UserType,
-                    Gender = u.Gender,
-                    DOB = u.DOB,
-                    Age = u.Age,
-                    LastLoginDate = u.LastLoginDate,
-                    CreatedDate = u.CreatedDate,
-                    ModifiedDate = u.ModifiedDate,
-                    CreatedBy = u.CreatedBy,
-                    ModifiedBy = u.ModifiedBy,
-                    IsActive = u.IsActive,
-                    Address = _context.Addresses
-                        .Where(a => a.UserID == u.ID && a.IsActive)
-                        .FirstOrDefault(),
-                    Contact = _context.Contacts
-                        .Where(c => c.UserID == u.ID && c.IsActive)
-                        .FirstOrDefault()
-                })
-                .FirstOrDefaultAsync()
+                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive==1)
                 .ConfigureAwait(false);
-            
             return entity;
         }
 
@@ -92,7 +66,7 @@ namespace ClinicManager.Controllers
                 // Set timestamps
                 user.CreatedDate = DateTime.UtcNow;
                 user.ModifiedDate = DateTime.UtcNow;
-                user.IsActive = true;
+                user.IsActive = 1;
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
@@ -106,7 +80,7 @@ namespace ClinicManager.Controllers
                     user.Address.UserID = user.ID;
                     user.Address.CreatedDate = DateTime.UtcNow;
                     user.Address.ModifiedDate = DateTime.UtcNow;
-                    user.Address.IsActive = true;
+                    user.Address.IsActive = 1;
                     entitiesToAdd.Add(user.Address);
                 }
 
@@ -116,7 +90,7 @@ namespace ClinicManager.Controllers
                     user.Contact.UserID = user.ID;
                     user.Contact.CreatedDate = DateTime.UtcNow;
                     user.Contact.ModifiedDate = DateTime.UtcNow;
-                    user.Contact.IsActive = true;
+                    user.Contact.IsActive = 1;
                     entitiesToAdd.Add(user.Contact);
                 }
 
@@ -174,7 +148,7 @@ namespace ClinicManager.Controllers
                     {
                         user.Address.UserID = user.ID;
                         user.Address.CreatedDate = DateTime.UtcNow;
-                        user.Address.IsActive = true;
+                        user.Address.IsActive = 1;
                         _context.Addresses.Add(user.Address);
                     }
                 }
@@ -190,7 +164,7 @@ namespace ClinicManager.Controllers
                     {
                         user.Contact.UserID = user.ID;
                         user.Contact.CreatedDate = DateTime.UtcNow;
-                        user.Contact.IsActive = true;
+                        user.Contact.IsActive = 1;
                         _context.Contacts.Add(user.Contact);
                     }
                 }
@@ -214,7 +188,7 @@ namespace ClinicManager.Controllers
         public async Task<IActionResult> Patch(int id, JsonPatchDocument<User> patchDoc)
         {
             var entity = await _context.Users
-                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive)
+                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive == 1)
                 .ConfigureAwait(false);
                 
             if (entity == null)
@@ -236,7 +210,7 @@ namespace ClinicManager.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var entity = await _context.Users
-                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive);
+                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive==1);
                 
             if (entity == null)
             {
@@ -245,7 +219,7 @@ namespace ClinicManager.Controllers
             }
 
             // Soft delete instead of hard delete
-            entity.IsActive = false;
+            entity.IsActive = 0;
             entity.ModifiedDate = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

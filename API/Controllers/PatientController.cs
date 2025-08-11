@@ -34,7 +34,7 @@ namespace ClinicManager.Controllers
            
             var patients = await _context.Patients
                 .AsNoTracking()
-                .Where(p => p.IsActive)
+                .Where(p => p.IsActive ==1)
                 .OrderBy(p => p.ID)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -58,7 +58,7 @@ namespace ClinicManager.Controllers
                 .Include(p => p.PatientReports)
                 .Include(p => p.PatientTreatment)
                     .ThenInclude(pt => pt!.PatientTreatmentDetails)
-                .FirstOrDefaultAsync(p => p.ID == id && p.IsActive);
+                .FirstOrDefaultAsync(p => p.ID == id && p.IsActive== 1);
 
             if (entity == null)
             {
@@ -80,16 +80,16 @@ namespace ClinicManager.Controllers
             // Optimize with single query using projection to avoid loading unnecessary data
             var userData = await (from _patient in _context.Patients
                                   join _user in _context.Users on _patient.UserID equals _user.ID
-                                  where _patient.ID == id && _patient.IsActive && _user.IsActive
+                                  where _patient.ID == id && _patient.IsActive ==1 && _user.IsActive ==1
                                   select new
                                   {
                                       User = _user,
                                       Patient = _patient,
                                       Address = _context.Addresses
-                                          .Where(a => a.UserID == _user.ID && a.IsActive)
+                                          .Where(a => a.UserID == _user.ID && a.IsActive == 1)
                                           .FirstOrDefault(),
                                       Contact = _context.Contacts
-                                          .Where(c => c.UserID == _user.ID && c.IsActive)
+                                          .Where(c => c.UserID == _user.ID && c.IsActive == 1)
                                           .FirstOrDefault(),
                                       PatientAppointments = _context.PatientAppointments
                                           .Where(pa => pa.PatientID == id)
@@ -145,7 +145,7 @@ namespace ClinicManager.Controllers
                 // Set timestamps
                 patient.CreatedDate = DateTime.UtcNow;
                 patient.ModifiedDate = DateTime.UtcNow;
-                patient.IsActive = true;
+                patient.IsActive = 1;
 
                 _context.Patients.Add(patient);
                 await _context.SaveChangesAsync();
@@ -269,7 +269,7 @@ namespace ClinicManager.Controllers
             }
 
             // Soft delete instead of hard delete for better performance and data integrity
-            entity.IsActive = false;
+            entity.IsActive = 0;
             entity.ModifiedDate = DateTime.UtcNow;
             
             await _context.SaveChangesAsync();

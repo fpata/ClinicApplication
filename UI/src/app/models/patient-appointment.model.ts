@@ -11,11 +11,11 @@ export class PatientAppointment {
   ApptStatus?: string;
   PatientID?: number;
   PatientName?: string;
-  IsActive?: boolean =true;
-  CreatedDate?: string;
-  CreatedBy?: number;
-  ModifiedDate?: string;
-  ModifiedBy?: number;
+  IsActive?: number = 1;
+  CreatedDate?: string = new Date().toISOString();
+  CreatedBy?: number = 1;
+  ModifiedDate?: string = new Date().toISOString();
+  ModifiedBy?: number = 1;
   user?: User;
   doctor?: User;
   patient?: Patient;

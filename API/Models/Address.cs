@@ -22,10 +22,10 @@ namespace ClinicManager.Models
         public string? CorrZipCode { get; set; }
         public int? UserID { get; set; }
       
-        public DateTime? CreatedDate { get; set; }
-        public DateTime? ModifiedDate { get; set; }
-        public int? CreatedBy { get; set; }
-        public int? ModifiedBy { get; set; }
-        public bool IsActive { get; set; }
+        public DateTime? CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? ModifiedDate { get; set; } = DateTime.UtcNow;  
+        public int? CreatedBy { get; set; } = 1;
+        public int? ModifiedBy { get; set; } = 1;
+        public byte IsActive { get; set; }=1;
     }
 }

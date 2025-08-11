@@ -17,9 +17,9 @@ export class User {
   Address: Address;
   Contact?: Contact;
   Patients?: Patient[];
-  CreatedDate?: Date = new Date();
-  ModifiedDate?: Date = new Date();
+  CreatedDate?: string = new Date().toISOString();
+  ModifiedDate?: string = new Date().toISOString();
   CreatedBy?: number = 1;
   ModifiedBy?: number =1;
-  IsActive?: boolean = true;
+  IsActive?: number = 1;
 }
