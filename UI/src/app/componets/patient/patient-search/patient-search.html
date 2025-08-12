@@ -68,7 +68,7 @@
     <div class="table-responsive">
     <table class="table table-striped table-bordered" style="color: black;">
       <thead>
-        <th>ID</th>
+        <th>Patient ID</th>
         <th>First Name</th>
         <th>Last Name</th>
         <th>City</th>
@@ -78,7 +78,7 @@
       <tbody>
         @for (result of searchResult; track $index){
         <tr>
-          <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(result.PatientID)">{{result.PatientID}}</a></td>
+          <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(result.PatientID, result.UserID)">{{(result.PatientID === null? 0 : result.PatientID)}}</a></td>
           <td>{{result.FirstName}}</td>
           <td>{{result.LastName}}</td>
           <td>{{result.PermCity}}</td>

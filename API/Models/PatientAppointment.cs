@@ -5,6 +5,7 @@ namespace ClinicManager.Models
     [Table("patientappointment")]
     public class PatientAppointment
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public int? UserID { get; set; }
         public DateTime? StartApptDate { get; set; } = DateTime.UtcNow;

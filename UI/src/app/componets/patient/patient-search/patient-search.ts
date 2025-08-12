@@ -8,6 +8,7 @@ import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';  
 import { User } from '../../../models/user.model';
 import { HttpClient } from '@angular/common/http';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-patient-search',
@@ -23,7 +24,9 @@ export class PatientSearchComponent {
   searchLengthConstraintError: boolean = false;
   clearSearchClicked: boolean = false;
 
-  constructor(private searchService: SearchService, private patientService: PatientService, private dataService: DataService) {
+  constructor(private searchService: SearchService, private patientService: PatientService,
+    private dataService: DataService, private userService: UserService
+  ) {
     this.searchPatient = new PatientSearchModel();
     this.searchPatient.EndDate = new Date().toISOString().split('T')[0]; // Default to today
     this.searchPatient.StartDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Default to 365 days ago
@@ -76,7 +79,19 @@ export class PatientSearchComponent {
     this.clearSearchClicked = true;
   }
   
-  OnPatientIdClick(patientId: number) {
+  OnPatientIdClick(patientId: number, userId: number) {
+    if(patientId === 0 || patientId === undefined || patientId === null) {
+      this.userService.getUser(userId).subscribe({
+        next: (user: User) => {
+          this.dataService.setUser(user);
+        },
+        error: (err:Error) => {
+          console.error('Error fetching user data:', err);
+        }
+      });
+      return;
+    }
+
     this.patientService.getCompletePatient(patientId).subscribe({
       next: (user) => {
         // Handle the patient data as needed

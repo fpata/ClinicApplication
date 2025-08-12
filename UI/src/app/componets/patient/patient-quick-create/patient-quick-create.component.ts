@@ -8,6 +8,7 @@ import { Address } from '../../../models/address.model';
 import { DataService } from '../../../services/data.service';
 import { PatientService } from '../../../services/patient.service';
 import { UserService } from '../../../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-patient-quick-create',
@@ -23,7 +24,8 @@ export class PatientQuickCreateComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private patientService: PatientService,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -37,7 +39,7 @@ export class PatientQuickCreateComponent implements OnInit {
     this.patient.PatientTreatment.UserID = this.dataService.getUser()?.ID || 0;
   }
 
-  
+
 
   private validatePatient(): boolean {
     if (!this.patient.Allergies?.trim()) {
@@ -58,5 +60,5 @@ export class PatientQuickCreateComponent implements OnInit {
     return true;
   }
 
-  
+
 }

@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild, ViewChild } from '@angular/core';
 import { PatientAppointmentComponent } from '../patient-appointment/patient-appointment';
 import { PatientHistoryComponent } from '../patient-history/patient-history';
 import { PatientReportComponent } from '../patient-report/patient-report';
@@ -26,8 +26,10 @@ import { HttpClient } from '@angular/common/http';
 export class PatientMasterComponent {
 
   isSearchTabSelected: boolean = true;
+  selectedTab: string = 'tbPatientSearch';
   userID: number = 0;
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
+  @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
   constructor(private dataService: DataService, private patientService: PatientService) { }
 
   tabSelectedEvent(event: MouseEvent) {
@@ -40,10 +42,20 @@ export class PatientMasterComponent {
     }
     if (targetId.startsWith('tbPreviousInfo')) {
       this.userID = this.dataService.getUser()?.ID;
-      if (this.userID >= 0 && this.patientCompleteHistoryComponent && this.patientCompleteHistoryComponent.patientTreatments.length == 0) {
+      if (this.userID >= 0 && this.patientCompleteHistoryComponent) {
         this.patientCompleteHistoryComponent.GetAllTreatmentsForUser(this.userID);
       }
     }
+    if (targetId.startsWith('tbQuickCreate')) {
+      this.userID = this.dataService.getUser()?.ID;
+      if (this.userID == undefined || this.userID == 0) {
+        document.getElementById('tbPatientSearch-tab')?.click();
+        return true; // Prevent default action if needed
+      }
+    }
+    console.log('Selected Tab:', targetId);
+    this.selectedTab = targetId;
+    return true;
   }
 
   ClearPatientInformation() {
@@ -90,8 +102,13 @@ export class PatientMasterComponent {
   }
   
   SavePatientInformation() {
-    const currentPatient = this.dataService.getPatient();
-    
+    var currentPatient = this.dataService.getPatient();
+    if(this.selectedTab.startsWith('tbQuickCreate')) {
+      currentPatient = this.quickCreateComponent.patient;
+      currentPatient.UserID = this.dataService.getUser()?.ID || 0;
+      currentPatient.PatientTreatment.UserID = this.dataService.getUser()?.ID || 0;
+    }
+
     if (!currentPatient) {
       alert('No patient information to save');
       return;

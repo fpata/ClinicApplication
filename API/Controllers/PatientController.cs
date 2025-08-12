@@ -50,15 +50,16 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Fetching patient with ID: {id}");
             
             var cacheKey = $"patient_{id}";
-         
+
             // Use Include to solve N+1 problem with single query
             var entity = await _context.Patients
                 .AsNoTracking()
+                .AsSplitQuery() // Use AsSplitQuery to optimize loading related entities
                 .Include(p => p.PatientAppointments)
                 .Include(p => p.PatientReports)
                 .Include(p => p.PatientTreatment)
                     .ThenInclude(pt => pt!.PatientTreatmentDetails)
-                .FirstOrDefaultAsync(p => p.ID == id && p.IsActive== 1);
+                .FirstOrDefaultAsync(p => p.ID == id && p.IsActive == 1);
 
             if (entity == null)
             {
@@ -142,27 +143,21 @@ namespace ClinicManager.Controllers
 
             try
             {
-                // Set timestamps
+                // Set timestamps and IsActive for the main patient entity
                 patient.CreatedDate = DateTime.UtcNow;
                 patient.ModifiedDate = DateTime.UtcNow;
                 patient.IsActive = 1;
 
-                _context.Patients.Add(patient);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation($"Created new patient with ID: {patient.ID}");
-
-                // Process related entities in batch
-                var entitiesToAdd = new List<object>();
-
+                // Reset IDs and set properties for all related entities to ensure they are treated as new.
+                // EF Core will handle setting the foreign keys automatically.
                 if (patient.PatientReports?.Any() == true)
                 {
                     foreach (var report in patient.PatientReports)
                     {
-                        report.PatientID = patient.ID;
+                        report.ID = 0;
                         report.UserID = patient.UserID;
                         report.CreatedDate = DateTime.UtcNow;
                         report.ModifiedDate = DateTime.UtcNow;
-                        entitiesToAdd.Add(report);
                     }
                 }
 
@@ -170,39 +165,38 @@ namespace ClinicManager.Controllers
                 {
                     foreach (var appointment in patient.PatientAppointments)
                     {
-                        appointment.PatientID = patient.ID;
+                        appointment.ID = 0;
+                        appointment.UserID = patient.UserID;
                         appointment.CreatedDate = DateTime.UtcNow;
                         appointment.ModifiedDate = DateTime.UtcNow;
-                        entitiesToAdd.Add(appointment);
                     }
                 }
 
                 if (patient.PatientTreatment != null)
                 {
-                    patient.PatientTreatment.PatientID = patient.ID;
+                    patient.PatientTreatment.ID = 0;
                     patient.PatientTreatment.UserID = patient.UserID;
                     patient.PatientTreatment.CreatedDate = DateTime.UtcNow;
                     patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
-                    entitiesToAdd.Add(patient.PatientTreatment);
 
                     if (patient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
                     {
                         foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
                         {
-                            detail.PatientID = patient.ID;
+                            detail.ID = 0;
+                            detail.UserID = patient.UserID;
                             detail.CreatedDate = DateTime.UtcNow;
                             detail.ModifiedDate = DateTime.UtcNow;
-                            entitiesToAdd.Add(detail);
                         }
                     }
                 }
 
-                // Add all entities in batch and save once
-                if (entitiesToAdd.Any())
-                {
-                    _context.AddRange(entitiesToAdd);
-                    await _context.SaveChangesAsync();
-                }
+                // Add only the top-level patient object to the context.
+                // EF Core will automatically detect and add all related child entities.
+                _context.Patients.Add(patient);
+
+                // Save all changes in a single transaction.
+                await _context.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
             }

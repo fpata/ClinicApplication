@@ -12,7 +12,7 @@
        
       </thead>
       <tbody>
-        @for (treatment of patientTreatments; track $index){
+        @for (treatment of patientTreatments; track treatment.ID){
         <tr>
           <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(treatment.PatientID)">{{treatment.PatientID}}</a></td>
           <td>{{treatment.ChiefComplaint}}</td>

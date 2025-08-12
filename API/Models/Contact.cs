@@ -5,6 +5,7 @@ namespace ClinicManager.Models
     [Table("contact")]
     public class Contact
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public string PrimaryPhone { get; set; } = string.Empty;
         public string? SecondaryPhone { get; set; }

@@ -11,15 +11,14 @@ import { User } from '../../../models/user.model';
   imports: [FormsModule],
   templateUrl: './patientcompletehistory.html',
   styleUrl: './patientcompletehistory.css',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: true
 })
 
 export class PatientCompleteHistoryComponent {
 
   constructor(private dataService: DataService,
-    private patientTreatmentService: PatientTreatmentService, private patientService: PatientService,
-    private cdr: ChangeDetectorRef) { }
+    private patientTreatmentService: PatientTreatmentService, private patientService: PatientService
+) { }
 
   patientTreatments: PatientTreatment[] = [];
 
@@ -38,10 +37,10 @@ export class PatientCompleteHistoryComponent {
   }
 
   GetAllTreatmentsForUser(userId: number) {
+    this.patientTreatments = [];  
     this.patientTreatmentService.getAllTreatmentsForUser(userId).subscribe({
       next: (result: any) => {
         this.patientTreatments = result;
-        this.cdr.markForCheck();
         console.log('Treatments fetched successfully:', this.patientTreatments);
       },
       error: (error: any) => {

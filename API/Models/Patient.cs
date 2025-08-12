@@ -5,6 +5,7 @@ namespace ClinicManager.Models
     [Table("patient")]
     public class Patient
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public int UserID { get; set; }
         public string? Allergies { get; set; }
