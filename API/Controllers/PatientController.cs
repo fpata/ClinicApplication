@@ -221,12 +221,54 @@ namespace ClinicManager.Controllers
 
             // Update timestamp
             patient.ModifiedDate = DateTime.UtcNow;
+            if (patient.PatientAppointments?.Any() == true)
+            {
+                foreach (var appointment in patient.PatientAppointments)
+                {
+                    appointment.PatientID = id; // Ensure the appointment is linked to the correct patient
+                    appointment.UserID = patient.UserID;
+                    appointment.CreatedDate = appointment.CreatedDate ?? DateTime.UtcNow;
+                    appointment.ModifiedDate = DateTime.UtcNow;
+                    _context.Entry(appointment).State = appointment.ID < 1 ? EntityState.Added : EntityState.Modified;
+                }
+            }
+            if(patient.PatientReports?.Any() == true)
+            {
+                foreach (var report in patient.PatientReports)
+                {
+                    report.PatientID = id; // Ensure the report is linked to the correct patient
+                    report.UserID = patient.UserID;
+                    report.CreatedDate = report.CreatedDate ?? DateTime.UtcNow;
+                    report.ModifiedDate = DateTime.UtcNow;
+                    _context.Entry(report).State = report.ID < 1 ? EntityState.Added : EntityState.Modified;
+                }
+            }
+            if(patient.PatientTreatment != null)
+            {
+                patient.PatientTreatment.PatientID = id; // Ensure the treatment is linked to the correct patient
+                patient.PatientTreatment.UserID = patient.UserID;
+                patient.PatientTreatment.CreatedDate = patient.PatientTreatment.CreatedDate ?? DateTime.UtcNow;
+                patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
+                _context.Entry(patient.PatientTreatment).State = patient.PatientTreatment.ID < 1 ? EntityState.Added : EntityState.Modified;
+                if (patient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
+                {
+                    foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
+                    {
+                        detail.UserID = patient.UserID;
+                        detail.PatientID = id; // Ensure the detail is linked to the correct patient
+                        detail.CreatedDate = detail.CreatedDate ?? DateTime.UtcNow;
+                        detail.ModifiedDate = DateTime.UtcNow;
+                        _context.Entry(detail).State = detail.ID < 1 ? EntityState.Added : EntityState.Modified;
+                    }
+                }
+            }
 
             _context.Entry(patient).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             
-           _logger.LogInformation($"Updated patient with ID: {id}");
-            return NoContent();
+           _logger  .LogInformation($"Updated patient with ID: {id}");
+            patient = Get(id).Result.Value!; // Refresh patient to get full details including related entities
+            return Ok(patient);
         }
 
         [HttpPatch("{id}")]

@@ -8,7 +8,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><button type="button" id="btnAddReport" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal">Add Report</button></td>
+                <td><button type="button" id="btnAddReport" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal" (click)="AddReport()">Add Report</button></td>
             </tr>
             <tr>
             <th>Date</th>
@@ -44,16 +44,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="apptModalLabel">Add Reports</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
             </div>
             <div class="modal-body">
                 <br />
                 <div class="row">
                     <div class="col">
-                      <label for="txtReportDate" class="form-label">Report Date</label>
+                      <label for="txtReportDate" class="form-label" >Report Date</label>
                     </div>
                     <div class="col">
-                      <input type="date" id="txtReportDate" class="form-control">
+                      <input type="date" id="txtReportDate" class="form-control" min="2024-01-01" max="2025-12-31" [ngModel]="this.newReport?.ReportDate" (ngModelChange)="newReport.ReportDate = $event">
                     </div>
                 </div>
                 <br />
@@ -62,7 +62,7 @@
                       <label for="txtReportName" class="form-label">Report Name</label>
                     </div>
                     <div class="col">
-                      <input type="text" id="txtReportName" class="form-control">
+                      <input type="text" id="txtReportName" class="form-control" [ngModel]="this.newReport?.ReportName" (ngModelChange)="newReport.ReportName = $event">
                     </div>
                   </div>
                   <br />
@@ -71,7 +71,7 @@
                       <label for="txtDoctorName" class="form-label">Doctor Name</label>
                     </div>
                     <div class="col">
-                      <input type="text" id="txtDoctorName" class="form-control">
+                      <input type="text" id="txtDoctorName" class="form-control" [ngModel]="this.newReport?.DoctorName" (ngModelChange)="newReport.DoctorName = $event">
                     </div>
                   </div>
                   <br />
@@ -80,7 +80,7 @@
                       <label for="txtReportFinding" class="form-label">Findings</label>
                     </div>
                     <div class="col">
-                      <textarea type="text" id="txtReportFinding" class="form-control" rows="2"></textarea>
+                      <textarea type="text" id="txtReportFinding" class="form-control" rows="2" [ngModel]="this.newReport?.ReportDetails" (ngModelChange)="newReport.ReportDetails = $event"></textarea>
                     </div>
                   </div>
                   <br />

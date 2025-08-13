@@ -4,20 +4,22 @@ import { User } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
 import { Subscription } from 'rxjs';
 import { Patient } from '../../../models/patient.model';
-
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-patient-report',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './patient-report.html',
   styleUrl: './patient-report.css'
 })
 export class PatientReportComponent {
 
-  reports: PatientReport[] = []; // Initialize reports array
+  reports: PatientReport[] = [];
   private patientSubscription: Subscription = new Subscription();
   patient: Patient | null = null;
-
-  constructor(private dataService: DataService) { }
+  newReport: PatientReport|null = null; // Initialize new report object
+  
+  constructor(private dataService: DataService) {
+   }
   
   ngOnInit() {
     // Subscribe to user changes from the data service
@@ -45,52 +47,53 @@ export class PatientReportComponent {
     }
   }
 
-  EditReport(reportId: number) {
-    document.getElementById("btnAddReport")?.click();
-
-    var report: PatientReport = this.reports.find(x => x.ID == reportId) as PatientReport;
-    (document.getElementById('txtReportFinding') as HTMLInputElement).value = report.ReportDetails || '';
-    (document.getElementById('txtDoctorName') as HTMLInputElement).value = report.DoctorName;
-    (document.getElementById('txtReportName') as HTMLInputElement).value = report.ReportName;
-    var strDate = report.ReportDate ? new Date(report.ReportDate).toISOString().split('T')[0] : '';
-    (document.getElementById('txtReportDate') as HTMLInputElement).value = strDate;
-    (document.getElementById('hdReportId') as HTMLInputElement).value = report.ID.toString();
+  AddReport() {
+    var user: User | null = this.dataService.getUser();
+    this.newReport = <PatientReport>  {
+      ID: this.reports.length > 0 ? Math.min(...this.reports.map(r => r.ID)) - 1 : 0,
+      UserID: user?.ID || 0,
+      PatientID: this.patient?.ID || 0,
+      IsActive :1,
+      ReportDate: new Date().toISOString().split('T')[0],
+      ReportName: '',
+      DoctorName: '',
+      ReportDetails: '',
+      CreatedBy: user?.ID || 0,
+      ModifiedBy: user?.ID || 0,
+      ModifiedDate: new Date().toISOString().split('T')[0] ,
+      CreatedDate: new Date().toISOString().split('T')[0] 
+    };
   }
+
+  EditReport(reportId: number) {
+    this.newReport = <PatientReport>this.reports.find(x => x.ID === reportId);
+  }
+
   DeleteReport(reportId: number) {
     var reportIndex = this.reports.findIndex(x => x.ID === reportId);
     this.reports.splice(reportIndex, 1);
+    // Update the patient reports in the data service
+    this.patient.PatientReports = this.reports;
+    this.dataService.setPatient(this.patient);
   }
+
   SaveReport() {
-    var report: PatientReport = { ID: 0, ReportDetails: '', DoctorName: '', ReportName: '', ReportDate: '' };
-    var reportId = (document.getElementById('hdReportId') as HTMLInputElement).value;
-    var IsEdit: boolean = false;
-    ///is EditOperation
-    if (!(reportId == undefined || reportId == '')) {
-      var rptId = Number.parseInt(reportId)
-      report = this.reports.find(x => x.ID == rptId) as PatientReport;
-      IsEdit = true;
-    }
-    else {
-      if (this.reports == undefined || this.reports == null) {
-        this.reports = new Array<PatientReport>();
-        report.ID = -1;
+    if (this.newReport) {
+      // Check if the report already exists
+      const existingReportIndex = this.reports.findIndex(r => r.ID === this.newReport.ID);
+      if (existingReportIndex > -1) {
+        // Update existing report
+        this.reports[existingReportIndex] = { ...this.newReport };
+      } else {
+        // Add new report
+        this.reports.push({ ...this.newReport });
       }
-      else {
-        report.ID = (Math.min(...this.reports.map(x => x.ID)) + (-1));
-      }
-    }
-    report.ReportDetails = (document.getElementById('txtReportFinding') as HTMLInputElement).value;
-    report.DoctorName = (document.getElementById('txtDoctorName') as HTMLInputElement).value;
-    report.ReportName = (document.getElementById('txtReportName') as HTMLInputElement).value;
-    var dtStringValue = (document.getElementById('txtReportDate') as HTMLInputElement).value;
-    if (dtStringValue == undefined || dtStringValue == '') {
-      dtStringValue = new Date().toISOString().split('T')[0]; // Default to today's date if not provided  
-    } else {
-      dtStringValue = (new Date(dtStringValue)).toISOString().split('T')[0];
-    }
-    report.ReportDate = dtStringValue;
-    if (!IsEdit) {
-      this.reports.push(report);
+      // Reset new report object
+      this.newReport = null;
+      this.patient.PatientReports = this.reports; // Update the patient reports in the data service
+      this.dataService.setPatient(this.patient);
     }
   }
+
+
 }

@@ -13,7 +13,7 @@
                         <th></th>
                         <th></th>
                         <th style="text-align: right;"><button type="button" class="btn btn-primary"
-                        data-bs-toggle="modal" data-bs-target="#addAppointmentModal">Add Row</button></th>
+                        data-bs-toggle="modal" data-bs-target="#addAppointmentModal" (click)="AddAppointment()">Add Appointment</button></th>
                     </tr>
                     <tr>
                     <th>Start Date</th>
@@ -64,10 +64,10 @@
                 <br />
                 <div class="row">
                     <div class="col">
-                      <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
+                      <label for="txtAppointmentDate" class="form-label" >Appointment Date</label>
                     </div>
                     <div class="col">
-                      <input type="date" id="txtAppointmentDate" class="form-control"  min="2024-01-01" max="2025-12-31">
+                      <input type="date" id="txtAppointmentDate" class="form-control"  min="2024-01-01" max="2025-12-31" [ngModel]="this.newAppointment?.StartApptDate" (ngModelChange)="newAppointment.StartApptDate = $event">
                     </div>
                 </div>
                 <br />
