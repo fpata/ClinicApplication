@@ -15,12 +15,11 @@ import { Patient } from '../../../models/patient.model';
 })
 export class PatientTreatmentComponent {
 
+
   patient: Patient | null = null;
   treatment: PatientTreatment | null = null;
-  isModalOpen = false;
-  editingTreatmentId: number | null = null;
-  originalTreatmentData: any = null;
-
+  isEditOperation = false;
+  newTreatmentDetail: PatientTreatmentDetail | null = null;
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
@@ -50,22 +49,36 @@ export class PatientTreatmentComponent {
     }
   }
 
+  AddNewTreatmentDetails() {
+    this.newTreatmentDetail = new PatientTreatmentDetail();
+    const ids = this.treatment?.PatientTreatmentDetails?.map(x => x.ID) || [];
+    this.newTreatmentDetail.ID = ids.length > 0 ? Math.min(...ids) - 1 : 0;
+    this.newTreatmentDetail.IsActive = 1;
+    this.newTreatmentDetail.PatientTreatmentID = this.treatment.ID;
+    this.newTreatmentDetail.UserID = this.patient.UserID;
+    this.newTreatmentDetail.PatientID = this.patient.ID;
+    this.newTreatmentDetail.Tooth = '';
+    this.newTreatmentDetail.Procedure = '';
+    this.newTreatmentDetail.Advice = '';
+    this.newTreatmentDetail.TreatmentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    this.newTreatmentDetail.CreatedBy = this.patient.UserID;
+    this.newTreatmentDetail.CreatedDate = new Date().toISOString();
+    this.newTreatmentDetail.ModifiedBy = this.patient.UserID;
+    this.newTreatmentDetail.ModifiedDate = new Date().toISOString();
+    this.isEditOperation = false;
+  }
+
 
   EditTreatmentDetails(treatmentdetailID: number) {
     if (this.treatment && this.treatment.PatientTreatmentDetails && this.treatment.PatientTreatmentDetails.length > 0) {
       const index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === treatmentdetailID);
       if (index > -1) {
-        const treatmentDetail: PatientTreatmentDetail = this.treatment.PatientTreatmentDetails[index];
-        (document.getElementById('txtTooth') as HTMLInputElement).value = treatmentDetail.Tooth;
-        (document.getElementById('txtProcedure') as HTMLInputElement).value = treatmentDetail.Procedure;
-        (document.getElementById('txtAdvice') as HTMLInputElement).value = treatmentDetail.Advice;
-        //(document.getElementById('txtTreatmentDate') as HTMLInputElement).value = treatmentDetail.TreatmentDate;
-        //(document.getElementById('hdtreatmentid') as HTMLInputElement).value = treatmentDetail.PatientTreatmentID.toString();
-        (document.getElementById('hdtreatmentdetailid') as HTMLInputElement).value = treatmentDetail.ID.toString();
+        this.newTreatmentDetail = { ...this.treatment.PatientTreatmentDetails[index] };
       } else {
         alert('Treatment detail not found.');
       }
     }
+    this.isEditOperation = true
   }
 
   DeleteTreatmentDetails(treatmentdetailID: number) {
@@ -81,12 +94,23 @@ export class PatientTreatmentComponent {
   }
 
   SaveTreatmentDetails() {
-    if (this.treatment) {
-      // Save the treatment details
-      console.log('Saving treatment details:', this.treatment);
-      alert('Treatment details saved successfully.');
+    if (this.newTreatmentDetail) {
+      if (this.newTreatmentDetail.ID < 1 && this.isEditOperation === false) {
+        // Add new treatment detail
+        this.treatment.PatientTreatmentDetails.push({ ...this.newTreatmentDetail });
+      } else {
+        // Update existing treatment detail
+        const index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === this.newTreatmentDetail.ID);
+        if (index > -1) {
+          this.treatment.PatientTreatmentDetails[index] = { ...this.newTreatmentDetail };
+        }
+      }
+      this.patient.PatientTreatment = this.treatment;
+      this.newTreatmentDetail = null;
+      this.dataService.setPatient(this.patient);
+      this.isEditOperation = false;
     } else {
-      alert('No treatment details to save.');
+      alert('Please fill in all required fields.');
     }
   }
 }
