@@ -89,6 +89,9 @@
        @if (searchResult != undefined && searchResult.length == 0 && clearSearchClicked==false){
         <tr >
           <td colspan="6"><label id="lblNoRecordsError">No record found matching the search criteria</label></td>
+        @if(searchPatient.PatientID == null || searchPatient.PatientID == 0){
+          <td colspan="6"><button type="button" class="btn btn-primary" (click)="AddNewUser()">Add New Patient</button></td>
+        }
         </tr>
       }
       </tbody>

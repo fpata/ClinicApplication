@@ -123,7 +123,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                    @for(appointment of searchResult; track appointment.ID) {
+                    @for(appointment of searchResult; track $index) {
                     <tr>
                         <td>{{appointment.StartApptDate}}</td>
                         <td>{{appointment.EndApptDate}}</td>
@@ -153,7 +153,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static"  id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModal" aria-hidden="true">
+<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static"  id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -167,7 +167,7 @@
                       <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
                     </div>
                     <div class="col">
-                      <input type="date" id="txtAppointmentDate" class="form-control"  min="2024-01-01" max="2025-12-31">
+                      <input type="date" id="txtAppointmentDate" class="form-control"  min="2024-01-01" max="2025-12-31" [ngModel]="newAppointment?.StartApptDate" (ngModelChange)="newAppointment.StartApptDate = $event">
                     </div>
                 </div>
                 <br />
@@ -178,6 +178,9 @@
                     <div class="col">
                       <input type="time" id="txtAppointmentTime" class="form-control">
                     </div>
+                  </div>
+                  <br />
+                  <div class="row">
                     <div class="col">
                       <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
                     </div>
@@ -191,7 +194,7 @@
                       <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
                     </div>
                     <div class="col">
-                      <input type="text" id="txtApptDoctorName" class="form-control">
+                      <input type="text" id="txtApptDoctorName" class="form-control" [ngModel]="newAppointment?.DoctorName" (ngModelChange)="newAppointment.DoctorName = $event">
                     </div>
                   </div>
                   <br />
@@ -200,11 +203,10 @@
                       <label for="txtApptProcedure" class="form-label">Procedure</label>
                     </div>
                     <div class="col">
-                      <input type="text" id="txtApptProcedure" class="form-control">
+                      <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName" (ngModelChange)="newAppointment.TreatmentName = $event">
                     </div>
                   </div>
                   <br />
-                  <div><input type="hidden" value="" id="hdAppointmentId" /></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

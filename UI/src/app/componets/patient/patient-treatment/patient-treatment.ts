@@ -97,6 +97,9 @@ export class PatientTreatmentComponent {
     if (this.newTreatmentDetail) {
       if (this.newTreatmentDetail.ID < 1 && this.isEditOperation === false) {
         // Add new treatment detail
+        if(this.treatment.PatientTreatmentDetails === undefined || this.treatment.PatientTreatmentDetails === null) {
+          this.treatment.PatientTreatmentDetails = [];
+        }
         this.treatment.PatientTreatmentDetails.push({ ...this.newTreatmentDetail });
       } else {
         // Update existing treatment detail

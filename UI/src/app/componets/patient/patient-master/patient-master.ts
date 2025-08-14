@@ -11,7 +11,7 @@ import { Patient } from '../../../models/patient.model';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { PatientReport } from '../../../models/patient-report.model';
-import {PatientQuickCreateComponent} from '../patient-quick-create/patient-quick-create.component';
+import { PatientQuickCreateComponent } from '../patient-quick-create/patient-quick-create.component';
 import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-patient-master',
@@ -19,9 +19,9 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './patient-master.html',
   styleUrl: './patient-master.css',
   imports: [PatientAppointmentComponent, PatientHistoryComponent, PatientReportComponent,
-     PatientSearchComponent, PatientTreatmentComponent, 
+    PatientSearchComponent, PatientTreatmentComponent,
     PatientCompleteHistoryComponent, PatientQuickCreateComponent],
-    providers: [HttpClient]  
+  providers: [HttpClient]
 })
 export class PatientMasterComponent {
 
@@ -67,17 +67,17 @@ export class PatientMasterComponent {
 
   DeletePatientInformation() {
     const currentPatient = this.dataService.getPatient();
-    
+
     if (!currentPatient || !currentPatient.ID) {
       alert('No patient selected for deletion');
       return;
     }
-    
+
     // Get patient name from the associated user
-    const patientName = currentPatient.user ? 
-      `${currentPatient.user.FirstName} ${currentPatient.user.LastName}` : 
+    const patientName = currentPatient.user ?
+      `${currentPatient.user.FirstName} ${currentPatient.user.LastName}` :
       `Patient ID: ${currentPatient.ID}`;
-    
+
     if (confirm(`Are you sure you want to delete patient: ${patientName}?`)) {
       this.patientService.deletePatient(currentPatient.ID).subscribe({
         next: () => {
@@ -93,17 +93,24 @@ export class PatientMasterComponent {
   }
 
   AddNewPatient() {
-   var patient:Patient = new Patient();
-   patient.UserID = this.dataService.getUser()?.ID || 0;
-   patient.PatientTreatment = new PatientTreatment();
-   patient.PatientAppointments = new Array<PatientAppointment>();
-   patient.PatientReports = new Array<PatientReport>();
-   this.dataService.setPatient(patient);
+    var patient: Patient = new Patient();
+    patient.UserID = this.dataService.getUser()?.ID || 0;
+    patient.ID = 0; // New patient, so ID is 0
+    patient.CreatedBy = this.dataService.getUser()?.ID || 0;
+    patient.ModifiedBy = this.dataService.getUser()?.ID || 0;
+    patient.CreatedDate = new Date().toISOString();
+    patient.ModifiedDate = new Date().toISOString();
+    patient.IsActive = 1;
+    patient.PatientAppointments = new Array<PatientAppointment>();
+    patient.PatientAppointments = [];
+    patient.PatientTreatment = new PatientTreatment();
+    patient.PatientReports = new Array<PatientReport>();
+    this.dataService.setPatient(patient);
   }
-  
+
   SavePatientInformation() {
     var currentPatient = this.dataService.getPatient();
-    if(this.selectedTab.startsWith('tbQuickCreate')) {
+    if (this.selectedTab.startsWith('tbQuickCreate')) {
       currentPatient = this.quickCreateComponent.patient;
       currentPatient.UserID = this.dataService.getUser()?.ID || 0;
       currentPatient.PatientTreatment.UserID = this.dataService.getUser()?.ID || 0;
@@ -122,7 +129,7 @@ export class PatientMasterComponent {
 
     // Determine if this is a new patient or existing patient
     const isNewPatient = !currentPatient.ID || currentPatient.ID === 0;
-    
+
     if (isNewPatient) {
       // Create new patient
       this.patientService.createPatient(currentPatient).subscribe({
@@ -152,5 +159,5 @@ export class PatientMasterComponent {
     }
   }
 
-  
+
 }

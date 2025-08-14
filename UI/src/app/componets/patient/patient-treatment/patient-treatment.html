@@ -102,7 +102,7 @@
                 <br />
                 <div class="row">
                     <div class="col">
-                      <label for="txtTreatmentDate" class="form-label" [ngModel]="newTreatmentDetail?.TreatmentDate" (ngModelChange)="newTreatmentDetail.TreatmentDate = $event">Treatment Date</label>
+                      <label for="txtTreatmentDate" class="form-label">Treatment Date</label>
                     </div>
                     <div class="col">
                       <input type="date" id="txtTreatmentDate" class="form-control" min="2024-01-01" max="2025-12-31" [ngModel]="newTreatmentDetail?.TreatmentDate" (ngModelChange)="newTreatmentDetail.TreatmentDate = $event">
@@ -134,10 +134,6 @@
                     <div class="col">
                       <textarea id="txtAdvice" class="form-control" rows="2" [ngModel]="newTreatmentDetail?.Advice" (ngModelChange)="newTreatmentDetail.Advice = $event"></textarea>
                     </div>
-                  </div>
-                  <div>
-                    <input type="hidden" id="hdtreatmentid" value="">
-                    <input type="hidden" id="hdtreatmentdetailid" value="">
                   </div>
             </div>
             <div class="modal-footer">

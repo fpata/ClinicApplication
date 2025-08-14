@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
@@ -6,41 +6,33 @@ import { PatientAppointmentService } from '../../../services/patient-appointment
 import { PatientSearchModel } from '../../../models/patient-search.model';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { DataService } from '../../../services/data.service';
 
 @Component({
   selector: 'app-doctor-appointments',
   imports: [SchedulerComponent, FormsModule],
   templateUrl: './doctorappointments.html',
   styleUrl: './doctorappointments.css',
-  providers: [ PatientAppointmentService, HttpClient]
+  providers: [HttpClient]
 })
 export class DoctorAppointmentsComponent {
   clearSearchClicked: boolean;
   searchResult: PatientAppointment[];
+  @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
+  appointments: PatientAppointment[] | null = null;
+  searchPatient: PatientSearchModel;
+  searchLengthConstraintError: any;
+  newAppointment: PatientAppointment = new PatientAppointment();
 
-  constructor(private patientAppointmentService: PatientAppointmentService) {
-    this.clearSearchClicked = false;
-    this.searchPatient = {
-      PatientID: 0,
-      UserID: 0,
-      FirstName: '',
-      LastName: '',
-      PrimaryPhone: '',
-      PrimaryEmail: '',
-      PermCity: '',
-      UserName: '',
-      UserType: '',
-      DoctorID: 0,
-      DoctorName: '',
-      EndDate: (new Date().toISOString().split('T')[0]), // Default to today
-      StartDate: (new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]) // Default to 365 days ago
-    }
-    this.searchResult = [];
+  constructor(private patientAppointmentService: PatientAppointmentService, private dataService: DataService) {
+   this.clearNewAppointment();
+   this.appointments = new Array<PatientAppointment>();
+   this.appointments = [];
   }
 
   // Placeholder methods for the unimplemented methods
-validateSearchInput() {
-if (this.searchPatient != null && this.searchPatient != undefined && this.searchPatient.FirstName?.length < 3 && this.searchPatient.LastName?.length < 3 &&
+  validateSearchInput() {
+    if (this.searchPatient != null && this.searchPatient != undefined && this.searchPatient.FirstName?.length < 3 && this.searchPatient.LastName?.length < 3 &&
       this.searchPatient.PrimaryEmail?.length < 3 && this.searchPatient.PermCity?.length < 3 &&
       this.searchPatient.PrimaryPhone?.length < 3 && this.searchPatient.DoctorName?.length < 3) {
       this.searchLengthConstraintError = true;
@@ -49,16 +41,16 @@ if (this.searchPatient != null && this.searchPatient != undefined && this.search
       this.searchLengthConstraintError = false;
       this.clearSearchClicked = true;
     }
-}
-SearchAppointments() {
- if (this.searchLengthConstraintError) {
+  }
+  SearchAppointments() {
+    if (this.searchLengthConstraintError) {
       return;
     }
     this.patientAppointmentService.searchAppointmentsForDoctor(this.searchPatient).subscribe({
-      next: (result:any) => {
+      next: (result: any) => {
         this.searchResult = result;
         this.clearSearchClicked = false;
-        if(!this.searchResult || this.searchResult.length === 0) {
+        if (!this.searchResult || this.searchResult.length === 0) {
           alert('No appointments found.');
         } else {
           this.AddEventsToScheduler(this.searchResult);
@@ -72,16 +64,29 @@ SearchAppointments() {
         this.clearSearchClicked = false;
       }
     });
-}
-clearSearch() {
-throw new Error('Method not implemented.');
-}
-  @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
-  appointments: PatientAppointment[] | null = null;
-  searchPatient: PatientSearchModel;
-searchLengthConstraintError: any;
+  }
 
 
+
+  clearSearch() {
+    this.searchPatient = {
+      PatientID: 0,
+      UserID: 0,
+      FirstName: '',
+      LastName: '',
+      PrimaryPhone: '',
+      PrimaryEmail: '',
+      PermCity: '',
+      UserName: '',
+      UserType: '',
+      DoctorID: 0,
+      DoctorName: '',
+      EndDate: (new Date().toISOString().split('T')[0]),
+      StartDate: (new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+    };
+    this.searchResult = [];
+    this.clearSearchClicked = false;
+  }
 
   EditAppointment(arg0: number) {
     throw new Error('Method not implemented.');
@@ -90,10 +95,83 @@ searchLengthConstraintError: any;
     throw new Error('Method not implemented.');
   }
   SaveAppointment() {
-    throw new Error('Method not implemented.');
+    // Implement save logic here
+    const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
+    const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
+
+    // Create a temporary appointment object to avoid mutating the form-bound newAppointment
+    const appointmentToSave = { ...this.newAppointment };
+
+    if (appointmentToSave.StartApptDate && appointmentTime) {
+      const [hours, minutes] = appointmentTime.split(':').map(Number);
+      const startDate = new Date(appointmentToSave.StartApptDate);
+      startDate.setHours(hours, minutes, 0, 0);
+      appointmentToSave.StartApptDate = startDate;
+    }
+
+    if (appointmentToSave.EndApptDate && appointmentEndTime) {
+      const [hours, minutes] = appointmentEndTime.split(':').map(Number);
+      // Assuming EndApptDate should be on the same day as StartApptDate
+      const endDate = new Date(appointmentToSave.StartApptDate);
+      endDate.setHours(hours, minutes, 0, 0);
+      appointmentToSave.EndApptDate = endDate;
+    }
+
+    if (appointmentToSave.ID < 1) {
+      appointmentToSave.ID = this.appointments.length > 0 ? Math.min(...this.appointments.map(a => a.ID)) - 1 : 0; // Initialize new appointment ID
+      if (!this.appointments) this.appointments = [];
+      this.appointments.push(appointmentToSave);
+
+    } else {
+      const index = this.appointments.findIndex(a => a.ID === appointmentToSave.ID);
+      if (index > -1) {
+        this.appointments[index] = appointmentToSave;
+      }
+    }
+    // Defer the scheduler update to avoid blocking the UI thread
+    setTimeout(() => this.AddEventsToScheduler(this.appointments));
+    this.clearNewAppointment(); // Reset the form after saving
+    /*this.patientAppointmentService.createPatientAppointment(this.newAppointment).subscribe({
+      next: (result: any) => {
+        this.appointments.push(result);
+        this.clearNewAppointment();
+      },
+      error: (err: any) => {
+        console.error(err);
+      }
+    });*/
   }
-  
- AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
+  clearNewAppointment() {
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0];
+    const thirtyMinutesLater = new Date(today.getTime() + 30 * 60000);
+
+    this.newAppointment = {
+      ID: 0,
+      PatientID: 0,
+      DoctorID: 0,
+      StartApptDate: todayString as any, // Format for date input
+      EndApptDate: todayString as any, // Format for date input
+      TreatmentName: '',
+      CreatedDate: new Date().toString(),
+      ModifiedDate: new Date().toString(),
+      CreatedBy: this.dataService.getLoginUser()?.user?.ID || 1,
+      ModifiedBy: this.dataService.getLoginUser()?.user?.ID || 1
+    };
+
+    // Set default time values for time inputs
+    const startTime = today.toTimeString().slice(0, 5);
+    const endTime = thirtyMinutesLater.toTimeString().slice(0, 5);
+
+    setTimeout(() => {
+      const timeInput = document.getElementById('txtAppointmentTime') as HTMLInputElement;
+      if (timeInput) timeInput.value = startTime;
+      const endTimeInput = document.getElementById('txtAppointmentEndTime') as HTMLInputElement;
+      if (endTimeInput) endTimeInput.value = endTime;
+    });
+  }
+
+  AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
     var events: DayPilot.EventData[] = [];
     appointments.forEach(appointment => {
       events.push({
@@ -109,6 +187,6 @@ searchLengthConstraintError: any;
   }
 
   ngOnInit() {
-    
+    this.clearSearch();
   }
 }

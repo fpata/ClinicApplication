@@ -144,12 +144,12 @@ namespace ClinicManager.Controllers
             try
             {
                 // Set timestamps and IsActive for the main patient entity
+                patient.ID = 0; // Ensure new patient
                 patient.CreatedDate = DateTime.UtcNow;
                 patient.ModifiedDate = DateTime.UtcNow;
                 patient.IsActive = 1;
 
                 // Reset IDs and set properties for all related entities to ensure they are treated as new.
-                // EF Core will handle setting the foreign keys automatically.
                 if (patient.PatientReports?.Any() == true)
                 {
                     foreach (var report in patient.PatientReports)
@@ -158,6 +158,8 @@ namespace ClinicManager.Controllers
                         report.UserID = patient.UserID;
                         report.CreatedDate = DateTime.UtcNow;
                         report.ModifiedDate = DateTime.UtcNow;
+                        report.PatientID = null; // Clear foreign key - EF will set it
+                        report.IsActive = 1;
                     }
                 }
 
@@ -169,6 +171,8 @@ namespace ClinicManager.Controllers
                         appointment.UserID = patient.UserID;
                         appointment.CreatedDate = DateTime.UtcNow;
                         appointment.ModifiedDate = DateTime.UtcNow;
+                        appointment.PatientID = null; // Clear foreign key - EF will set it
+                        appointment.IsActive = 1;
                     }
                 }
 
@@ -178,6 +182,8 @@ namespace ClinicManager.Controllers
                     patient.PatientTreatment.UserID = patient.UserID;
                     patient.PatientTreatment.CreatedDate = DateTime.UtcNow;
                     patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
+                    patient.PatientTreatment.PatientID = null; // Clear foreign key - EF will set it
+                    patient.PatientTreatment.IsActive = 1;
 
                     if (patient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
                     {
@@ -187,6 +193,9 @@ namespace ClinicManager.Controllers
                             detail.UserID = patient.UserID;
                             detail.CreatedDate = DateTime.UtcNow;
                             detail.ModifiedDate = DateTime.UtcNow;
+                            detail.PatientID = null; // Clear direct patient reference
+                            detail.PatientTreatmentID = null; // Clear treatment reference - EF will set it
+                            detail.IsActive = 1;
                         }
                     }
                 }
@@ -199,6 +208,7 @@ namespace ClinicManager.Controllers
                 await _context.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
+                _logger.LogInformation($"Created new patient with ID: {patient.ID}");
             }
             catch (Exception ex)
             {
@@ -254,6 +264,7 @@ namespace ClinicManager.Controllers
                 {
                     foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
                     {
+                        detail.ID= detail.ID < 1 ? 0 : detail.ID; // Reset ID for new details
                         detail.UserID = patient.UserID;
                         detail.PatientID = id; // Ensure the detail is linked to the correct patient
                         detail.CreatedDate = detail.CreatedDate ?? DateTime.UtcNow;

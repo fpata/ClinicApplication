@@ -9,6 +9,7 @@ import { Patient } from '../../../models/patient.model';
 import { User } from '../../../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-patient-search',
@@ -19,17 +20,18 @@ import { UserService } from '../../../services/user.service';
   providers: [HttpClient]
 })
 export class PatientSearchComponent {
+
   searchPatient: PatientSearchModel;
   searchResult: PatientSearchModel[];
   searchLengthConstraintError: boolean = false;
   clearSearchClicked: boolean = false;
 
   constructor(private searchService: SearchService, private patientService: PatientService,
-    private dataService: DataService, private userService: UserService
+    private dataService: DataService, private userService: UserService, private router: Router
   ) {
     this.searchPatient = new PatientSearchModel();
     this.searchPatient.EndDate = new Date().toISOString().split('T')[0]; // Default to today
-    this.searchPatient.StartDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Default to 365 days ago
+    this.searchPatient.StartDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Default to 7 days ago
     this.searchResult = [];
   }
 
@@ -103,6 +105,10 @@ export class PatientSearchComponent {
         console.error('Error fetching patient data:', err);
       }
     });
+  }
+
+  AddNewUser() {
+    this.router.navigate(['/user', 'new']);
   }
 }
 
