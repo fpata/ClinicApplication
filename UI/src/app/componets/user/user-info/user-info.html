@@ -63,6 +63,20 @@
                 <input type="password" id="txtPassword" name="txtPassword" class="form-control" required [ngModel]="user?.Password" (ngModelChange)="user && (user.Password = $event)"  minlength="3" maxlength="50">
               </div>
             </div>
+            <br />
+            
+             <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtUserType" class="form-label">User Type</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <select id="txtUserType" class="form-select" [ngModel]="user?.UserType" (ngModelChange)="user && (user.UserType = $event)" required>
+                  <option value="Patient">Patient</option>
+                  <option value="Doctor">Doctor</option>
+                  <option value="Admin">Admin</option>
+                </select> 
+              </div>
+            </div>
             </fieldset>
           </div>
         </div>

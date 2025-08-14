@@ -1,218 +1,288 @@
 <div class="container-fluid">
-<div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchFirstName" class="form-label">First Name</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchFirstName" class="form-control" [(ngModel)]="this.searchPatient.FirstName" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchLastName" class="form-label">Last Name</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchLastName" class="form-control" [(ngModel)]="this.searchPatient.LastName" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchPhone" class="form-label">Phone</label>
-      </div>
-      <div class="ccol-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchPhone" class="form-control" [(ngModel)]="this.searchPatient.PrimaryPhone" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchEmailAddress" class="form-label">Email Address</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchEmailAddress" class="form-control" [(ngModel)]="this.searchPatient.PrimaryEmail" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-    </div>
-    <br />
-    <br />
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchPatientID" class="form-label">Patient ID</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="number" id="txtSearchPatientID" class="form-control" [(ngModel)]="this.searchPatient.PatientID">
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchCity" class="form-label">City</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchCity" class="form-control" [(ngModel)]="this.searchPatient.PermCity" minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
-      </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchDoctorID" class="form-label">Doctor ID</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="number" id="txtSearchDoctorID" class="form-control"  [(ngModel)]="this.searchPatient.DoctorID" >
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchDoctorName" class="form-label">Doctor Name</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="text" id="txtSearchDoctorName" class="form-control"  minlength="3" maxlength="25" [(ngModel)]="this.searchPatient.DoctorName" (ngModelChange)="validateSearchInput()">
-      </div>
-    </div>
-    <br>
-    <div class="row">
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchStartDate" class="form-label">Start Date</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="date" id="txtSearchStartDate" class="form-control"  [(ngModel)]="this.searchPatient.StartDate" >
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-      <div class="col-xs-12 col-sm-5 col-md-2">
-        <label for="txtSearchEndDate" class="form-label">End Date</label>
-      </div>
-      <div class="col-xs-12 col-sm-5 col-md-3">
-        <input type="date" id="txtSearchEndDate" class="form-control"   [(ngModel)]="this.searchPatient.EndDate" >
-      </div>
-    </div>
-    <br />
-    <br />
-    <div class="row">
-      <div class="col-xs-12 col-sm-6 col-md-6 text-center">
-        <button type="button" id="btnSaerchPatient" class="btn btn-primary" (click)="SearchAppointments()">Search Patient</button>
-      </div>
-      <div class="col-xs-12 col-sm-6 col-md-6 text-center">
-        <button type="button" id="btnSaerchPatient" class="btn btn-secondary" (click)="clearSearch()">Clear Search</button>
-      </div>
-    </div>
-    <br>
-    @if(searchLengthConstraintError) {
-    <div  class="row">
-      <div class="col-12" style="background-color: cornflowerblue;color: white"><label class="align-center" >Search Error: Atleast 3 characters should be entered in any one field</label></div>
-    </div>
-  }
-  </div>
-  <br>
-    <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-    <div class="row">
-        <div class="col">
-          <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
+  <div class="accordion" id="doctorAppointmentsAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+          aria-expanded="true" aria-controls="collapseOne">
+          Search Appointments & Results
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+        data-bs-parent="#doctorAppointmentsAccordion">
+        <div class="accordion-body">
+          <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+            <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchFirstName" class="form-label">First Name</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtSearchFirstName" class="form-control"
+                  [(ngModel)]="this.searchPatient.FirstName" minlength="3" maxlength="25"
+                  (ngModelChange)="validateSearchInput()">
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchLastName" class="form-label">Last Name</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtSearchLastName" class="form-control" [(ngModel)]="this.searchPatient.LastName"
+                  minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchPhone" class="form-label">Phone</label>
+              </div>
+              <div class="ccol-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtSearchPhone" class="form-control"
+                  [(ngModel)]="this.searchPatient.PrimaryPhone" minlength="3" maxlength="25"
+                  (ngModelChange)="validateSearchInput()">
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchEmailAddress" class="form-label">Email Address</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtSearchEmailAddress" class="form-control"
+                  [(ngModel)]="this.searchPatient.PrimaryEmail" minlength="3" maxlength="25"
+                  (ngModelChange)="validateSearchInput()">
+              </div>
+            </div>
+            <br />
+            <br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchPatientID" class="form-label">Patient ID</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="number" id="txtSearchPatientID" class="form-control"
+                  [(ngModel)]="this.searchPatient.PatientID">
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchCity" class="form-label">City</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtSearchCity" class="form-control" [(ngModel)]="this.searchPatient.PermCity"
+                  minlength="3" maxlength="25" (ngModelChange)="validateSearchInput()">
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchDoctorID" class="form-label">Doctor ID</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="number" id="txtSearchDoctorID" class="form-control"
+                  [(ngModel)]="this.searchPatient.DoctorID">
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchDoctorName" class="form-label">Doctor Name</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtSearchDoctorName" class="form-control" minlength="3" maxlength="25"
+                  [(ngModel)]="this.searchPatient.DoctorName" (ngModelChange)="validateSearchInput()">
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchStartDate" class="form-label">Start Date</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="date" id="txtSearchStartDate" class="form-control"
+                  [(ngModel)]="this.searchPatient.StartDate">
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSearchEndDate" class="form-label">End Date</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="date" id="txtSearchEndDate" class="form-control" [(ngModel)]="this.searchPatient.EndDate">
+              </div>
+            </div>
+            <br />
+            <br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-6 col-md-6 text-center">
+                <button type="button" id="btnSaerchPatient" class="btn btn-primary"
+                  (click)="SearchAppointments()">Search Patient</button>
+              </div>
+              <div class="col-xs-12 col-sm-6 col-md-6 text-center">
+                <button type="button" id="btnSaerchPatient" class="btn btn-secondary" (click)="clearSearch()">Clear
+                  Search</button>
+              </div>
+            </div>
+            <br>
+            @if(searchLengthConstraintError) {
+            <div class="row">
+              <div class="col-12" style="background-color: cornflowerblue;color: white"><label
+                  class="align-center">Search Error: Atleast 3 characters should be entered in any one field</label>
+              </div>
+            </div>
+            }
+          </div>
+          <br>
+          <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+            <div class="row">
+              <div class="col">
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
                         <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th style="text-align: right;"><button type="button" class="btn btn-primary"
-                        data-bs-toggle="modal" data-bs-target="#addAppointmentModal">Add Row</button></th>
-                    </tr>
-                    <tr>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Patient</th>
-                    <th>Treatment</th>
-                    <th>Doctor</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                    @for(appointment of searchResult; track $index) {
-                    <tr>
+                        <th style="text-align: right;"></th>
+                      </tr>
+                      <tr>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Patient</th>
+                        <th>Treatment</th>
+                        <th>Doctor</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for(appointment of searchResult; track $index) {
+                      <tr>
                         <td>{{appointment.StartApptDate}}</td>
                         <td>{{appointment.EndApptDate}}</td>
                         <td>{{appointment.PatientName}}</td>
                         <td>{{appointment.TreatmentName}}</td>
                         <td>{{appointment.DoctorName}}</td>
-                        <td> 
-                          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal" (click)="EditAppointment(appointment.ID)">&nbsp;Edit</button>
-                          &nbsp;&nbsp;<button class="btn btn-secondary" (click)="DeleteAppointment(appointment.ID)">&nbsp;Delete</button>
-                         </td>  
-                    </tr>
-                }
-                </tbody>
-            </table>
+                        <td>
+                          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal"
+                            (click)="EditAppointment(appointment.ID)">&nbsp;Edit</button>
+                          &nbsp;&nbsp;<button class="btn btn-secondary"
+                            (click)="DeleteAppointment(appointment.ID)">&nbsp;Delete</button>
+                        </td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+          aria-expanded="true" aria-controls="collapseTwo">
+          Appointment Scheduler
+        </button>
+      </h2>
+      <div style="text-align: center;align-items: center;">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal" (click)="AddNewAppointment()">Add
+          New Appointment</button>
+      </div>
+      <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo"
+        data-bs-parent="#doctorAppointmentsAccordion">
+        <div class="accordion-body">
+          <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+            <div class="row">
+              <div class="col">
+                <app-scheduler></app-scheduler>
+              </div>
+            </div>
           </div>
         </div>
-    </div>
-  </div>
-  <br />
-  <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-    <div class="row">
-      <div class="col">
-       <app-scheduler></app-scheduler>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal -->
-<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static"  id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <br />
-                <div class="row">
-                    <div class="col">
-                      <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
-                    </div>
-                    <div class="col">
-                      <input type="date" id="txtAppointmentDate" class="form-control"  min="2024-01-01" max="2025-12-31" [ngModel]="newAppointment?.StartApptDate" (ngModelChange)="newAppointment.StartApptDate = $event">
-                    </div>
-                </div>
-                <br />
-                <div class="row">
-                    <div class="col">
-                      <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
-                    </div>
-                    <div class="col">
-                      <input type="time" id="txtAppointmentTime" class="form-control">
-                    </div>
-                  </div>
-                  <br />
-                  <div class="row">
-                    <div class="col">
-                      <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
-                    </div>
-                    <div class="col">
-                      <input type="time" id="txtAppointmentEndTime" class="form-control">
-                    </div>
-                  </div>
-                  <br />
-                  <div class="row">
-                    <div class="col">
-                      <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
-                    </div>
-                    <div class="col">
-                      <input type="text" id="txtApptDoctorName" class="form-control" [ngModel]="newAppointment?.DoctorName" (ngModelChange)="newAppointment.DoctorName = $event">
-                    </div>
-                  </div>
-                  <br />
-                  <div class="row">
-                    <div class="col">
-                      <label for="txtApptProcedure" class="form-label">Procedure</label>
-                    </div>
-                    <div class="col">
-                      <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName" (ngModelChange)="newAppointment.TreatmentName = $event">
-                    </div>
-                  </div>
-                  <br />
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save changes</button>
-            </div>
+<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addAppointmentModal" tabindex="-1"
+  aria-labelledby="addAppointmentModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
+          </div>
+          <div class="col">
+            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
+              [ngModel]="newAppointment?.StartApptDate" (ngModelChange)="newAppointment.StartApptDate = $event">
+          </div>
         </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
+          </div>
+          <div class="col">
+            <input type="time" id="txtAppointmentTime" class="form-control">
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
+          </div>
+          <div class="col">
+            <input type="time" id="txtAppointmentEndTime" class="form-control">
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
+          </div>
+          <div class="col">
+            <select id="cbxApptDoctorName" class="form-control" [ngModel]="newAppointment?.DoctorID"
+              (ngModelChange)="newAppointment.DoctorID = $event">
+              @for(doctor of doctors; track $index) {
+              <option [value]="doctor.UserID">{{ doctor.FirstName }} {{ doctor.LastName }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtApptPatientName" class="form-label">Patient Name</label>
+          </div>
+          <div class="col">
+            <input type="text" id="txtApptPatientName" class="form-control" [ngModel]="newAppointment?.PatientName"
+              (ngModelChange)="newAppointment.PatientName = $event">
+            <button class="btn btn-primary" type="button">
+              <i class="bi bi-search"></i> 
+            </button>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtApptProcedure" class="form-label">Procedure</label>
+          </div>
+          <div class="col">
+            <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName"
+              (ngModelChange)="newAppointment.TreatmentName = $event">
+          </div>
+        </div>
+        <br />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save
+          changes</button>
+      </div>
     </div>
+  </div>
 </div>
-

@@ -8,6 +8,7 @@ import { User } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
 import { HttpClient } from '@angular/common/http';
+import { MessageService } from '../../../services/message.service';
 
 @Component({
   selector: 'app-user-master',
@@ -24,7 +25,7 @@ export class UserMasterComponent {
   @ViewChild(UserQuickCreateComponent) quickCreateComponent!: UserQuickCreateComponent;
   @ViewChild(UserInfoComponent) userInfoComponent!: UserInfoComponent;
 
-  constructor(private dataService: DataService, private userService: UserService) { }
+  constructor(private dataService: DataService, private userService: UserService, private messageService: MessageService) { }
 
   tabSelectedEvent(event: MouseEvent) {
     // Logic to handle tab selection
@@ -45,19 +46,18 @@ export class UserMasterComponent {
     const currentUser = this.dataService.getUser();
 
     if (!currentUser || !currentUser.ID) {
-      console.warn('No user selected for deletion');
+      this.messageService.warn('No user selected for deletion');
       return;
     }
 
     if (confirm(`Are you sure you want to delete user: ${currentUser.FirstName} ${currentUser.LastName}?`)) {
       this.userService.deleteUser(currentUser.ID).subscribe({
         next: () => {
-          console.log('User deleted successfully');
+          this.messageService.success('User deleted successfully');
           this.ClearUserInformation(); // Clear the user from data service
         },
         error: (error) => {
-          console.error('Error deleting user:', error);
-          // You might want to show a user-friendly error message here
+          this.messageService.error('Error deleting user: ' + error.message);
         }
       });
     }
@@ -85,7 +85,7 @@ export class UserMasterComponent {
       currentUser.Contact = this.userInfoComponent.contact;
     }
     if (!currentUser) {
-      console.warn('No user data to save');
+      this.messageService.warn('No user data to save');
       return;
     }
 
@@ -93,24 +93,22 @@ export class UserMasterComponent {
       // Create new user (POST)
       this.userService.createUser(currentUser).subscribe({
         next: (newUser) => {
-          console.log('User created successfully', newUser);
+          this.messageService.success('User created successfully');
           this.dataService.setUser(newUser); // Update with the new user data including ID
         },
         error: (error) => {
-          console.error('Error creating user:', error);
-          // You might want to show a user-friendly error message here
+          this.messageService.error('Error creating user: ' + error.message);
         }
       });
     } else {
       // Update existing user (PUT)
       this.userService.updateUser(currentUser.ID, currentUser).subscribe({
         next: (updatedUser) => {
-          console.log('User updated successfully', updatedUser);
+          this.messageService.success('User updated successfully');
           this.dataService.setUser(updatedUser); // Update with the latest user data
         },
         error: (error) => {
-          console.error('Error updating user:', error);
-          // You might want to show a user-friendly error message here
+          this.messageService.error('Error updating user: ' + error.message);
         }
       });
     }

@@ -7,6 +7,8 @@ import { PatientSearchModel } from '../../../models/patient-search.model';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { DataService } from '../../../services/data.service';
+import { User } from '../../../models/user.model';
+import { SearchService } from '../../../services/search.service';
 
 @Component({
   selector: 'app-doctor-appointments',
@@ -16,6 +18,7 @@ import { DataService } from '../../../services/data.service';
   providers: [HttpClient]
 })
 export class DoctorAppointmentsComponent {
+
   clearSearchClicked: boolean;
   searchResult: PatientAppointment[];
   @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
@@ -23,11 +26,14 @@ export class DoctorAppointmentsComponent {
   searchPatient: PatientSearchModel;
   searchLengthConstraintError: any;
   newAppointment: PatientAppointment = new PatientAppointment();
+  doctors: PatientSearchModel[] | null = null;
 
-  constructor(private patientAppointmentService: PatientAppointmentService, private dataService: DataService) {
-   this.clearNewAppointment();
-   this.appointments = new Array<PatientAppointment>();
-   this.appointments = [];
+  constructor(private patientAppointmentService: PatientAppointmentService, 
+    private dataService: DataService,
+    private searchService: SearchService) {
+    this.clearNewAppointment();
+    this.appointments = new Array<PatientAppointment>();
+    this.appointments = [];
   }
 
   // Placeholder methods for the unimplemented methods
@@ -66,7 +72,18 @@ export class DoctorAppointmentsComponent {
     });
   }
 
-
+  getDoctors() {
+    var searchModel:PatientSearchModel = new PatientSearchModel();
+    searchModel.UserType = 'Doctor';
+    this.searchService.searchUser(searchModel).subscribe({
+      next: (result: PatientSearchModel[]) => {
+        this.doctors = result;
+      },
+      error: (err: any) => {
+        console.error(err);
+      }
+    });
+  }
 
   clearSearch() {
     this.searchPatient = {
@@ -86,6 +103,11 @@ export class DoctorAppointmentsComponent {
     };
     this.searchResult = [];
     this.clearSearchClicked = false;
+  }
+
+  AddNewAppointment() {
+    this.getDoctors();
+    this.clearNewAppointment();
   }
 
   EditAppointment(arg0: number) {
@@ -141,6 +163,7 @@ export class DoctorAppointmentsComponent {
       }
     });*/
   }
+
   clearNewAppointment() {
     const today = new Date();
     const todayString = today.toISOString().split('T')[0];

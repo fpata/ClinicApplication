@@ -57,6 +57,15 @@ namespace ClinicManager.Controllers
 
                 if (!string.IsNullOrWhiteSpace(model.PermCity))
                     query = query.Where(x => x.address != null && x.address.PermCity!.Contains(model.PermCity));
+                
+                if(!string.IsNullOrWhiteSpace(model.UserName))
+                    query = query.Where(x => x.user.UserName.Contains(model.UserName));
+                
+                if (!string.IsNullOrWhiteSpace(model.UserType))
+                    query = query.Where(x => x.user.UserType == model.UserType);
+                
+                if (model.StartDate.HasValue)
+                    query = query.Where(x => x.user.CreatedDate >= model.StartDate.Value);
 
                 if (model.PatientID > 0)
                     query = query.Where(x => x.patient != null && x.patient.ID == model.PatientID);
@@ -90,7 +99,7 @@ namespace ClinicManager.Controllers
                         DoctorName = string.Empty,
                         StartDate = g.Key.CreatedDate,
                         EndDate = g.Key.ModifiedDate
-                    });
+                    }).Distinct();
 
                 var results = await groupedQuery
                     .AsNoTracking()
