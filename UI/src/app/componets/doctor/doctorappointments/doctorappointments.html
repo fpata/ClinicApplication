@@ -182,7 +182,8 @@
         </button>
       </h2>
       <div style="text-align: center;align-items: center;">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal" (click)="AddNewAppointment()">Add
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal"
+          (click)="AddNewAppointment()">Add
           New Appointment</button>
       </div>
       <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo"
@@ -259,10 +260,14 @@
             <label for="txtApptPatientName" class="form-label">Patient Name</label>
           </div>
           <div class="col">
+              <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients"
+                [displayWith]="displayPatientName"
+              (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName">
+            </app-typeahead>
             <input type="text" id="txtApptPatientName" class="form-control" [ngModel]="newAppointment?.PatientName"
               (ngModelChange)="newAppointment.PatientName = $event">
             <button class="btn btn-primary" type="button">
-              <i class="bi bi-search"></i> 
+              <i class="bi bi-search"></i>
             </button>
           </div>
         </div>

@@ -7,12 +7,15 @@ import { PatientSearchModel } from '../../../models/patient-search.model';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { DataService } from '../../../services/data.service';
-import { User } from '../../../models/user.model';
 import { SearchService } from '../../../services/search.service';
+import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
+import { Observable } from 'rxjs';
+import { MessagesComponent } from '../../../common/messages/messages.component';
+import { MessageService } from '../../../services/message.service';
 
 @Component({
   selector: 'app-doctor-appointments',
-  imports: [SchedulerComponent, FormsModule],
+  imports: [SchedulerComponent, FormsModule, TypeaheadComponent],
   templateUrl: './doctorappointments.html',
   styleUrl: './doctorappointments.css',
   providers: [HttpClient]
@@ -30,7 +33,9 @@ export class DoctorAppointmentsComponent {
 
   constructor(private patientAppointmentService: PatientAppointmentService, 
     private dataService: DataService,
-    private searchService: SearchService) {
+    private searchService: SearchService,
+    private messageService: MessageService
+  ) {
     this.clearNewAppointment();
     this.appointments = new Array<PatientAppointment>();
     this.appointments = [];
@@ -72,7 +77,7 @@ export class DoctorAppointmentsComponent {
     });
   }
 
-  getDoctors() {
+  getDoctors() :void {
     var searchModel:PatientSearchModel = new PatientSearchModel();
     searchModel.UserType = 'Doctor';
     this.searchService.searchUser(searchModel).subscribe({
@@ -81,8 +86,17 @@ export class DoctorAppointmentsComponent {
       },
       error: (err: any) => {
         console.error(err);
+        this.messageService.error('Error occurred while fetching doctors.');
+        this.doctors = [];
       }
     });
+  }
+
+  getPatients = (name:string): Observable<PatientSearchModel[]> => {
+    const searchModel:PatientSearchModel = new PatientSearchModel();
+    searchModel.UserType = 'Patient';
+    searchModel.FirstName = name;
+    return this.searchService.searchUser(searchModel);
   }
 
   clearSearch() {
@@ -212,4 +226,12 @@ export class DoctorAppointmentsComponent {
   ngOnInit() {
     this.clearSearch();
   }
+
+  displayPatientName(d: any): string {
+  if (!d) return 'Unknown Patient';
+  const first = d.FirstName || '';
+  const last = d.LastName || '';
+  const name = (first + ' ' + last).trim();
+  return name.length ? name : 'Unknown Patient';
+}
 }
