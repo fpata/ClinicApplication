@@ -9,11 +9,11 @@ export class PatientTreatment {
   TreatmentPlan: string;
   PatientID?: number;
   IsActive?: number = 1;
-  CreatedDate?: string = new Date().toISOString();
+  CreatedDate?: string; // set via UtilityService
   CreatedBy?: number = 1;
-  ModifiedDate?: string = new Date().toISOString();
+  ModifiedDate?: string; // set via UtilityService
   ModifiedBy?: number = 1;
-  TreatmentDate?: string = new Date().toISOString();
+  TreatmentDate?: string = new Date().toString();
   user?: User;
   patient?: Patient;
   PatientTreatmentDetails?: PatientTreatmentDetail[];

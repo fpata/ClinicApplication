@@ -43,8 +43,8 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
     const eventDetails = `
 Event: ${args.e.text()}
 Resource: ${args.e.data.resource || 'N/A'}
-Start: ${args.e.start().toString('M/d/yyyy h:mm tt')}
-End: ${args.e.end().toString('M/d/yyyy h:mm tt')}
+Start: ${args.e.start().toString('yyyy-MM-dd h:mm tt')}
+End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
     `;
     alert(eventDetails);
   }

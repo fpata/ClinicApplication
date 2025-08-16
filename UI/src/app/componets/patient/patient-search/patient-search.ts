@@ -10,6 +10,7 @@ import { User } from '../../../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../../services/user.service';
 import { Router } from '@angular/router';
+import { UtilityService } from '../../../services/utility.service';
 
 @Component({
   selector: 'app-patient-search',
@@ -27,11 +28,11 @@ export class PatientSearchComponent {
   clearSearchClicked: boolean = false;
 
   constructor(private searchService: SearchService, private patientService: PatientService,
-    private dataService: DataService, private userService: UserService, private router: Router
+    private dataService: DataService, private userService: UserService, private router: Router, private util: UtilityService
   ) {
-    this.searchPatient = new PatientSearchModel();
-    this.searchPatient.EndDate = new Date().toISOString().split('T')[0]; // Default to today
-    this.searchPatient.StartDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Default to 7 days ago
+    this.searchPatient = new PatientSearchModel(this.util);
+    this.searchPatient.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
+    this.searchPatient.StartDate = this.util.formatDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
     this.searchResult = [];
   }
 

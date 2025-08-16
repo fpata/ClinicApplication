@@ -12,6 +12,7 @@ import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
 import { Observable } from 'rxjs';
 import { MessagesComponent } from '../../../common/messages/messages.component';
 import { MessageService } from '../../../services/message.service';
+import { UtilityService } from '../../../services/utility.service';
 
 @Component({
   selector: 'app-doctor-appointments',
@@ -34,7 +35,8 @@ export class DoctorAppointmentsComponent {
   constructor(private patientAppointmentService: PatientAppointmentService, 
     private dataService: DataService,
     private searchService: SearchService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private util: UtilityService
   ) {
     this.clearNewAppointment();
     this.appointments = new Array<PatientAppointment>();
@@ -78,7 +80,7 @@ export class DoctorAppointmentsComponent {
   }
 
   getDoctors() :void {
-    var searchModel:PatientSearchModel = new PatientSearchModel();
+    var searchModel:PatientSearchModel = new PatientSearchModel(this.util);
     searchModel.UserType = 'Doctor';
     this.searchService.searchUser(searchModel).subscribe({
       next: (result: PatientSearchModel[]) => {
@@ -93,14 +95,14 @@ export class DoctorAppointmentsComponent {
   }
 
   getPatients = (name:string): Observable<PatientSearchModel[]> => {
-    const searchModel:PatientSearchModel = new PatientSearchModel();
+    const searchModel:PatientSearchModel = new PatientSearchModel(this.util);
     searchModel.UserType = 'Patient';
     searchModel.FirstName = name;
     return this.searchService.searchUser(searchModel);
   }
 
   clearSearch() {
-    this.searchPatient = {
+    this.searchPatient = <PatientSearchModel> {
       PatientID: 0,
       UserID: 0,
       FirstName: '',
@@ -112,8 +114,8 @@ export class DoctorAppointmentsComponent {
       UserType: '',
       DoctorID: 0,
       DoctorName: '',
-      EndDate: (new Date().toISOString().split('T')[0]),
-      StartDate: (new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+  EndDate: this.util.formatDate(new Date()),
+  StartDate: this.util.formatDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))    
     };
     this.searchResult = [];
     this.clearSearchClicked = false;
@@ -166,21 +168,33 @@ export class DoctorAppointmentsComponent {
     }
     // Defer the scheduler update to avoid blocking the UI thread
     setTimeout(() => this.AddEventsToScheduler(this.appointments));
-    this.clearNewAppointment(); // Reset the form after saving
-    /*this.patientAppointmentService.createPatientAppointment(this.newAppointment).subscribe({
+
+    // Call API with the populated appointment BEFORE clearing the form
+    this.patientAppointmentService.createPatientAppointment(appointmentToSave).subscribe({
       next: (result: any) => {
-        this.appointments.push(result);
-        this.clearNewAppointment();
+        // Replace the temp (possibly negative ID) with server result if needed
+        if (appointmentToSave.ID < 0) {
+          const idx = this.appointments.findIndex(a => a.ID === appointmentToSave.ID);
+          if (idx > -1) {
+            this.appointments[idx] = result;
+          } else {
+            this.appointments.push(result);
+          }
+        } else {
+          this.appointments.push(result);
+        }
+        this.clearNewAppointment(); // Reset only after successful save
       },
       error: (err: any) => {
         console.error(err);
+        // Keep the form values so user can retry
       }
-    });*/
+    });
   }
 
   clearNewAppointment() {
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0];
+  const today = new Date();
+  const todayString = this.util.formatDate(today);
     const thirtyMinutesLater = new Date(today.getTime() + 30 * 60000);
 
     this.newAppointment = {
@@ -190,8 +204,8 @@ export class DoctorAppointmentsComponent {
       StartApptDate: todayString as any, // Format for date input
       EndApptDate: todayString as any, // Format for date input
       TreatmentName: '',
-      CreatedDate: new Date().toString(),
-      ModifiedDate: new Date().toString(),
+  CreatedDate: this.util.formatDateTime(new Date()),
+  ModifiedDate: this.util.formatDateTime(new Date()),
       CreatedBy: this.dataService.getLoginUser()?.user?.ID || 1,
       ModifiedBy: this.dataService.getLoginUser()?.user?.ID || 1
     };

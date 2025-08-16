@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { DataService } from '../../../services/data.service';
+import { UtilityService } from '../../../services/utility.service';
 import { Subscription } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
@@ -23,7 +24,7 @@ export class PatientTreatmentComponent {
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private util: UtilityService) { }
 
   ngOnInit() {
     // Subscribe to patient changes from the data service
@@ -60,11 +61,11 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail.Tooth = '';
     this.newTreatmentDetail.Procedure = '';
     this.newTreatmentDetail.Advice = '';
-    this.newTreatmentDetail.TreatmentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  this.newTreatmentDetail.TreatmentDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
     this.newTreatmentDetail.CreatedBy = this.patient.UserID;
-    this.newTreatmentDetail.CreatedDate = new Date().toISOString();
+  this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
     this.newTreatmentDetail.ModifiedBy = this.patient.UserID;
-    this.newTreatmentDetail.ModifiedDate = new Date().toISOString();
+  this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
     this.isEditOperation = false;
   }
 

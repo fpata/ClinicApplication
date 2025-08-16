@@ -68,6 +68,8 @@ namespace ClinicManager.Controllers
                 // Set timestamps
                 user.CreatedDate = DateTime.UtcNow;
                 user.ModifiedDate = DateTime.UtcNow;
+                user.CreatedBy = user.CreatedBy ?? 1; // Default to 1 if not set
+                user.ModifiedBy = user.ModifiedBy ?? 1; // Default to 1 if not set
                 user.IsActive = 1;
 
                 _context.Users.Add(user);
@@ -82,6 +84,8 @@ namespace ClinicManager.Controllers
                     user.Address.UserID = user.ID;
                     user.Address.CreatedDate = DateTime.UtcNow;
                     user.Address.ModifiedDate = DateTime.UtcNow;
+                    user.CreatedBy = user.CreatedBy ?? 1; // Default to 1 if not set
+                    user.ModifiedBy = user.ModifiedBy ?? 1; // Default to 1 if not set
                     user.Address.IsActive = 1;
                     entitiesToAdd.Add(user.Address);
                 }
@@ -92,6 +96,8 @@ namespace ClinicManager.Controllers
                     user.Contact.UserID = user.ID;
                     user.Contact.CreatedDate = DateTime.UtcNow;
                     user.Contact.ModifiedDate = DateTime.UtcNow;
+                    user.Contact.CreatedBy = user.CreatedBy ?? 1; // Default to 1 if not set
+                    user.Contact.ModifiedBy = user.ModifiedBy ?? 1; // Default to 1 if not set
                     user.Contact.IsActive = 1;
                     entitiesToAdd.Add(user.Contact);
                 }
@@ -134,7 +140,7 @@ namespace ClinicManager.Controllers
             try
             {
                 user.ModifiedDate = DateTime.UtcNow;
-
+                user.ModifiedBy = user.ModifiedBy ?? 1; // Default to 1 if not set
                 // Update user
                 _context.Entry(user).State = EntityState.Modified;
 
@@ -149,7 +155,10 @@ namespace ClinicManager.Controllers
                     else
                     {
                         user.Address.UserID = user.ID;
-                        user.Address.CreatedDate = DateTime.UtcNow;
+                        user.Address.CreatedDate = user.Address.CreatedDate ?? DateTime.UtcNow;
+                        user.Address.ModifiedDate = DateTime.UtcNow;
+                        user.Address.CreatedBy = user.CreatedBy ?? 1; // Default to 1 if not set
+                        user.Address.ModifiedBy = user.ModifiedBy ?? 1; // Default to 1 if not set
                         user.Address.IsActive = 1;
                         _context.Addresses.Add(user.Address);
                     }
@@ -165,8 +174,11 @@ namespace ClinicManager.Controllers
                     else
                     {
                         user.Contact.UserID = user.ID;
-                        user.Contact.CreatedDate = DateTime.UtcNow;
+                        user.Contact.CreatedDate = user.CreatedDate ?? DateTime.UtcNow;
+                        user.Contact.ModifiedDate = DateTime.UtcNow;
                         user.Contact.IsActive = 1;
+                        user.Contact.CreatedBy = user.CreatedBy ?? 1; // Default to 1 if not set
+                        user.Contact.ModifiedBy = user.ModifiedBy ?? 1; // Default to 1 if not set
                         _context.Contacts.Add(user.Contact);
                     }
                 }

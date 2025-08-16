@@ -13,9 +13,9 @@ export class User {
   Gender?: string;
   DOB?: string | null;
   Age?: number;
-  LastLoginDate?: string= new Date().toISOString();
-  CreatedDate?: string= new Date().toISOString();
-  ModifiedDate?: string= new Date().toISOString();
+  LastLoginDate?: string; // set via UtilityService when needed
+  CreatedDate?: string;   // set via UtilityService.formatDateTime
+  ModifiedDate?: string;  // set via UtilityService.formatDateTime
   CreatedBy?: number= 1;
   ModifiedBy?: number= 1;
   IsActive?: number= 1;

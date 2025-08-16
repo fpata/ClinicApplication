@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output, signal, computed, effect, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, computed, effect, OnDestroy, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { HttpClient, HttpClientModule, HttpParams } from '@angular/common/http';
 import { Subject, Subscription, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, switchMap, catchError, tap } from 'rxjs/operators';
@@ -10,9 +10,17 @@ import { debounceTime, distinctUntilChanged, filter, switchMap, catchError, tap 
   standalone: true,
   imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './typeahead.html',
-  styleUrls: ['./typeahead.css']
+  styleUrls: ['./typeahead.css'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => TypeaheadComponent),
+      multi: true
+    }
+  ]
 })
-export class TypeaheadComponent<T = any> implements OnDestroy {
+export class TypeaheadComponent<T = any> implements OnDestroy, ControlValueAccessor {
+
   // UI config
   @Input() placeholder = 'Search...';
   @Input() minLength = 1;
@@ -20,6 +28,8 @@ export class TypeaheadComponent<T = any> implements OnDestroy {
   @Input() debounce = 300;
   @Input() disabled = false;
   @Input() displayWith: (item: T) => string = (i: any) => String(i ?? '');
+  // Show dropdown even if there are zero matches (so "No results" / Loading appears)
+  @Input() showOnEmpty = true;
 
   // Local static list mode (optional)
   @Input() items: T[] = [];
@@ -45,6 +55,13 @@ export class TypeaheadComponent<T = any> implements OnDestroy {
   private remoteResults = signal<T[]>([]);
   private query$ = new Subject<string>();
   private sub?: Subscription;
+  private manualClosed = signal(false);
+
+  // ControlValueAccessor callbacks (initialized as no-ops)
+  private onChange: (value: T | null) => void = () => {};
+  private onTouched: () => void = () => {};
+
+  //isOpen = computed(() => !this.manualClosed() && this.filtered().length > 0);
 
   // Decide active result source
   filtered = computed(() => {
@@ -100,6 +117,9 @@ export class TypeaheadComponent<T = any> implements OnDestroy {
     );
   }
 
+  close() { this.manualClosed.set(true); }
+  open() { this.manualClosed.set(false); }
+
   onInput(event$: Event) {
     const value = (event$.target as HTMLInputElement).value;
     this.query.set(value);
@@ -109,41 +129,64 @@ export class TypeaheadComponent<T = any> implements OnDestroy {
       // Local mode still emits immediately
       this.queryChange.emit(value);
     }
+    this.open();
+  }
+
+  onKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') this.close();
+    if (e.key === 'Enter' && this.focusedIndex() > -1) {
+      this.choose(this.filtered()[this.focusedIndex()]);
+      this.close();
+      e.preventDefault();
+    }
   }
 
   choose(item: T) {
     this.selectItem.emit(item);
     this.query.set(this.displayWith(item));
     this.focusedIndex.set(-1);
-  }
-
-  onKey(e: KeyboardEvent) {
-    if (!this.filtered().length) return;
-    const max = this.filtered().length - 1;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      this.focusedIndex.set(Math.min(max, this.focusedIndex() + 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.focusedIndex.set(Math.max(0, this.focusedIndex() - 1));
-    } else if (e.key === 'Enter') {
-      const idx = this.focusedIndex();
-      if (idx >= 0) {
-        e.preventDefault();
-        this.choose(this.filtered()[idx]);
-      }
-    } else if (e.key === 'Escape') {
-      this.focusedIndex.set(-1);
-    }
+    this.onChange(item); // propagate to form
+    this.onTouched();    // mark touched
   }
 
   isOpen() {
-    return this.query().length >= this.minLength && (this.loading() || this.filtered().length > 0 || this.serverError());
+    if (this.manualClosed()) return false;
+    const hasQuery = this.query().length >= this.minLength;
+    if (!hasQuery) return false;
+    // Open if we either have results, are loading, have an error, or are allowed to show empty state
+    return this.loading() || this.serverError() || this.filtered().length > 0 || this.showOnEmpty;
   }
 
   trackByIndex(i: number) { return i; }
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
+  }
+
+  onItemMouseDown(evt: MouseEvent, item: T) {
+    evt.preventDefault();         // avoid losing focus before we process
+    this.choose(item);
+    this.close();                 // make sure to explicitly close
+  }
+
+  // ControlValueAccessor implementation
+  writeValue(value: T | null): void {
+    if (value == null) {
+      this.query.set('');
+    } else {
+      this.query.set(this.displayWith(value));
+    }
+  }
+
+  registerOnChange(fn: (value: T | null) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
   }
 }

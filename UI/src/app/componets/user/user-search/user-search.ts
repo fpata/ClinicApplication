@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UtilityService } from '../../../services/utility.service';
 import { PatientSearchModel } from '../../../models/patient-search.model';
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding 
 import { SearchService } from '../../../services/search.service';
@@ -21,10 +22,11 @@ export class UserSearch {
   searchLengthConstraintError: boolean = false;
   clearSearchClicked: boolean = false;
 
-  constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService) {
-    this.searchPatient = new PatientSearchModel();
-    this.searchPatient.EndDate = new Date().toISOString().split('T')[0]; // Default to today
-    this.searchPatient.StartDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Default to 365 days ago
+  constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService, 
+    private util: UtilityService) {
+    this.searchPatient = new PatientSearchModel(this.util);
+    this.searchPatient.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd'); // Default to today
+    this.searchPatient.StartDate = this.util.formatDate(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'); // 365 days ago
     this.searchResult = [];
   }
 
@@ -65,7 +67,7 @@ validateSearchInput() {
 
   clearSearch() {
     this.searchLengthConstraintError = false;
-    this.searchPatient = new PatientSearchModel();
+    this.searchPatient = new PatientSearchModel(this.util);
 
     this.searchResult = [];
     this.clearSearchClicked = true;

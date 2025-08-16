@@ -264,11 +264,6 @@
                 [displayWith]="displayPatientName"
               (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName">
             </app-typeahead>
-            <input type="text" id="txtApptPatientName" class="form-control" [ngModel]="newAppointment?.PatientName"
-              (ngModelChange)="newAppointment.PatientName = $event">
-            <button class="btn btn-primary" type="button">
-              <i class="bi bi-search"></i>
-            </button>
           </div>
         </div>
         <br />

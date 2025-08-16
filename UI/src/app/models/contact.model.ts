@@ -9,8 +9,8 @@ export class Contact {
   RelativePhone?: string;
   RelativeEmail?: string;
   UserID?: number;
-  CreatedDate?: string = new Date().toISOString();
-  ModifiedDate?: string = new Date().toISOString();
+  CreatedDate?: string; // set via UtilityService
+  ModifiedDate?: string; // set via UtilityService
   CreatedBy?: number = 1;
   ModifiedBy?: number = 1;
   IsActive?: number = 1;

@@ -6,6 +6,7 @@ import { PatientSearchComponent } from '../patient-search/patient-search';
 import { PatientTreatmentComponent } from "../patient-treatment/patient-treatment";
 import { DataService } from '../../../services/data.service';
 import { PatientService } from '../../../services/patient.service';
+import { UtilityService } from '../../../services/utility.service';
 import { PatientCompleteHistoryComponent } from '../patientcompletehistory/patientcompletehistory';
 import { Patient } from '../../../models/patient.model';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
@@ -30,7 +31,7 @@ export class PatientMasterComponent {
   userID: number = 0;
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
   @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
-  constructor(private dataService: DataService, private patientService: PatientService) { }
+  constructor(private dataService: DataService, private patientService: PatientService, private util: UtilityService) { }
 
   tabSelectedEvent(event: MouseEvent) {
     // Logic to handle tab selection
@@ -98,8 +99,8 @@ export class PatientMasterComponent {
     patient.ID = 0; // New patient, so ID is 0
     patient.CreatedBy = this.dataService.getUser()?.ID || 0;
     patient.ModifiedBy = this.dataService.getUser()?.ID || 0;
-    patient.CreatedDate = new Date().toISOString();
-    patient.ModifiedDate = new Date().toISOString();
+  patient.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
+  patient.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
     patient.IsActive = 1;
     patient.PatientAppointments = new Array<PatientAppointment>();
     patient.PatientAppointments = [];

@@ -106,6 +106,7 @@ namespace ClinicManager.Controllers
                                           .ToList()
                                   })
                                  .AsNoTracking()
+                                 .AsSplitQuery() // Use AsSplitQuery to optimize loading related entities
                                  .FirstOrDefaultAsync();
 
             if (userData == null)
@@ -147,6 +148,8 @@ namespace ClinicManager.Controllers
                 patient.ID = 0; // Ensure new patient
                 patient.CreatedDate = DateTime.UtcNow;
                 patient.ModifiedDate = DateTime.UtcNow;
+                patient.CreatedBy = patient.CreatedBy ?? 1; // Default to 1 if not set
+                patient.ModifiedBy = patient.ModifiedBy ?? 1; // Default to 1 if not set
                 patient.IsActive = 1;
 
                 // Reset IDs and set properties for all related entities to ensure they are treated as new.
@@ -158,6 +161,8 @@ namespace ClinicManager.Controllers
                         report.UserID = patient.UserID;
                         report.CreatedDate = DateTime.UtcNow;
                         report.ModifiedDate = DateTime.UtcNow;
+                        report.CreatedBy = report.CreatedBy ?? 1; // Default to 1 if not set
+                        report.ModifiedBy = report.ModifiedBy ?? 1; // Default to 1 if not set
                         report.PatientID = null; // Clear foreign key - EF will set it
                         report.IsActive = 1;
                     }
@@ -171,6 +176,8 @@ namespace ClinicManager.Controllers
                         appointment.UserID = patient.UserID;
                         appointment.CreatedDate = DateTime.UtcNow;
                         appointment.ModifiedDate = DateTime.UtcNow;
+                        appointment.CreatedBy = appointment.CreatedBy ?? 1; // Default to 1 if not set
+                        appointment.ModifiedBy = appointment.ModifiedBy ?? 1; // Default to 1 if not set
                         appointment.PatientID = null; // Clear foreign key - EF will set it
                         appointment.IsActive = 1;
                     }
@@ -182,6 +189,8 @@ namespace ClinicManager.Controllers
                     patient.PatientTreatment.UserID = patient.UserID;
                     patient.PatientTreatment.CreatedDate = DateTime.UtcNow;
                     patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
+                    patient.PatientTreatment.CreatedBy = patient.PatientTreatment.CreatedBy ?? 1; // Default to 1 if not set
+                    patient.PatientTreatment.ModifiedBy = patient.PatientTreatment.ModifiedBy ?? 1; // Default to 1 if not set
                     patient.PatientTreatment.PatientID = null; // Clear foreign key - EF will set it
                     patient.PatientTreatment.IsActive = 1;
 
@@ -193,6 +202,8 @@ namespace ClinicManager.Controllers
                             detail.UserID = patient.UserID;
                             detail.CreatedDate = DateTime.UtcNow;
                             detail.ModifiedDate = DateTime.UtcNow;
+                            detail.CreatedBy = detail.CreatedBy ?? 1; // Default to 1 if not set
+                            detail.ModifiedBy = detail.ModifiedBy ?? 1; // Default to 1 if not set
                             detail.PatientID = null; // Clear direct patient reference
                             detail.PatientTreatmentID = null; // Clear treatment reference - EF will set it
                             detail.IsActive = 1;
@@ -239,6 +250,8 @@ namespace ClinicManager.Controllers
                     appointment.UserID = patient.UserID;
                     appointment.CreatedDate = appointment.CreatedDate ?? DateTime.UtcNow;
                     appointment.ModifiedDate = DateTime.UtcNow;
+                    appointment.CreatedBy = appointment.CreatedBy ?? 1; // Default to 1 if not set
+                    appointment.ModifiedBy = appointment.ModifiedBy ?? 1; // Default to 1 if not set
                     _context.Entry(appointment).State = appointment.ID < 1 ? EntityState.Added : EntityState.Modified;
                 }
             }
@@ -250,6 +263,8 @@ namespace ClinicManager.Controllers
                     report.UserID = patient.UserID;
                     report.CreatedDate = report.CreatedDate ?? DateTime.UtcNow;
                     report.ModifiedDate = DateTime.UtcNow;
+                    report.CreatedBy = report.CreatedBy ?? 1; // Default to 1 if not set
+                    report.ModifiedBy = report.ModifiedBy ?? 1; // Default to 1 if not set
                     _context.Entry(report).State = report.ID < 1 ? EntityState.Added : EntityState.Modified;
                 }
             }
@@ -259,6 +274,9 @@ namespace ClinicManager.Controllers
                 patient.PatientTreatment.UserID = patient.UserID;
                 patient.PatientTreatment.CreatedDate = patient.PatientTreatment.CreatedDate ?? DateTime.UtcNow;
                 patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
+                patient.PatientTreatment.CreatedBy = patient.PatientTreatment.CreatedBy ?? 1; // Default to 1 if not set
+                patient.PatientTreatment.ModifiedBy = patient.PatientTreatment.ModifiedBy ?? 1; // Default to 1 if not set
+                patient.PatientTreatment.IsActive = 1; // Ensure treatment is active
                 _context.Entry(patient.PatientTreatment).State = patient.PatientTreatment.ID < 1 ? EntityState.Added : EntityState.Modified;
                 if (patient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
                 {
@@ -269,6 +287,10 @@ namespace ClinicManager.Controllers
                         detail.PatientID = id; // Ensure the detail is linked to the correct patient
                         detail.CreatedDate = detail.CreatedDate ?? DateTime.UtcNow;
                         detail.ModifiedDate = DateTime.UtcNow;
+                        detail.CreatedBy = detail.CreatedBy ?? 1; // Default to 1 if not set
+                        detail.ModifiedBy = detail.ModifiedBy ?? 1; // Default to 1 if not set
+                        detail.PatientTreatmentID = patient.PatientTreatment.ID; // Link to the treatment
+                        detail.IsActive = 1; // Ensure detail is active
                         _context.Entry(detail).State = detail.ID < 1 ? EntityState.Added : EntityState.Modified;
                     }
                 }

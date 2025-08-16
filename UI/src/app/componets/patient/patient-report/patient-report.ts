@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { PatientReport } from '../../../models/patient-report.model';
 import { User } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
+import { UtilityService } from '../../../services/utility.service';
 import { Subscription } from 'rxjs';
 import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +19,7 @@ export class PatientReportComponent {
   patient: Patient | null = null;
   newReport: PatientReport|null = null; // Initialize new report object
   
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService, private util: UtilityService) {
    }
   
   ngOnInit() {
@@ -54,14 +55,14 @@ export class PatientReportComponent {
       UserID: user?.ID || 0,
       PatientID: this.patient?.ID || 0,
       IsActive :1,
-      ReportDate: new Date().toISOString().split('T')[0],
+      ReportDate: new Date().toString().split('T')[0],
       ReportName: '',
       DoctorName: '',
       ReportDetails: '',
       CreatedBy: user?.ID || 0,
       ModifiedBy: user?.ID || 0,
-      ModifiedDate: new Date().toISOString().split('T')[0] ,
-      CreatedDate: new Date().toISOString().split('T')[0] 
+  ModifiedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd'),
+  CreatedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd') 
     };
   }
 

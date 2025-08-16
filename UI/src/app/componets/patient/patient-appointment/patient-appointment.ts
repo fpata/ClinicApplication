@@ -2,6 +2,7 @@ import { Component, ViewChild, viewChild } from '@angular/core';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { Subscription } from 'rxjs';
 import { DataService } from '../../../services/data.service';
+import { UtilityService } from '../../../services/utility.service';
 import { User } from '../../../models/user.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilotModule, DayPilot } from '@daypilot/daypilot-lite-angular';
@@ -25,7 +26,7 @@ export class PatientAppointmentComponent {
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private util: UtilityService) { }
 
   ngOnInit() {
     // Subscribe to patient changes from the data service
@@ -135,8 +136,8 @@ export class PatientAppointmentComponent {
     this.newAppointment.IsActive = 1;
     this.newAppointment.CreatedBy = user?.ID || 1;
     this.newAppointment.ModifiedBy = user?.ID || 1;
-    this.newAppointment.CreatedDate = new Date().toISOString();
-    this.newAppointment.ModifiedDate = new Date().toISOString();
+  this.newAppointment.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
+  this.newAppointment.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
     this.newAppointment.DoctorID = this.dataService.getLoginUser()?.user?.ID || 1;
   }
 }

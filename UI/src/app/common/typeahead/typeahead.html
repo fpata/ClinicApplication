@@ -26,7 +26,7 @@
       class="list-group-item list-group-item-action"
       *ngFor="let item of filtered(); let i = index; trackBy: trackByIndex"
       [class.active]="i === focusedIndex()"
-      (mousedown)="choose(item)"
+      (mousedown)="onItemMouseDown($event, item)"
       (mouseenter)="focusedIndex.set(i)"
     >
       {{ displayWith(item) }}

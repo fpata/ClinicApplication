@@ -10,9 +10,9 @@ export class Patient {
   FatherHistory?: string;
   MotherHistory?: string;
   IsActive?: number = 1;
-  CreatedDate?: string = new Date().toISOString();
+  CreatedDate?: string; // set via UtilityService.formatDateTime where created
   CreatedBy?: number = 1;
-  ModifiedDate?: string = new Date().toISOString();
+  ModifiedDate?: string; // set via UtilityService.formatDateTime where modified
   ModifiedBy?: number = 1;
   user?: User;
   PatientAppointments?: PatientAppointment[];
