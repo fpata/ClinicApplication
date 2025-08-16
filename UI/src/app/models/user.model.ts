@@ -9,13 +9,27 @@ export class User extends BaseEntity {
   LastName?: string;
   UserName?: string;
   Password?: string;
-  UserType?: string;
+  UserType?: UserType;
   Gender?: string;
-  DOB?: string | null;
+  DateOfBirth?: string | null;
   Age?: number;
   LastLoginDate?: string; // set via UtilityService when needed
   Address?: Address;
   Patients?: any;
   Contact?: Contact;
   FullName?: string;
+  Designation?: string;
+  LicenseNumber?: string;
+  Specialization?: string;
+  LicenseExpiryDate?: Date | null;        
 }
+
+ export enum UserType
+ {
+     Patient = 1,
+     Doctor = 2,
+     Nurse = 3,
+     Receptionist = 4,
+     Administrator = 5,
+     Technician = 6
+ }

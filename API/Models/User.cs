@@ -53,12 +53,10 @@ namespace ClinicManager.Models
         
         public DateTime? LicenseExpiryDate { get; set; }
         
-        [StringLength(15)]
-        public string? WorkPhone { get; set; }
         
         // Full name property
         [NotMapped]
-        public string FullName => $"{FirstName} {MiddleName} {LastName}".Replace("  ", " ").Trim();
+        public string FullName => $"{FirstName} {LastName}".Replace("  ", " ").Trim();
         
         // Navigation properties
         public virtual Address? Address { get; set; }

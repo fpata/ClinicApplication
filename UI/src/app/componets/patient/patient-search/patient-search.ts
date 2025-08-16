@@ -77,7 +77,7 @@ export class PatientSearchComponent {
     this.searchPatient.PrimaryPhone = '';
     this.searchPatient.UserID = 0;
     this.searchPatient.UserName = '';
-    this.searchPatient.UserType = '';
+    this.searchPatient.UserType = 0;
     this.searchResult = [];
     this.clearSearchClicked = true;
   }

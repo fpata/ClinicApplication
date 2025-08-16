@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 import { MessagesComponent } from '../../../common/messages/messages.component';
 import { MessageService } from '../../../services/message.service';
 import { UtilityService } from '../../../services/utility.service';
+import { UserType } from '../../../models/user.model';
 
 @Component({
   selector: 'app-doctor-appointments',
@@ -81,7 +82,7 @@ export class DoctorAppointmentsComponent {
 
   getDoctors() :void {
     var searchModel:PatientSearchModel = new PatientSearchModel(this.util);
-    searchModel.UserType = 'Doctor';
+    searchModel.UserType = UserType.Doctor;
     this.searchService.searchUser(searchModel).subscribe({
       next: (result: PatientSearchModel[]) => {
         this.doctors = result;
@@ -96,7 +97,7 @@ export class DoctorAppointmentsComponent {
 
   getPatients = (name:string): Observable<PatientSearchModel[]> => {
     const searchModel:PatientSearchModel = new PatientSearchModel(this.util);
-    searchModel.UserType = 'Patient';
+    searchModel.UserType = UserType.Patient;
     searchModel.FirstName = name;
     return this.searchService.searchUser(searchModel);
   }
@@ -111,7 +112,7 @@ export class DoctorAppointmentsComponent {
       PrimaryEmail: '',
       PermCity: '',
       UserName: '',
-      UserType: '',
+      UserType: UserType.Patient,
       DoctorID: 0,
       DoctorName: '',
   EndDate: this.util.formatDate(new Date()),

@@ -40,10 +40,14 @@
                 <label for="rdGenderMale" class="form-label">Gender</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="male" [checked]="user?.Gender === 'male'" (change)="user && (user.Gender = 'male')">
+                <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1" [checked]="user?.Gender === '1'" (change)="user && (user.Gender = '1')">
                 <label class="form-check-label" for="rdGenderMale">Male</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="female" [checked]="user?.Gender === 'female'" (change)="user && (user.Gender = 'female')">
-                <label class="form-check-label" for="rdGenderFemale">Female</label>
+                <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2" [checked]="user?.Gender === '2'" (change)="user && (user.Gender = '2')">
+                <label class="form-check-label" for="rdGenderFemale">Female</label>&nbsp;&nbsp;
+                <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3" [checked]="user?.Gender === '3'" (change)="user && (user.Gender = '3')">
+                <label class="form-check-label" for="rdGenderOther">Other</label>&nbsp;&nbsp;
+                <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4" [checked]="user?.Gender === '4'" (change)="user && (user.Gender = '4')">
+                <label class="form-check-label" for="rdGenderPreferNotToSay">Prefer Not to Say</label>
               </div>
             </div>
             <br />
@@ -71,9 +75,9 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <select id="txtUserType" class="form-select" [ngModel]="user?.UserType" (ngModelChange)="user && (user.UserType = $event)" required>
-                  <option value="Patient">Patient</option>
-                  <option value="Doctor">Doctor</option>
-                  <option value="Admin">Admin</option>
+                  <option value="1">Patient</option>
+                  <option value="2">Doctor</option>
+                  <option value="5">Administrator</option>
                 </select> 
               </div>
             </div>
