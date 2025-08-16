@@ -17,4 +17,11 @@ export class PatientTreatment {
   user?: User;
   patient?: Patient;
   PatientTreatmentDetails?: PatientTreatmentDetail[];
+  EstimatedCost: number;
+  ActualCost?: number;
+  ClinicalFindings?: string;
+  Diagnosis?: string;
+  Prescription?: string;
+  FollowUpInstructions?: string;
+  PaymentStatus?: string;
 }

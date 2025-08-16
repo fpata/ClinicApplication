@@ -73,7 +73,7 @@
                                 <td>{{treatmentdetail.TreatmentDate}}</td>
                                 <td>{{treatmentdetail.Tooth}}</td>
                                 <td>{{treatmentdetail.Procedure}}</td>
-                                <td>{{treatmentdetail.Advice}}</td>
+                                <td>{{treatmentdetail.Prescription}}</td>
                                 <td>{{treatmentdetail.PatientTreatmentID}}</td>
                             </tr>
                         }
@@ -129,10 +129,10 @@
                   <br />
                   <div class="row">
                     <div class="col">
-                      <label for="txtAdvice" class="form-label">Advice Medication</label>
+                      <label for="txtPrescription" class="form-label">Prescription Medication</label>
                     </div>
                     <div class="col">
-                      <textarea id="txtAdvice" class="form-control" rows="2" [ngModel]="newTreatmentDetail?.Advice" (ngModelChange)="newTreatmentDetail.Advice = $event"></textarea>
+                      <textarea id="txtPrescription" class="form-control" rows="2" [ngModel]="newTreatmentDetail?.Prescription" (ngModelChange)="newTreatmentDetail.Prescription = $event"></textarea>
                     </div>
                   </div>
             </div>

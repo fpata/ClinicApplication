@@ -6,7 +6,7 @@ export class PatientTreatmentDetail {
   UserID?: number;
   Tooth?: string;
   Procedure?: string;
-  Advice?: string;
+  Prescription?: string;
   TreatmentDate?: string;
   PatientID?: number;
   IsActive?: number = 1;
@@ -16,4 +16,5 @@ export class PatientTreatmentDetail {
   ModifiedBy?: number = 1;
   user?: User;
   patientTreatment?: PatientTreatment;
+  FollowUpDate?: string;
 }

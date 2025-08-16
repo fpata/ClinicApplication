@@ -148,7 +148,7 @@ namespace ClinicManager.Controllers
                 patient.ID = 0; // Ensure new patient
                 patient.CreatedDate = DateTime.UtcNow;
                 patient.ModifiedDate = DateTime.UtcNow;
-                patient.CreatedBy = patient.CreatedBy ?? 1; // Default to 1 if not set
+                patient.CreatedBy = patient.CreatedBy = 1; // Default to 1 if not set
                 patient.ModifiedBy = patient.ModifiedBy ?? 1; // Default to 1 if not set
                 patient.IsActive = 1;
 

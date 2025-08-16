@@ -140,19 +140,19 @@ export class DoctorAppointmentsComponent {
     // Create a temporary appointment object to avoid mutating the form-bound newAppointment
     const appointmentToSave = { ...this.newAppointment };
 
-    if (appointmentToSave.StartApptDate && appointmentTime) {
+    if (appointmentToSave.StartDateTime && appointmentTime) {
       const [hours, minutes] = appointmentTime.split(':').map(Number);
-      const startDate = new Date(appointmentToSave.StartApptDate);
+      const startDate = new Date(appointmentToSave.StartDateTime);
       startDate.setHours(hours, minutes, 0, 0);
-      appointmentToSave.StartApptDate = startDate;
+      appointmentToSave.StartDateTime = startDate;
     }
 
-    if (appointmentToSave.EndApptDate && appointmentEndTime) {
+    if (appointmentToSave.EndDateTime && appointmentEndTime) {
       const [hours, minutes] = appointmentEndTime.split(':').map(Number);
-      // Assuming EndApptDate should be on the same day as StartApptDate
-      const endDate = new Date(appointmentToSave.StartApptDate);
+      // Assuming EndDateTime should be on the same day as StartDateTime
+      const endDate = new Date(appointmentToSave.StartDateTime);
       endDate.setHours(hours, minutes, 0, 0);
-      appointmentToSave.EndApptDate = endDate;
+      appointmentToSave.EndDateTime = endDate;
     }
 
     if (appointmentToSave.ID < 1) {
@@ -197,12 +197,12 @@ export class DoctorAppointmentsComponent {
   const todayString = this.util.formatDate(today);
     const thirtyMinutesLater = new Date(today.getTime() + 30 * 60000);
 
-    this.newAppointment = {
+    this.newAppointment = <PatientAppointment>{
       ID: 0,
       PatientID: 0,
       DoctorID: 0,
-      StartApptDate: todayString as any, // Format for date input
-      EndApptDate: todayString as any, // Format for date input
+      StartDateTime: todayString as any, // Format for date input
+      EndDateTime: todayString as any, // Format for date input
       TreatmentName: '',
   CreatedDate: this.util.formatDateTime(new Date()),
   ModifiedDate: this.util.formatDateTime(new Date()),
@@ -228,8 +228,8 @@ export class DoctorAppointmentsComponent {
       events.push({
         id: appointment.ID.toString(),
         text: appointment.PatientName || 'Unknown Patient',
-        start: new DayPilot.Date(appointment.StartApptDate),
-        end: new DayPilot.Date(appointment.EndApptDate),
+        start: new DayPilot.Date(appointment.StartDateTime),
+        end: new DayPilot.Date(appointment.EndDateTime),
         resource: appointment.DoctorName || 'General',
         backColor: '#3c8dbc',
       });

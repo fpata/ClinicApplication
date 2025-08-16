@@ -60,7 +60,7 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail.PatientID = this.patient.ID;
     this.newTreatmentDetail.Tooth = '';
     this.newTreatmentDetail.Procedure = '';
-    this.newTreatmentDetail.Advice = '';
+    this.newTreatmentDetail.Prescription = '';
   this.newTreatmentDetail.TreatmentDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
     this.newTreatmentDetail.CreatedBy = this.patient.UserID;
   this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');

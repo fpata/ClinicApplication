@@ -151,8 +151,8 @@
                     <tbody>
                       @for(appointment of searchResult; track $index) {
                       <tr>
-                        <td>{{appointment.StartApptDate}}</td>
-                        <td>{{appointment.EndApptDate}}</td>
+                        <td>{{appointment.StartDateTime}}</td>
+                        <td>{{appointment.EndDateTime}}</td>
                         <td>{{appointment.PatientName}}</td>
                         <td>{{appointment.TreatmentName}}</td>
                         <td>{{appointment.DoctorName}}</td>
@@ -219,7 +219,7 @@
           </div>
           <div class="col">
             <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
-              [ngModel]="newAppointment?.StartApptDate" (ngModelChange)="newAppointment.StartApptDate = $event">
+              [ngModel]="newAppointment?.StartDateTime" (ngModelChange)="newAppointment.StartDateTime = $event">
           </div>
         </div>
         <br />

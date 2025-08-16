@@ -30,51 +30,65 @@ namespace ClinicManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            _logger.LogInformation($"Login attempt for user: {request.UserName}");
+            _logger.LogInformation("Login attempt for user: {UserName}", request.UserName);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
             if (user == null)
             {
-                _logger.LogWarning($"Login failed: User not found: {request.UserName}");
+                _logger.LogWarning("Login failed: User not found: {UserName}", request.UserName);
                 return Unauthorized("Invalid username or password.");
             }
+
             if (user.Password != request.Password)
             {
-                _logger.LogWarning($"Login failed: Incorrect password for user: {request.UserName}");
+                _logger.LogWarning("Login failed: Incorrect password for user: {UserName}", request.UserName);
                 return Unauthorized("Invalid username or password.");
             }
-            _logger.LogInformation($"Login successful for user: {request.UserName}");
 
-            // Generate JWT token
-            var jwtKey = HttpContext.RequestServices.GetService<IConfiguration>()?["Jwt:Key"] ?? "ClinicManagerJwtTokenForEncryption";
-            var jwtIssuer = HttpContext.RequestServices.GetService<IConfiguration>()?["Jwt:Issuer"] ?? "ClinicManagerIssuer";
+            if (string.IsNullOrWhiteSpace(user.UserName))
+            {
+                _logger.LogError("User record has null/empty UserName. User ID: {UserId}", user.ID);
+                return StatusCode(500, "User record invalid.");
+            }
+
+            _logger.LogInformation("Login successful for user: {UserName}", request.UserName);
+
+            var configuration = HttpContext.RequestServices.GetService<IConfiguration>();
+            var jwtKey = configuration?["Jwt:Key"] ?? "ClinicManagerJwtTokenForEncryption";
+            var jwtIssuer = configuration?["Jwt:Issuer"] ?? "ClinicManagerIssuer";
+
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName!), // userName validated above
                 new Claim("userid", user.ID.ToString()),
-                new Claim("usertype", user.UserType),
+                new Claim("usertype", user.UserType.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
             var token = new JwtSecurityToken(
                 issuer: jwtIssuer,
                 audience: null,
                 claims: claims,
-                expires: DateTime.Now.AddHours(2),
+                expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: credentials
             );
+
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(new {
+            return Ok(new
+            {
                 token = tokenString,
-                user = new {
+                user = new
+                {
                     user.ID,
                     user.UserName,
                     user.UserType,
                     user.FirstName,
                     user.LastName,
                     user.Gender,
-                    user.DOB,
+                    user.Age,
                     user.LastLoginDate
                 }
             });

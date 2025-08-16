@@ -22,60 +22,66 @@ namespace ClinicManager.Controllers
             _logger = logger;
         }
 
-        // Optimized search using LINQ instead of raw SQL to prevent SQL injection
+        // PSEUDOCODE:
+        // 1. Build base query joining users with optional patient, address, contact.
+        // 2. Ensure active status filters.
+        // 3. Apply conditional filters only when corresponding SearchModel properties have values.
+        //    - For UserName filter, avoid CS8602 by adding null check (user.UserName != null && ...)
+        // 4. Group results to consolidate duplicates and project to SearchModel.
+        // 5. Execute with AsNoTracking and Take(100).
+        // 6. Handle exceptions with logging.
         [HttpPost("user")]
         public async Task<ActionResult<IEnumerable<SearchModel>>> SearchUser([FromBody] SearchModel model)
         {
             _logger.LogInformation("Searching users by fields");
             try
             {
-                // Use LINQ with proper parameterization instead of raw SQL
                 var query = from user in _context.Users
-                           join patient in _context.Patients on user.ID equals patient.UserID into patientGroup
-                           from patient in patientGroup.DefaultIfEmpty()
-                           join address in _context.Addresses on user.ID equals address.UserID into addressGroup
-                           from address in addressGroup.DefaultIfEmpty()
-                           join contact in _context.Contacts on user.ID equals contact.UserID into contactGroup
-                           from contact in contactGroup.DefaultIfEmpty()
-                           where user.IsActive == 1 && 
-                                 (address == null || address.IsActive == 1) && 
-                                 (contact == null || contact.IsActive == 1)
-                           select new { user, patient, address, contact };
+                            join patient in _context.Patients on user.ID equals patient.UserID into patientGroup
+                            from patient in patientGroup.DefaultIfEmpty()
+                            join address in _context.Addresses on user.ID equals address.UserID into addressGroup
+                            from address in addressGroup.DefaultIfEmpty()
+                            join contact in _context.Contacts on user.ID equals contact.UserID into contactGroup
+                            from contact in contactGroup.DefaultIfEmpty()
+                            where user.IsActive == 1 &&
+                                  (address == null || address.IsActive == 1) &&
+                                  (contact == null || contact.IsActive == 1)
+                            select new { user, patient, address, contact };
 
-                // Apply filters using parameterized queries
                 if (!string.IsNullOrWhiteSpace(model.FirstName))
-                    query = query.Where(x => x.user.FirstName.Contains(model.FirstName));
+                    query = query.Where(x => x.user.FirstName != null && x.user.FirstName.Contains(model.FirstName));
 
                 if (!string.IsNullOrWhiteSpace(model.LastName))
-                    query = query.Where(x => x.user.LastName.Contains(model.LastName));
+                    query = query.Where(x => x.user.LastName != null && x.user.LastName.Contains(model.LastName));
 
                 if (!string.IsNullOrWhiteSpace(model.PrimaryEmail))
-                    query = query.Where(x => x.contact != null && x.contact.PrimaryEmail!.Contains(model.PrimaryEmail));
+                    query = query.Where(x => x.contact != null && x.contact.PrimaryEmail != null && x.contact.PrimaryEmail.Contains(model.PrimaryEmail));
 
                 if (!string.IsNullOrWhiteSpace(model.PrimaryPhone))
-                    query = query.Where(x => x.contact != null && x.contact.PrimaryPhone!.Contains(model.PrimaryPhone));
+                    query = query.Where(x => x.contact != null && x.contact.PrimaryPhone != null && x.contact.PrimaryPhone.Contains(model.PrimaryPhone));
 
                 if (!string.IsNullOrWhiteSpace(model.PermCity))
-                    query = query.Where(x => x.address != null && x.address.PermCity!.Contains(model.PermCity));
-                
-                if(!string.IsNullOrWhiteSpace(model.UserName))
-                    query = query.Where(x => x.user.UserName.Contains(model.UserName));
-                
-                if (!string.IsNullOrWhiteSpace(model.UserType))
+                    query = query.Where(x => x.address != null && x.address.PermCity != null && x.address.PermCity.Contains(model.PermCity));
+
+                if (!string.IsNullOrWhiteSpace(model.UserName))
+                    // FIX: Added null check to avoid CS8602 (possible null dereference)
+                    query = query.Where(x => x.user.UserName != null && x.user.UserName.Contains(model.UserName));
+
+                if (model.UserType.HasValue && model.UserType.Value > 0)
                     query = query.Where(x => x.user.UserType == model.UserType);
-                
+
                 if (model.StartDate.HasValue)
                     query = query.Where(x => x.user.CreatedDate >= model.StartDate.Value);
 
-                if (model.PatientID > 0)
-                    query = query.Where(x => x.patient != null && x.patient.ID == model.PatientID);
+                if (model.PatientID.HasValue && model.PatientID.Value > 0)
+                    query = query.Where(x => x.patient != null && x.patient.ID == model.PatientID.Value);
 
-                // Group and project to SearchModel
                 var groupedQuery = query
-                    .GroupBy(x => new { 
-                        x.user.ID, 
-                        x.user.FirstName, 
-                        x.user.LastName, 
+                    .GroupBy(x => new
+                    {
+                        x.user.ID,
+                        x.user.FirstName,
+                        x.user.LastName,
                         x.user.UserName,
                         x.user.UserType,
                         x.user.CreatedDate,
@@ -103,10 +109,10 @@ namespace ClinicManager.Controllers
 
                 var results = await groupedQuery
                     .AsNoTracking()
-                    .Take(100) // Limit results for performance
+                    .Take(100)
                     .ToListAsync()
                     .ConfigureAwait(false);
-              
+
                 _logger.LogInformation($"Found {results.Count} users matching search criteria");
                 return Ok(results);
             }
@@ -117,7 +123,13 @@ namespace ClinicManager.Controllers
             }
         }
 
-        // Advanced search using LINQ with optimizations
+        // PSEUDOCODE:
+        // 1. Start from Users AsNoTracking.
+        // 2. Apply filters when model properties have values.
+        // 3. For UserName filter add null check to prevent CS8602.
+        // 4. Ensure active users only.
+        // 5. Project to SearchModel, order, limit, execute.
+        // 6. Handle exceptions with logging.
         [HttpPost("advanced")]
         public async Task<ActionResult<IEnumerable<SearchModel>>> AdvancedSearch([FromBody] SearchModel model)
         {
@@ -125,26 +137,23 @@ namespace ClinicManager.Controllers
 
             try
             {
-                // Use compiled query for better performance if this is a frequent operation
                 var query = _context.Users.AsNoTracking();
 
-                // Apply filters efficiently
                 if (!string.IsNullOrEmpty(model.UserName))
-                    query = query.Where(u => u.UserName.Contains(model.UserName));
+                    // FIX: Added null check to avoid CS8602
+                    query = query.Where(u => u.UserName != null && u.UserName.Contains(model.UserName));
 
                 if (!string.IsNullOrEmpty(model.FirstName))
-                    query = query.Where(u => u.FirstName.Contains(model.FirstName));
+                    query = query.Where(u => u.FirstName != null && u.FirstName.Contains(model.FirstName));
 
                 if (!string.IsNullOrEmpty(model.LastName))
-                    query = query.Where(u => u.LastName.Contains(model.LastName));
+                    query = query.Where(u => u.LastName != null && u.LastName.Contains(model.LastName));
 
-                if (!string.IsNullOrEmpty(model.UserType))
+                if (model.UserType.HasValue && model.UserType.Value > 0)
                     query = query.Where(u => u.UserType == model.UserType);
 
-                // Always filter active users
-                query = query.Where(u => u.IsActive==1);
+                query = query.Where(u => u.IsActive == 1);
 
-                // Project to SearchModel to avoid loading unnecessary data
                 var results = await query
                     .Select(u => new SearchModel
                     {
@@ -158,11 +167,10 @@ namespace ClinicManager.Controllers
                     })
                     .OrderBy(u => u.FirstName)
                     .ThenBy(u => u.LastName)
-                    .Take(100) // Limit results
+                    .Take(100)
                     .ToListAsync()
                     .ConfigureAwait(false);
 
-                
                 _logger.LogInformation($"Advanced search found {results.Count} results");
                 return Ok(results);
             }

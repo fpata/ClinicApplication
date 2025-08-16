@@ -34,7 +34,7 @@ namespace ClinicManager.Controllers
             var appointments = await _context.PatientAppointments
                 .AsNoTracking()
                 .Where(a => a.PatientID == patientID)
-                .OrderByDescending(a => a.StartApptDate)
+                .OrderByDescending(a => a.StartDateTime)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -148,7 +148,7 @@ namespace ClinicManager.Controllers
             var appointments = await _context.PatientAppointments
                 .AsNoTracking()
                 .Where(a => a.DoctorID == doctorID)
-                .OrderByDescending(a => a.StartApptDate)
+                .OrderByDescending(a => a.StartDateTime)
                 .Take(100) // Limit results for performance
                 .ToListAsync();
                 
@@ -170,7 +170,7 @@ namespace ClinicManager.Controllers
             var appointments = await _context.PatientAppointments
                 .AsNoTracking()
                 .Where(a => a.PatientID == patientID)
-                .OrderByDescending(a => a.StartApptDate)
+                .OrderByDescending(a => a.StartDateTime)
                 .Take(100) // Limit results for performance
                 .ToListAsync();
                 
@@ -228,12 +228,12 @@ namespace ClinicManager.Controllers
                     query = query.Where(x => x.appointment.DoctorName!.Contains(model.DoctorName));
 
                 if (model.StartDate.HasValue)
-                    query = query.Where(x => x.appointment.StartApptDate >= model.StartDate.Value);
+                    query = query.Where(x => x.appointment.StartDateTime >= model.StartDate.Value);
 
                 var results = await query
                     .Select(x => x.appointment)
                     .AsNoTracking()
-                    .OrderByDescending(a => a.StartApptDate)
+                    .OrderByDescending(a => a.StartDateTime)
                     .Take(100) // Limit results
                     .ToListAsync();
              

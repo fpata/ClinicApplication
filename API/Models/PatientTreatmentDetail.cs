@@ -11,7 +11,7 @@ namespace ClinicManager.Models
         public int? UserID { get; set; }
         public string? Tooth { get; set; }
         public string? Procedure { get; set; }
-        public string? Advice { get; set; }
+        public string? Prescription { get; set; }
         public DateTime? TreatmentDate { get; set; }
         public int? PatientID { get; set; }
 

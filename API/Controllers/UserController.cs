@@ -42,20 +42,32 @@ namespace ClinicManager.Controllers
             return users;
         }
 
+        // Updated to use async EF Core call and proper null handling
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(int id)
         {
-            _logger.LogInformation($"Fetching user with ID: {id}");
+            // Pseudocode:
+            // 1. Log request
+            // 2. Query Users with Includes asynchronously using FirstOrDefaultAsync
+            // 3. If null -> return NotFound
+            // 4. Log fetched details
+            // 5. Return entity (implicit 200 OK)
+            _logger.LogInformation("Fetching user with ID: {Id}", id);
 
-            // Use single query with Include to solve N+1 problem
-            var entity = _context.Users
+            var entity = await _context.Users
                 .AsNoTracking()
-                .Where(u => u.ID == id && u.IsActive == 1)
                 .Include(u => u.Address)
                 .Include(u => u.Contact)
-                .FirstOrDefault();
-           
-            Console.WriteLine($"Fetched user with ID: {id}, Address: {entity?.Address?.ID}, Contact: {entity?.Contact?.ID}");
+                .FirstOrDefaultAsync(u => u.ID == id && u.IsActive == 1)
+                .ConfigureAwait(false);
+
+            if (entity == null)
+            {
+                _logger.LogWarning("User with ID: {Id} not found", id);
+                return NotFound();
+            }
+
+            Console.WriteLine($"Fetched user with ID: {id}, Address: {entity.Address?.ID}, Contact: {entity.Contact?.ID}");
             return entity;
         }
 
@@ -127,12 +139,12 @@ namespace ClinicManager.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, User user)
+        public async Task<IActionResult> Put(int id, User? user)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
-            if (id != user.ID)
+            if (id != user?.ID)
             {
-                _logger.LogWarning($"User ID mismatch: {id} != {user.ID}");
+                _logger.LogWarning($"User ID mismatch: {id} != {user?.ID}");
                 return BadRequest();
             }
 

@@ -38,8 +38,8 @@ export class Dashboard implements OnInit {
       const events: DayPilot.EventData[] = appointments.map(appointment => ({
          id: appointment.ID.toString(),
          text: appointment.PatientName || 'Unknown Patient',
-         start: new DayPilot.Date(appointment.StartApptDate),
-         end: new DayPilot.Date(appointment.EndApptDate),
+         start: new DayPilot.Date(appointment.StartDateTime),
+         end: new DayPilot.Date(appointment.EndDateTime),
          resource: appointment.DoctorName || 'General',
          backColor: '#bc8f3cff'
       }));

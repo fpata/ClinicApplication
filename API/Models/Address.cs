@@ -1,31 +1,39 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicManager.Models
 {
     [Table("Address")]
-    public class Address
+    public class Address : BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        [StringLength(200)]
+        [Required]
         public string? PermAddress1 { get; set; }
+        [StringLength(200)]
         public string? PermAddress2 { get; set; }
+        [StringLength(45)]
         public string? PermState { get; set; }
+        [StringLength(45)]
         public string? PermCity { get; set; }
+        [StringLength(45)]
         public string? PermCountry { get; set; }
+        [StringLength(45)]
         public string? PermZipCode { get; set; }
+        [StringLength(200)]
         public string? CorrAddress1 { get; set; }
+        [StringLength(200)]
         public string? CorrAddress2 { get; set; }
+        [StringLength(45)]
         public string? CorrState { get; set; }
+        [StringLength(45)]
         public string? CorrCity { get; set; }
+        [StringLength(45)]
         public string? CorrCountry { get; set; }
+        [StringLength(45)]
         public string? CorrZipCode { get; set; }
+        [Required]
+        [ForeignKey("User")]
         public int? UserID { get; set; }
-      
-        public DateTime? CreatedDate { get; set; } = DateTime.UtcNow;
-        public DateTime? ModifiedDate { get; set; } = DateTime.UtcNow;  
-        public int? CreatedBy { get; set; } = 1;
-        public int? ModifiedBy { get; set; } = 1;
-        public byte IsActive { get; set; }=1;
     }
 }

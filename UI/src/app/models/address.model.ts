@@ -1,5 +1,6 @@
-export class Address {
-  ID?: number;
+import { BaseEntity } from "./base.model";
+
+export class Address extends BaseEntity {
   PermAddress1?: string;
   PermAddress2?: string;
   PermState?: string;
@@ -14,10 +15,5 @@ export class Address {
   CorrZipCode?: string;
   AddressType?: string;
   UserID?: number;
-  CreatedDate?: string; // set via UtilityService
-  ModifiedDate?: string; // set via UtilityService
-  CreatedBy?: number = 1;
-  ModifiedBy?: number = 1;
-  IsActive?: number = 1;
-  user?: any; // Avoid circular reference
+  //user?: any; // Avoid circular reference
 }

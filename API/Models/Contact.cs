@@ -1,25 +1,30 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace ClinicManager.Models
 {
     [Table("contact")]
-    public class Contact
+    public class Contact:BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        [Required]
+        [StringLength(100)]
         public string PrimaryPhone { get; set; } = string.Empty;
+        [StringLength(100)]
         public string? SecondaryPhone { get; set; }
+        [StringLength(100)]
         public string PrimaryEmail { get; set; } = string.Empty;
+        [StringLength(100)]
         public string? SecondaryEmail { get; set; }
+        [StringLength(200)]
         public string? RelativeName { get; set; }
+        [StringLength(200)]
         public string? RelativeRealtion { get; set; }
+        [StringLength(200)]
         public string? RelativePhone { get; set; }
+        [StringLength(100)]
         public string? RelativeEmail { get; set; }
+
+        [Required]
+        [ForeignKey("User")]
         public int? UserID { get; set; } = 1;
-        public DateTime? CreatedDate { get; set; }= DateTime.UtcNow;
-        public DateTime? ModifiedDate { get; set; } = DateTime.UtcNow;
-        public int? CreatedBy { get; set; } = 1;
-        public int? ModifiedBy { get; set; } = 1;
-        public byte? IsActive { get; set; } = 1;
     }
 }

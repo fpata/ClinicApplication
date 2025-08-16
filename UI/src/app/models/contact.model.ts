@@ -1,5 +1,7 @@
-export class Contact {
-  ID?: number;
+import { BaseEntity } from "./base.model";
+
+export class Contact extends BaseEntity {
+  
   PrimaryPhone?: string;
   SecondaryPhone?: string;
   PrimaryEmail?: string;
@@ -9,10 +11,6 @@ export class Contact {
   RelativePhone?: string;
   RelativeEmail?: string;
   UserID?: number;
-  CreatedDate?: string; // set via UtilityService
-  ModifiedDate?: string; // set via UtilityService
-  CreatedBy?: number = 1;
-  ModifiedBy?: number = 1;
-  IsActive?: number = 1;
-  user?: any; // Avoid circular reference
+
+  //user?: any; // Avoid circular reference
 }

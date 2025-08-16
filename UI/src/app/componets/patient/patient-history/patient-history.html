@@ -25,7 +25,7 @@
             <label for="txtFatherHistory" class="form-label">Father Medical History</label>
         </div>
         <div class="col-10">
-            <textarea id="txtFatherHistory" class="form-control" row="2" [ngModel]="this.patient?.FatherHistory" (ngModelChange)="this.patient.FatherHistory = $event"></textarea>
+            <textarea id="txtFatherHistory" class="form-control" row="2" [ngModel]="this.patient?.FatherMedicalHistory" (ngModelChange)="this.patient.FatherMedicalHistory = $event"></textarea>
         </div>
     </div>
     <br />
@@ -34,7 +34,7 @@
             <label for="txtMotherHistory" class="form-label">Mother Medical History</label>
         </div>
         <div class="col-10">
-            <textarea id="txtMotherHistory" class="form-control" row="2" [ngModel]="this.patient?.MotherHistory" (ngModelChange)="this.patient.MotherHistory = $event"></textarea>
+            <textarea id="txtMotherHistory" class="form-control" row="2" [ngModel]="this.patient?.MotherMedicalHistory" (ngModelChange)="this.patient.MotherMedicalHistory = $event"></textarea>
         </div>
     </div>
 </div>

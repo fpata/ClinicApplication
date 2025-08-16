@@ -65,8 +65,8 @@ export class PatientAppointmentComponent {
       events.push({
         id: appointment.ID.toString(),
         text: appointment.PatientName || 'Unknown Patient',
-        start: new DayPilot.Date(appointment.StartApptDate),
-        end: new DayPilot.Date(appointment.EndApptDate),
+        start: new DayPilot.Date(appointment.StartDateTime),
+        end: new DayPilot.Date(appointment.EndDateTime),
         resource: appointment.DoctorName || 'General',
         backColor: '#3c8dbc',
       });
@@ -92,20 +92,20 @@ export class PatientAppointmentComponent {
     // Implement save logic here
     const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
     const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
-    
-    if (this.newAppointment.StartApptDate && appointmentTime) {
+
+    if (this.newAppointment.StartDateTime && appointmentTime) {
       const [hours, minutes] = appointmentTime.split(':').map(Number);
-      const startDate = new Date(this.newAppointment.StartApptDate);
+      const startDate = new Date(this.newAppointment.StartDateTime);
       startDate.setHours(hours, minutes, 0, 0);
-      this.newAppointment.StartApptDate = startDate;
+      this.newAppointment.StartDateTime = startDate;
     }
 
-    if (this.newAppointment.EndApptDate && appointmentEndTime) {
+    if (this.newAppointment.EndDateTime && appointmentEndTime) {
       const [hours, minutes] = appointmentEndTime.split(':').map(Number);
-      // Assuming EndApptDate should be on the same day as StartApptDate
-      const endDate = new Date(this.newAppointment.StartApptDate); 
+      // Assuming EndDateTime should be on the same day as StartDateTime
+      const endDate = new Date(this.newAppointment.StartDateTime);
       endDate.setHours(hours, minutes, 0, 0);
-      this.newAppointment.EndApptDate = endDate;
+      this.newAppointment.EndDateTime = endDate;
     }
 
     if (this.newAppointment.ID < 1) {
@@ -128,8 +128,8 @@ export class PatientAppointmentComponent {
     this.newAppointment.ID = this.appointments.length > 0 ? Math.min(...this.appointments.map(a => a.ID)) - 1 : 0; // Initialize new appointment ID
     this.newAppointment.PatientID = this.patient?.ID || 1;
     this.newAppointment.UserID = user?.ID || 1;
-    this.newAppointment.StartApptDate = new Date();
-    this.newAppointment.EndApptDate = new Date(new Date().getTime() + 30 * 60000); // Default to 30 minutes later
+    this.newAppointment.StartDateTime = new Date();
+    this.newAppointment.EndDateTime = new Date(new Date().getTime() + 30 * 60000); // Default to 30 minutes later
     this.newAppointment.DoctorName = '';
     this.newAppointment.TreatmentName = '';
     this.newAppointment.PatientName = user?.FirstName + ' ' + user?.LastName || 'Unknown Patient';
