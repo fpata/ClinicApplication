@@ -7,38 +7,39 @@ namespace ClinicManager.Models
     [Table("User")]
     public class User : BaseEntity
     {
-        [Required]
+      
         [StringLength(50)]
         public string FirstName { get; set; } = string.Empty;
         
         [StringLength(50)]
         public string? MiddleName { get; set; }
         
-        [Required]
+      
         [StringLength(50)]
         public string LastName { get; set; } = string.Empty;
         
-        [Required]
+      
         [StringLength(50)]
         public string? UserName { get; set; } = string.Empty;
         
-        [Required]
+      
         [StringLength(255)]
         public string? Password { get; set; } = string.Empty;
        
-        
-        [Required]
-        public UserType UserType { get; set; }
-        
+ 
+        public UserType? UserType { get; set; } = Enums.UserType.Patient;
+
+        public int? Age { get; set; }
+
         public Gender? Gender { get; set; }
-        
+
         public DateTime? DateOfBirth { get; set; }
         
-        [NotMapped]
-        public int? Age => DateOfBirth.HasValue 
-            ? DateTime.Today.Year - DateOfBirth.Value.Year - 
-              (DateTime.Today.DayOfYear < DateOfBirth.Value.DayOfYear ? 1 : 0) 
-            : null;
+        //[NotMapped]
+        //public int? Age => DateOfBirth.HasValue 
+        //    ? DateTime.Today.Year - DateOfBirth.Value.Year - 
+        //      (DateTime.Today.DayOfYear < DateOfBirth.Value.DayOfYear ? 1 : 0) 
+        //    : null;
         
         public DateTime? LastLoginDate { get; set; }
         
@@ -53,10 +54,7 @@ namespace ClinicManager.Models
         
         public DateTime? LicenseExpiryDate { get; set; }
         
-        
-        // Full name property
-        [NotMapped]
-        public string FullName => $"{FirstName} {LastName}".Replace("  ", " ").Trim();
+        public string FullName => $"{FirstName} {MiddleName} {LastName}".Replace("  ", " ").Trim();
         
         // Navigation properties
         public virtual Address? Address { get; set; }

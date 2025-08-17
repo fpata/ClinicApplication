@@ -5,7 +5,7 @@ namespace ClinicManager.Models
     [Table("contact")]
     public class Contact:BaseEntity
     {
-        [Required]
+      
         [StringLength(100)]
         public string PrimaryPhone { get; set; } = string.Empty;
         [StringLength(100)]
@@ -23,7 +23,6 @@ namespace ClinicManager.Models
         [StringLength(100)]
         public string? RelativeEmail { get; set; }
 
-        [Required]
         [ForeignKey("User")]
         public int? UserID { get; set; } = 1;
     }

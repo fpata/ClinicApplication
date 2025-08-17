@@ -8,12 +8,12 @@ export class PatientTreatment {
   Observation?: string;
   TreatmentPlan: string;
   PatientID?: number;
-  IsActive?: number = 1;
+  IsActive?: number ;
   CreatedDate?: string; // set via UtilityService
-  CreatedBy?: number = 1;
+  CreatedBy?: number ;
   ModifiedDate?: string; // set via UtilityService
-  ModifiedBy?: number = 1;
-  TreatmentDate?: string = new Date().toString();
+  ModifiedBy?: number;
+  TreatmentDate?: string ;
   user?: User;
   patient?: Patient;
   PatientTreatmentDetails?: PatientTreatmentDetail[];

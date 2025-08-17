@@ -40,13 +40,13 @@
                 <label for="rdGenderMale" class="form-label">Gender</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1" [checked]="user?.Gender === '1'" (change)="user && (user.Gender = '1')">
+                <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1" [checked]="user?.Gender === 1" (change)="user && (user.Gender = 1)">
                 <label class="form-check-label" for="rdGenderMale">Male</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2" [checked]="user?.Gender === '2'" (change)="user && (user.Gender = '2')">
+                <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2" [checked]="user?.Gender === 2" (change)="user && (user.Gender = 2)">
                 <label class="form-check-label" for="rdGenderFemale">Female</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3" [checked]="user?.Gender === '3'" (change)="user && (user.Gender = '3')">
+                <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3" [checked]="user?.Gender === 3" (change)="user && (user.Gender = 3)">
                 <label class="form-check-label" for="rdGenderOther">Other</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4" [checked]="user?.Gender === '4'" (change)="user && (user.Gender = '4')">
+                <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4" [checked]="user?.Gender === 4" (change)="user && (user.Gender = 4)">
                 <label class="form-check-label" for="rdGenderPreferNotToSay">Prefer Not to Say</label>
               </div>
             </div>
@@ -67,20 +67,58 @@
                 <input type="password" id="txtPassword" name="txtPassword" class="form-control" required [ngModel]="user?.Password" (ngModelChange)="user && (user.Password = $event)"  minlength="3" maxlength="50">
               </div>
             </div>
-            <br />
             
+            <br />
              <div class="row">
               <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtUserType" class="form-label">User Type</label>
+                <label for="cbUserType" class="form-label">User Type</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <select id="txtUserType" class="form-select" [ngModel]="user?.UserType" (ngModelChange)="user && (user.UserType = $event)" required>
-                  <option value="1">Patient</option>
-                  <option value="2">Doctor</option>
-                  <option value="5">Administrator</option>
+                <select id="cbUserType" class="form-select" [ngModel]="user?.UserType" (ngModelChange)="onUserTypeChange($event)" required>
+                  <option value=1>Patient</option>
+                  <option value=2>Doctor</option>
+                  <option value=5>Administrator</option>
                 </select> 
               </div>
             </div>
+            <br />
+            @if(user?.UserType === 2) {
+            <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtDesignation" class="form-label">Designation</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtDesignation" class="form-control"  placeholder="Designation" [ngModel]="user?.Designation" (ngModelChange)="user && (user.Designation = $event)"> 
+                <div class="invalid-feedback">Please fill out this field.</div>
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSpecialization" class="form-label">Specialization</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtSpecialization" class="form-control"  placeholder="Specialization" [ngModel]="user?.Specialization" (ngModelChange)="user && (user.Specialization = $event)" > 
+                <div class="invalid-feedback">Please fill out this field.</div>
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtLicenseNumber" class="form-label">License Number</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtLicenseNumber" class="form-control"  placeholder="License Number" [ngModel]="user?.LicenseNumber" (ngModelChange)="user && (user.LicenseNumber = $event)" > 
+                <div class="invalid-feedback">Please fill out this field.</div>
+              </div>
+              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+              <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtLicenseExpiryDate" class="form-label">License Expiry Date</label>
+              </div>
+              <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="date" id="txtLicenseExpiryDate" class="form-control"  placeholder="License Expiry Date" [ngModel]="user?.LicenseExpiryDate" (ngModelChange)="user && (user.LicenseExpiryDate = $event)"> 
+                <div class="invalid-feedback">Please fill out this field.</div>
+              </div>
+            </div>
+          }
             </fieldset>
           </div>
         </div>

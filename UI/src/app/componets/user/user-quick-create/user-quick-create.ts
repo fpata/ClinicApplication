@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { User } from '../../../models/user.model';
+import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
 import { CommonModule } from '@angular/common';
@@ -24,6 +24,7 @@ user: User | null = null;
   this.user.Contact = new Contact();
   }
 
-  
- 
+   onUserTypeChange($event: any) {
+      this.user.UserType = Number($event);
+  }
 }

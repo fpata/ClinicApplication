@@ -18,16 +18,17 @@
                   <label for="firstName" class="form-label">First Name</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" [ngModel]="user?.FirstName" (ngModelChange)="user.FirstName = $event" required="">
-                     <div class="invalid-feedback">Please fill out this field.</div>
+                  <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
+                    [ngModel]="user?.FirstName" (ngModelChange)="user.FirstName = $event" required="">
+                  <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
                 <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                 <div class="col-xs-12 col-sm-5 col-md-2">
                   <label for="lastName" class="form-label">Last Name</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="text" class="form-control" id="lastName" name="lastName"
-                    placeholder="Last Name" [ngModel]="user?.LastName" (ngModelChange)="user.LastName = $event" required>
+                  <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name"
+                    [ngModel]="user?.LastName" (ngModelChange)="user.LastName = $event" required>
                 </div>
               </div>
 
@@ -37,15 +38,16 @@
                   <label for="userName" class="form-label">Username</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="text" class="form-control" id="userName" name="userName"
-                    placeholder="Username" [ngModel]="user?.UserName" (ngModelChange)="user.UserName = $event" required>
+                  <input type="text" class="form-control" id="userName" name="userName" placeholder="Username"
+                    [ngModel]="user?.UserName" (ngModelChange)="user.UserName = $event" required>
                 </div>
                 <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                 <div class="col-xs-12 col-sm-5 col-md-2">
                   <label for="password" class="form-label">Password</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="password" class="form-control" id="password" name="password"  placeholder="Password" [ngModel]="user?.Password" (ngModelChange)="user.Password = $event" required>
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                    [ngModel]="user?.Password" (ngModelChange)="user.Password = $event" required>
                 </div>
               </div>
 
@@ -55,14 +57,30 @@
                   <label for="userType" class="form-label">User Type</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <select class="form-select" id="userType" name="userType" [ngModel]="user?.UserType" (ngModelChange)="user.UserType = $event" required>
-                    <option value="">Select User Type</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Doctor">Doctor</option>
-                    <option value="Nurse">Nurse</option>
-                    <option value="Receptionist">Receptionist</option>
-                    <option value="patient">Patient</option>
+                  <select class="form-select" id="userType" name="userType" [ngModel]="user?.UserType"
+                    (ngModelChange)="onUserTypeChange($event)" required>
+                    <option value=1>Patient</option>
+                    <option value=2>Doctor</option>
+                    <option value=5>Administrator</option>
                   </select>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+                <div class="col-xs-12 col-sm-5 col-md-2">
+                  <label for="rdGenderMale" class="form-label">Gender</label>
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-3">
+                  <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1"
+                    [checked]="user?.Gender === 1" (change)="user && (user.Gender = 1)">
+                  <label class="form-check-label" for="rdGenderMale">Male</label>&nbsp;&nbsp;
+                  <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2"
+                    [checked]="user?.Gender === 2" (change)="user && (user.Gender = 2)">
+                  <label class="form-check-label" for="rdGenderFemale">Female</label>&nbsp;&nbsp;
+                  <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3"
+                    [checked]="user?.Gender === 3" (change)="user && (user.Gender = 3)">
+                  <label class="form-check-label" for="rdGenderOther">Other</label>&nbsp;&nbsp;
+                  <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4"
+                    [checked]="user?.Gender === 4" (change)="user && (user.Gender = 4)">
+                  <label class="form-check-label" for="rdGenderPreferNotToSay">Prefer Not to Say</label>
                 </div>
               </div>
             </form>
@@ -89,8 +107,9 @@
                   <label for="address1" class="form-label">Address Line 1</label>
                 </div>
                 <div class="col-9">
-                  <input type="text" class="form-control" id="address1" name="address1"
-                    placeholder="Address Line 1" [ngModel]="user?.Address?.PermAddress1" (ngModelChange)="user.Address.PermAddress1 = $event" required>
+                  <input type="text" class="form-control" id="address1" name="address1" placeholder="Address Line 1"
+                    [ngModel]="user?.Address?.PermAddress1" (ngModelChange)="user.Address.PermAddress1 = $event"
+                    required>
                 </div>
               </div>
               <br />
@@ -99,14 +118,16 @@
                   <label for="city" class="form-label">City</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="text" class="form-control" id="city" name="city" placeholder="City" [ngModel]="user?.Address?.PermCity" (ngModelChange)="user.Address.PermCity = $event" required>
+                  <input type="text" class="form-control" id="city" name="city" placeholder="City"
+                    [ngModel]="user?.Address?.PermCity" (ngModelChange)="user.Address.PermCity = $event" required>
                 </div>
                 <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                 <div class="col-xs-12 col-sm-5 col-md-2">
                   <label for="state" class="form-label">State</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="text" class="form-control" id="state" name="state" placeholder="State" [ngModel]="user?.Address?.PermState" (ngModelChange)="user.Address.PermState = $event" required>
+                  <input type="text" class="form-control" id="state" name="state" placeholder="State"
+                    [ngModel]="user?.Address?.PermState" (ngModelChange)="user.Address.PermState = $event" required>
                 </div>
               </div>
 
@@ -116,7 +137,8 @@
                   <label for="country" class="form-label">Country</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="text" class="form-control" id="country" name="country" placeholder="Country" [ngModel]="user?.Address?.PermCountry" (ngModelChange)="user.Address.PermCountry = $event" required>
+                  <input type="text" class="form-control" id="country" name="country" placeholder="Country"
+                    [ngModel]="user?.Address?.PermCountry" (ngModelChange)="user.Address.PermCountry = $event" required>
 
                 </div>
                 <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
@@ -124,7 +146,8 @@
                   <label for="zipCode" class="form-label">Zip Code</label>
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
-                  <input type="text" class="form-control" id="zipCode" name="zipCode" placeholder="Zip Code" [ngModel]="user?.Address?.PermZipCode" (ngModelChange)="user.Address.PermZipCode = $event" required>
+                  <input type="text" class="form-control" id="zipCode" name="zipCode" placeholder="Zip Code"
+                    [ngModel]="user?.Address?.PermZipCode" (ngModelChange)="user.Address.PermZipCode = $event" required>
                 </div>
               </div>
             </form>
@@ -152,7 +175,8 @@
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
                   <input type="tel" class="form-control" id="primaryPhone" name="primaryPhone"
-                    placeholder="Primary Phone" [ngModel]="user?.Contact?.PrimaryPhone" (ngModelChange)="user.Contact.PrimaryPhone = $event" required>
+                    placeholder="Primary Phone" [ngModel]="user?.Contact?.PrimaryPhone"
+                    (ngModelChange)="user.Contact.PrimaryPhone = $event" required>
 
                 </div>
                 <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
@@ -161,7 +185,8 @@
                 </div>
                 <div class="col-xs-12 col-sm-5 col-md-3">
                   <input type="email" class="form-control" id="primaryEmail" name="primaryEmail"
-                    placeholder="Primary Email" [ngModel]="user?.Contact?.PrimaryEmail" (ngModelChange)="user.Contact.PrimaryEmail = $event" required>
+                    placeholder="Primary Email" [ngModel]="user?.Contact?.PrimaryEmail"
+                    (ngModelChange)="user.Contact.PrimaryEmail = $event" required>
                 </div>
               </div>
             </form>

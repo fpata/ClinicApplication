@@ -11,5 +11,6 @@
     OxygenSaturation?: number;
     RespiratoryRate?: number;
     Notes?: string;
-    RecordedBy: number;
+    RecordedBy?: number;
+    BloodType?: string;
   }

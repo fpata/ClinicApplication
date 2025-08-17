@@ -6,18 +6,18 @@ namespace ClinicManager.Models
     [Table("patienttreatment")]
     public class PatientTreatment : BaseEntity
     {
-        [Required]
+      
         public int? UserID { get; set; }
 
-        [Required]
+      
         public int? PatientID { get; set; }
         
-        [Required]
+      
         public int? DoctorID { get; set; }
         
         public int? AppointmentID { get; set; }
         
-        [Required]
+      
         [StringLength(500)]
         public string ChiefComplaint { get; set; } = string.Empty;
         

@@ -7,12 +7,12 @@ namespace ClinicManager.Models
     [Table("patientvital")]
     public class PatientVital : BaseEntity
     {
-        [Required]
+      
         public int UserID { get; set; }
-        [Required]
+      
         public int PatientID { get; set; }
         
-        [Required]
+      
         public DateTime RecordedDate { get; set; } = DateTime.UtcNow;
         
         public int? BloodPressureSystolic { get; set; }
@@ -27,7 +27,11 @@ namespace ClinicManager.Models
         [StringLength(500)]
         public string? Notes { get; set; }
 
-        [Required]
+
+        [StringLength(100)]
+        public string? BloodType { get; set; }
+
+
         public int RecordedBy { get; set; } = 1;
 
 

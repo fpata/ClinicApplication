@@ -8,7 +8,7 @@ namespace ClinicManager.Models
     public class Address : BaseEntity
     {
         [StringLength(200)]
-        [Required]
+      
         public string? PermAddress1 { get; set; }
         [StringLength(200)]
         public string? PermAddress2 { get; set; }
@@ -32,7 +32,7 @@ namespace ClinicManager.Models
         public string? CorrCountry { get; set; }
         [StringLength(45)]
         public string? CorrZipCode { get; set; }
-        [Required]
+
         [ForeignKey("User")]
         public int? UserID { get; set; }
     }

@@ -10,7 +10,7 @@ export class User extends BaseEntity {
   UserName?: string;
   Password?: string;
   UserType?: UserType;
-  Gender?: string;
+  Gender?: Gender;
   DateOfBirth?: string | null;
   Age?: number;
   LastLoginDate?: string; // set via UtilityService when needed
@@ -32,4 +32,12 @@ export class User extends BaseEntity {
      Receptionist = 4,
      Administrator = 5,
      Technician = 6
+ }
+
+ export enum Gender
+ {
+     Male = 1,
+     Female = 2,
+     Other = 3,
+     PreferNotToSay = 4
  }

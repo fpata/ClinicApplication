@@ -6,7 +6,7 @@ namespace ClinicManager.Models
     [Table("patient")]
     public class Patient : BaseEntity
     {
-        [Required]
+      
         public int UserID { get; set; }
         
         [StringLength(1000)]
@@ -23,19 +23,12 @@ namespace ClinicManager.Models
 
         [StringLength(500)]
         public string? PersonalMedicalHistory { get; set; }
-        
-        [StringLength(100)]
-        public string? BloodType { get; set; }
-        
+      
         [StringLength(50)]
         public string? InsuranceProvider { get; set; }
         
         [StringLength(100)]
         public string? InsurancePolicyNumber { get; set; }
-               
-       
-        [ForeignKey("UserID")]
-        public virtual User? User { get; set; }
         
         public virtual ICollection<PatientAppointment>? PatientAppointments { get; set; }
         public virtual ICollection<PatientReport>? PatientReports { get; set; }

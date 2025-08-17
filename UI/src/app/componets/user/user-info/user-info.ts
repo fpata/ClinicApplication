@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { User } from '../../../models/user.model';
+import { CommonModule } from '@angular/common';
+import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
 import { DataService } from '../../../services/data.service';
@@ -10,11 +11,12 @@ import { AddressService } from '../../../services/address.service';
 
 @Component({
   selector: 'app-user-info',
-  imports: [FormsModule],
+  imports: [FormsModule,CommonModule],
   templateUrl: './user-info.html',
   styleUrls: ['./user-info.css']
 })
 export class UserInfoComponent {
+
 
   user: User | null = null;
   address: Address | null = null;
@@ -65,4 +67,10 @@ export class UserInfoComponent {
       this.user.Address.CorrZipCode = this.user.Address.PermZipCode;
     }
   }
+
+  onUserTypeChange($event: any) {
+  if (this.user && $event === "2") {
+    this.user.UserType =  UserType.Doctor;
+  }
+}
 }
