@@ -183,7 +183,7 @@ namespace ClinicManager.Controllers
                     }
                 }
 
-                if (patient.PatientTreatment != null)
+                if (!(patient.PatientTreatment == null || String.IsNullOrWhiteSpace(patient.PatientTreatment.ChiefComplaint)))
                 {
                     patient.PatientTreatment.ID = 0;
                     patient.PatientTreatment.UserID = patient.UserID;
@@ -210,10 +210,14 @@ namespace ClinicManager.Controllers
                         }
                     }
                 }
+                else
+                {
+                    patient.PatientTreatment = null;
+                }
 
-                // Add only the top-level patient object to the context.
-                // EF Core will automatically detect and add all related child entities.
-                _context.Patients.Add(patient);
+                    // Add only the top-level patient object to the context.
+                    // EF Core will automatically detect and add all related child entities.
+                    _context.Patients.Add(patient);
 
                 // Save all changes in a single transaction.
                 await _context.SaveChangesAsync();
@@ -268,7 +272,7 @@ namespace ClinicManager.Controllers
                     _context.Entry(report).State = report.ID < 1 ? EntityState.Added : EntityState.Modified;
                 }
             }
-            if(patient.PatientTreatment != null)
+            if(!(patient.PatientTreatment == null || String.IsNullOrWhiteSpace(patient.PatientTreatment?.ChiefComplaint)))
             {
                 patient.PatientTreatment.PatientID = id; // Ensure the treatment is linked to the correct patient
                 patient.PatientTreatment.UserID = patient.UserID;

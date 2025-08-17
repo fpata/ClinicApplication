@@ -39,20 +39,12 @@ namespace ClinicManager.Models
         
         [StringLength(50)]
         public string? PaymentStatus { get; set; }
-        
-        // Navigation properties
-        [ForeignKey("PatientID")]
-        public virtual Patient? Patient { get; set; }
-        
-        [ForeignKey("DoctorID")]
-        public virtual User? Doctor { get; set; }
-        
-        [ForeignKey("AppointmentID")]
-        public virtual PatientAppointment? Appointment { get; set; }
-        
+
+        public float? EstimatedCost { get; set; }
+        public float? ActualCost { get; set; }
+
         public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; }
 
-        public decimal? EstimatedCost { get; set; }
-        public decimal? ActualCost { get; set; }
+   
     }
 }

@@ -19,7 +19,7 @@ namespace ClinicManager.Models
         public string? FatherMedicalHistory { get; set; }
 
         [StringLength(500)]
-        public string? motherMedicalHistory { get; set; }
+        public string? MotherMedicalHistory { get; set; }
 
         [StringLength(500)]
         public string? PersonalMedicalHistory { get; set; }

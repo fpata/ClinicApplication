@@ -24,4 +24,6 @@ export class PatientTreatment {
   Prescription?: string;
   FollowUpInstructions?: string;
   PaymentStatus?: string;
+  AppointmentID?: number;
+  DoctorID?: number;
 }

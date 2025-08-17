@@ -18,8 +18,8 @@ export class PatientAppointment extends BaseEntity {
   patient?: Patient;
   Notes: string;
 
-  CheckInTime?: Time;
-  CheckOutTime?: Time;
+  CheckInTime?: Date;
+  CheckOutTime?: Date;
 
   CancellationReason?: string;
 
