@@ -6,6 +6,7 @@ import { DashboardComponent } from './componets/dashboard/dashboard.component';
 import { DoctorAppointmentsComponent } from './componets/doctor/doctorappointments/doctorappointments.component';
 import { PatientCompleteHistoryComponent } from './componets/patient/patientcompletehistory/patient-complete-history.component';
 import { UserMasterComponent } from './componets/user/user-master/user-master.component';
+import { BillingrecordComponent } from './componets/billing/billingrecord.component/billingrecord.component'; 
 import { authGuard } from './guards/auth.guard';
 
 
@@ -17,6 +18,7 @@ export const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'doctorAppointments', component: DoctorAppointmentsComponent, canActivate: [authGuard] },
   { path : 'patienthistory', component: PatientCompleteHistoryComponent, canActivate: [authGuard] },
-  { path: 'user', component : UserMasterComponent, canActivate: [authGuard] }
+  { path: 'user', component : UserMasterComponent, canActivate: [authGuard] },
+  { path: 'billing', component: BillingrecordComponent, canActivate: [authGuard] },
   // Add other routes here
 ];

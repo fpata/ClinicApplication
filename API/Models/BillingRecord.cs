@@ -36,7 +36,7 @@ namespace ClinicManager.Models
 
 
 
-    public class InsuranceSegment
+    public class InsuranceSegment:BaseEntity
     {
         public string? PayerName { get; set; }
         public string? PolicyNumber { get; set; }
