@@ -1,0 +1,115 @@
+<div class="container-fluid">
+
+    <br />
+    <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+        <div class="row">
+            <div class="col-2">
+                <label for="txtBloodPressureSystolic" class="form-label">Blood Pressure Systolic:</label>
+            </div>
+            <div class="col-3">
+                <input type="number" id="txtBloodPressureSystolic" class="form-control"
+                    [ngModel]="vitals?.BloodPressureSystolic" (ngModelChange)="vitals.BloodPressureSystolic = $event" />
+            </div>
+            <div class="col-1">&nbsp;</div>
+            <div class="col-2">
+                <label for="txtBloodPressureDiastolic" class="form-label">Blood Pressure Diastolic:</label>
+            </div>
+            <div class="col-3">
+                <input type="number" id="txtBloodPressureDiastolic" class="form-control"
+                    [ngModel]="vitals?.BloodPressureDiastolic"
+                    (ngModelChange)="vitals.BloodPressureDiastolic = $event" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-2">
+                <label for="txtHeartRate" class="form-label">Heart Rate:</label>
+            </div>
+            <div class="col-3">
+                <input type="number" id="txtHeartRate" class="form-control" [ngModel]="vitals?.HeartRate"
+                    (ngModelChange)="vitals.HeartRate = $event" />
+            </div>
+            <div class="col-1">&nbsp;</div>
+            <div class="col-2">
+                <label for="txtTemperature" class="form-label">Temperature:</label>
+            </div>
+            <div class="col-3">
+                <input type="text" id="txtTemperature" class="form-control" [ngModel]="vitals?.Temperature"
+                    (ngModelChange)="vitals.Temperature = $event" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-2">
+                <label for="txtWeight" class="form-label">Weight:</label>
+            </div>
+            <div class="col-3">
+                <input type="number" id="txtWeight" class="form-control" [ngModel]="vitals?.Weight"
+                    (ngModelChange)="vitals.Weight = $event" />
+            </div>
+            <div class="col-1">&nbsp;</div>
+            <div class="col-2">
+                <label for="txtHeight" class="form-label">Height:</label>
+            </div>
+            <div class="col-3">
+                <input type="text" id="txtHeight" class="form-control" [ngModel]="vitals?.Height"
+                    (ngModelChange)="vitals.Height = $event" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-2">
+                <label for="txtOxygenSaturation" class="form-label">Oxygen Saturation:</label>
+            </div>
+            <div class="col-3">
+                <input type="number" id="txtOxygenSaturation" class="form-control" [ngModel]="vitals?.OxygenSaturation"
+                    (ngModelChange)="vitals.OxygenSaturation = $event" />
+            </div>
+            <div class="col-1">&nbsp;</div>
+            <div class="col-2">
+                <label for="txtRespiratoryRate" class="form-label">Respiratory Rate:</label>
+            </div>
+            <div class="col-3">
+                <input type="text" id="txtRespiratoryRate" class="form-control" [ngModel]="vitals?.RespiratoryRate"
+                    (ngModelChange)="vitals.RespiratoryRate = $event" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-2">
+                <label for="txtBloodType" class="form-label">Blood Type:</label>
+            </div>
+            <div class="col-3">
+                <input type="text" id="txtBloodType" class="form-control" [ngModel]="vitals?.BloodType"
+                    (ngModelChange)="vitals.BloodType = $event" />
+            </div>
+            <div class="col-1">&nbsp;</div>
+            <div class="col-2">
+                <label for="txtNotes" class="form-label">Notes:</label>
+            </div>
+            <div class="col-3">
+                <input type="text" id="txtNotes" class="form-control" [ngModel]="vitals?.Notes"
+                    (ngModelChange)="vitals.Notes = $event" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-2">
+                <label for="txtRecordedDate" class="form-label">Recorded Date:</label>
+            </div>
+            <div class="col-3">
+                <input type="date" id="txtRecordedDate" class="form-control" [ngModel]="vitals?.RecordedDate"
+                    (ngModelChange)="vitals.RecordedDate = $event" />
+            </div>
+            <div class="col-1">&nbsp;</div>
+            <div class="col-2">
+                <label for="txtRecordedBy" class="form-label">Recorded By:</label>
+            </div>
+            <div class="col-3">
+                <input type="text" id="txtRecordedBy" class="form-control" [ngModel]="vitals?.RecordedBy"
+                    (ngModelChange)="vitals.RecordedBy = $event" />
+            </div>
+        </div>
+    </div>
+</div>
+<br />

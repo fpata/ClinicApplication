@@ -16,19 +16,38 @@
                     <label for="txtChiefComplaint" class="form-label">Chief Complaint</label>
                 </div>
                 <div class="col-10">
-                    <textarea id="txtChiefComplaint" class="form-control" row="2" [ngModel]="treatment?.ChiefComplaint" (ngModelChange)="treatment.ChiefComplaint = $event"></textarea>
+                    <textarea id="txtChiefComplaint" class="form-control" row="2" [ngModel]="treatment?.ChiefComplaint" (ngModelChange)="SetTreatmentValue('ChiefComplaint', $event)"></textarea>
                 </div>
             </div>
             <br />
             <div class="row">
                 <div class="col">
-                    <label for="txtOservationFindings" class="form-label">Observations/ Finding</label>
+                    <label for="txtClinicalFindings" class="form-label">Clinical Findings</label>
                 </div>
                 <div class="col-10">
-                    <textarea id="txtOservationFindings" class="form-control" row="2" [ngModel]="treatment?.Observation" (ngModelChange)="treatment.Observation = $event"></textarea>
+                    <textarea id="txtClinicalFindings" class="form-control" row="2" [ngModel]="treatment?.ClinicalFindings" (ngModelChange)="SetTreatmentValue('ClinicalFindings', $event)"></textarea>
                 </div>
             </div>
             <br />
+            <div class="row">
+                <div class="col">
+                    <label for="txtDiagnosis" class="form-label">Diagnosis</label>
+                </div>
+                <div class="col-10">
+                    <textarea id="txtDiagnosis" class="form-control" row="2" [ngModel]="treatment?.Diagnosis" (ngModelChange)="SetTreatmentValue('Diagnosis', $event)"></textarea>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col">
+                    <label for="txtPrescription" class="form-label">Prescription</label>
+                </div>
+                <div class="col-10">
+                    <textarea id="txtPrescription" class="form-control" row="2" [ngModel]="treatment?.Prescription" (ngModelChange)="SetTreatmentValue('Prescription', $event)"></textarea>
+                </div>
+            </div>
+            <br />
+
             <div class="row">
                 <div class="col">
                     <label for="txtTreatmentPlan" class="form-label">Treatment Plan</label>
@@ -41,6 +60,23 @@
               <input type="hidden" id="txtTreatmentID" value="-1" [ngModel]="treatment?.ID">
             </div>
             <br />
+            <div class="row">
+                <div class="col-2">
+                    <label for="txtEstimatedCost" class="form-label">Estimated Cost</label>
+                </div>
+                <div class="col-3">
+                    <input type="number" id="txtEstimatedCost" class="form-control" [ngModel]="treatment?.EstimatedCost" (ngModelChange)="SetTreatmentValue('EstimatedCost', $event)">
+                </div>
+                <div class="col-2">&nbsp;</div>
+                <div class="col-2">
+                    <label for="txtActualCost" class="form-label">Actual Cost</label>
+                </div>
+                <div class="col-3">
+                    <input type="number" id="txtActualCost" class="form-control" [ngModel]="treatment?.ActualCost" (ngModelChange)="SetTreatmentValue('ActualCost', $event)">
+                </div>
+            </div>
+            <br />
+
             <div class="row">
                 <div class="col-12">
                     <div class="table-responsive">
@@ -60,6 +96,7 @@
                                 <th>Tooth</th>
                                 <th>Procedure</th>
                                 <th>Advice/Medications</th>
+                                <th>Follow Up Instructions</th>
                                 <th>ID</th>
                             </tr>
                         </thead>
@@ -74,6 +111,7 @@
                                 <td>{{treatmentdetail.Tooth}}</td>
                                 <td>{{treatmentdetail.Procedure}}</td>
                                 <td>{{treatmentdetail.Prescription}}</td>
+                                <td>{{treatmentdetail.FollowUpInstructions}}</td>
                                 <td>{{treatmentdetail.PatientTreatmentID}}</td>
                             </tr>
                         }
@@ -135,6 +173,16 @@
                       <textarea id="txtPrescription" class="form-control" rows="2" [ngModel]="newTreatmentDetail?.Prescription" (ngModelChange)="newTreatmentDetail.Prescription = $event"></textarea>
                     </div>
                   </div>
+                  <br />
+                  <div class="row">
+                    <div class="col">
+                      <label for="txtFollowUpInstructions" class="form-label">Follow Up Instructions</label>
+                    </div>
+                    <div class="col">
+                      <textarea id="txtFollowUpInstructions" class="form-control" rows="2" [ngModel]="newTreatmentDetail?.FollowUpInstructions" (ngModelChange)="newTreatmentDetail.FollowUpInstructions = $event"></textarea>
+                    </div>
+                  </div>
+                  <br />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

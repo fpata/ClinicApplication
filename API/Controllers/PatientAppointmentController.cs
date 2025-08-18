@@ -69,8 +69,8 @@ namespace ClinicManager.Controllers
         [HttpPost]
         public async Task<ActionResult<PatientAppointment>> Post(PatientAppointment appointment)
         {
-            appointment.CreatedDate = DateTime.UtcNow;
-            appointment.ModifiedDate = DateTime.UtcNow;
+            appointment.CreatedDate = DateTime.Now;
+            appointment.ModifiedDate = DateTime.Now;
 
             _context.PatientAppointments.Add(appointment);
             await _context.SaveChangesAsync();
@@ -90,7 +90,7 @@ namespace ClinicManager.Controllers
                 return BadRequest();
             }
 
-            appointment.ModifiedDate = DateTime.UtcNow;
+            appointment.ModifiedDate = DateTime.Now;
             _context.Entry(appointment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
            
@@ -112,7 +112,7 @@ namespace ClinicManager.Controllers
             }
 
             patchDoc.ApplyTo(entity);
-            entity.ModifiedDate = DateTime.UtcNow;
+            entity.ModifiedDate = DateTime.Now;
             await _context.SaveChangesAsync();
             
             _logger.LogInformation($"Patched patient appointment with ID: {id}");

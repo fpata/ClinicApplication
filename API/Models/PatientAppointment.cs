@@ -38,8 +38,5 @@ namespace ClinicManager.Models
         
         public DateTime? ReminderSentDate { get; set; }
         
-
-        public virtual Patient? Patient { get; set; }
-        
     }
 }

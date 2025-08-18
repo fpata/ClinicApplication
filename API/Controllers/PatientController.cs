@@ -146,8 +146,8 @@ namespace ClinicManager.Controllers
             {
                 // Set timestamps and IsActive for the main patient entity
                 patient.ID = 0; // Ensure new patient
-                patient.CreatedDate = DateTime.UtcNow;
-                patient.ModifiedDate = DateTime.UtcNow;
+                patient.CreatedDate = DateTime.Now;
+                patient.ModifiedDate = DateTime.Now;
                 patient.CreatedBy = patient.CreatedBy = 1; // Default to 1 if not set
                 patient.ModifiedBy = patient.ModifiedBy ?? 1; // Default to 1 if not set
                 patient.IsActive = 1;
@@ -159,8 +159,8 @@ namespace ClinicManager.Controllers
                     {
                         report.ID = 0;
                         report.UserID = patient.UserID;
-                        report.CreatedDate = DateTime.UtcNow;
-                        report.ModifiedDate = DateTime.UtcNow;
+                        report.CreatedDate = DateTime.Now;
+                        report.ModifiedDate = DateTime.Now;
                         report.CreatedBy = report.CreatedBy ?? 1; // Default to 1 if not set
                         report.ModifiedBy = report.ModifiedBy ?? 1; // Default to 1 if not set
                         report.PatientID = null; // Clear foreign key - EF will set it
@@ -174,8 +174,8 @@ namespace ClinicManager.Controllers
                     {
                         appointment.ID = 0;
                         appointment.UserID = patient.UserID;
-                        appointment.CreatedDate = DateTime.UtcNow;
-                        appointment.ModifiedDate = DateTime.UtcNow;
+                        appointment.CreatedDate = DateTime.Now;
+                        appointment.ModifiedDate = DateTime.Now;
                         appointment.CreatedBy = appointment.CreatedBy ?? 1; // Default to 1 if not set
                         appointment.ModifiedBy = appointment.ModifiedBy ?? 1; // Default to 1 if not set
                         appointment.PatientID = null; // Clear foreign key - EF will set it
@@ -187,8 +187,8 @@ namespace ClinicManager.Controllers
                 {
                     patient.PatientTreatment.ID = 0;
                     patient.PatientTreatment.UserID = patient.UserID;
-                    patient.PatientTreatment.CreatedDate = DateTime.UtcNow;
-                    patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
+                    patient.PatientTreatment.CreatedDate = DateTime.Now;
+                    patient.PatientTreatment.ModifiedDate = DateTime.Now;
                     patient.PatientTreatment.CreatedBy = patient.PatientTreatment.CreatedBy ?? 1; // Default to 1 if not set
                     patient.PatientTreatment.ModifiedBy = patient.PatientTreatment.ModifiedBy ?? 1; // Default to 1 if not set
                     patient.PatientTreatment.PatientID = null; // Clear foreign key - EF will set it
@@ -200,8 +200,8 @@ namespace ClinicManager.Controllers
                         {
                             detail.ID = 0;
                             detail.UserID = patient.UserID;
-                            detail.CreatedDate = DateTime.UtcNow;
-                            detail.ModifiedDate = DateTime.UtcNow;
+                            detail.CreatedDate = DateTime.Now;
+                            detail.ModifiedDate = DateTime.Now;
                             detail.CreatedBy = detail.CreatedBy ?? 1; // Default to 1 if not set
                             detail.ModifiedBy = detail.ModifiedBy ?? 1; // Default to 1 if not set
                             detail.PatientID = null; // Clear direct patient reference
@@ -245,15 +245,15 @@ namespace ClinicManager.Controllers
             }
 
             // Update timestamp
-            patient.ModifiedDate = DateTime.UtcNow;
+            patient.ModifiedDate = DateTime.Now;
             if (patient.PatientAppointments?.Any() == true)
             {
                 foreach (var appointment in patient.PatientAppointments)
                 {
                     appointment.PatientID = id; // Ensure the appointment is linked to the correct patient
                     appointment.UserID = patient.UserID;
-                    appointment.CreatedDate = appointment.CreatedDate ?? DateTime.UtcNow;
-                    appointment.ModifiedDate = DateTime.UtcNow;
+                    appointment.CreatedDate = appointment.CreatedDate ?? DateTime.Now;
+                    appointment.ModifiedDate = DateTime.Now;
                     appointment.CreatedBy = appointment.CreatedBy ?? 1; // Default to 1 if not set
                     appointment.ModifiedBy = appointment.ModifiedBy ?? 1; // Default to 1 if not set
                     _context.Entry(appointment).State = appointment.ID < 1 ? EntityState.Added : EntityState.Modified;
@@ -265,8 +265,8 @@ namespace ClinicManager.Controllers
                 {
                     report.PatientID = id; // Ensure the report is linked to the correct patient
                     report.UserID = patient.UserID;
-                    report.CreatedDate = report.CreatedDate ?? DateTime.UtcNow;
-                    report.ModifiedDate = DateTime.UtcNow;
+                    report.CreatedDate = report.CreatedDate ?? DateTime.Now;
+                    report.ModifiedDate = DateTime.Now;
                     report.CreatedBy = report.CreatedBy ?? 1; // Default to 1 if not set
                     report.ModifiedBy = report.ModifiedBy ?? 1; // Default to 1 if not set
                     _context.Entry(report).State = report.ID < 1 ? EntityState.Added : EntityState.Modified;
@@ -276,8 +276,8 @@ namespace ClinicManager.Controllers
             {
                 patient.PatientTreatment.PatientID = id; // Ensure the treatment is linked to the correct patient
                 patient.PatientTreatment.UserID = patient.UserID;
-                patient.PatientTreatment.CreatedDate = patient.PatientTreatment.CreatedDate ?? DateTime.UtcNow;
-                patient.PatientTreatment.ModifiedDate = DateTime.UtcNow;
+                patient.PatientTreatment.CreatedDate = patient.PatientTreatment.CreatedDate ?? DateTime.Now;
+                patient.PatientTreatment.ModifiedDate = DateTime.Now;
                 patient.PatientTreatment.CreatedBy = patient.PatientTreatment.CreatedBy ?? 1; // Default to 1 if not set
                 patient.PatientTreatment.ModifiedBy = patient.PatientTreatment.ModifiedBy ?? 1; // Default to 1 if not set
                 patient.PatientTreatment.IsActive = 1; // Ensure treatment is active
@@ -289,8 +289,8 @@ namespace ClinicManager.Controllers
                         detail.ID= detail.ID < 1 ? 0 : detail.ID; // Reset ID for new details
                         detail.UserID = patient.UserID;
                         detail.PatientID = id; // Ensure the detail is linked to the correct patient
-                        detail.CreatedDate = detail.CreatedDate ?? DateTime.UtcNow;
-                        detail.ModifiedDate = DateTime.UtcNow;
+                        detail.CreatedDate = detail.CreatedDate ?? DateTime.Now;
+                        detail.ModifiedDate = DateTime.Now;
                         detail.CreatedBy = detail.CreatedBy ?? 1; // Default to 1 if not set
                         detail.ModifiedBy = detail.ModifiedBy ?? 1; // Default to 1 if not set
                         detail.PatientTreatmentID = patient.PatientTreatment.ID; // Link to the treatment
@@ -321,7 +321,7 @@ namespace ClinicManager.Controllers
             }
 
             patchDoc.ApplyTo(entity);
-            entity.ModifiedDate = DateTime.UtcNow;
+            entity.ModifiedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
             
@@ -343,7 +343,7 @@ namespace ClinicManager.Controllers
 
             // Soft delete instead of hard delete for better performance and data integrity
             entity.IsActive = 0;
-            entity.ModifiedDate = DateTime.UtcNow;
+            entity.ModifiedDate = DateTime.Now;
             
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Soft deleted patient with ID: {id}");

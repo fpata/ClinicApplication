@@ -1,4 +1,4 @@
-import { Component, viewChild, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PatientAppointmentComponent } from '../patient-appointment/patient-appointment';
 import { PatientHistoryComponent } from '../patient-history/patient-history';
 import { PatientReportComponent } from '../patient-report/patient-report';
@@ -15,6 +15,8 @@ import { PatientReport } from '../../../models/patient-report.model';
 import { PatientQuickCreateComponent } from '../patient-quick-create/patient-quick-create.component';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from '../../../services/message.service';
+import { PatientVitalsComponent } from '../patient-vitals/patient-vitals';  
+
 @Component({
   selector: 'app-patient-master',
   standalone: true,
@@ -22,7 +24,7 @@ import { MessageService } from '../../../services/message.service';
   styleUrl: './patient-master.css',
   imports: [PatientAppointmentComponent, PatientHistoryComponent, PatientReportComponent,
     PatientSearchComponent, PatientTreatmentComponent,
-    PatientCompleteHistoryComponent, PatientQuickCreateComponent],
+    PatientCompleteHistoryComponent, PatientQuickCreateComponent, PatientVitalsComponent],
   providers: [HttpClient]
 })
 export class PatientMasterComponent {

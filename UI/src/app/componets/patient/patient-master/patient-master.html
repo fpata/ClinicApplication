@@ -7,7 +7,10 @@
         <button class="nav-link active" id="tbPatientSearch-tab" data-bs-toggle="tab" data-bs-target="#tbPatientSearch"
           type="button" role="tab" aria-controls="tbPatientSearch" aria-selected="true" (click)="tabSelectedEvent($event)" >Search</button>
       </li>
-    
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tbPatientVitals-tab" data-bs-toggle="tab" data-bs-target="#tbPatientVitals"
+          type="button" role="tab" aria-controls="tbPatientVitals" aria-selected="false" (click)="tabSelectedEvent($event)">Patient Vitals</button>
+      </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="tbPatientHistory-tab" data-bs-toggle="tab" data-bs-target="#tbPatientHistory"
           type="button" role="tab" aria-controls="tbPatientHistory" aria-selected="false" (click)="tabSelectedEvent($event)">Patient History</button>
@@ -45,7 +48,10 @@
             <a class="dropdown-item" id="tbPatientSearch-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientSearch"
              aria-controls="tbPatientSearch" aria-selected="true">Search</a>
           </li>
-         
+          <li>
+            <a class="dropdown-item" id="tbPatientVitals-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientVitals"
+             aria-controls="tbPatientVitals" aria-selected="true">Vitals</a>
+          </li>
           <li>
             <a class="nav-link" id="tbPreviousInfo-tab1" data-bs-toggle="tab" data-bs-target="#tbPreviousInfo"
           aria-controls="tbPreviousInfo" aria-selected="false">Paient Previous Treatments</a>
@@ -83,6 +89,9 @@
     <div class="tab-content" id="nav-tabContentPatientInfo">
       <div class="tab-pane fade show active" id="tbPatientSearch" role="tabpanel" aria-labelledby="tbPatientSearch-tab">
         <app-patient-search></app-patient-search>
+      </div>
+      <div class="tab-pane fade" id="tbPatientVitals" role="tabpanel" aria-labelledby="tbPatientVitals-tab">
+        <app-patient-vitals></app-patient-vitals>
       </div>
       <div class="tab-pane fade" id="tbQuickCreate" role="tabpanel" aria-labelledby="tbQuickCreate-tab">
         <app-patient-quick-create></app-patient-quick-create>

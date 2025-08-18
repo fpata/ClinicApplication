@@ -17,6 +17,7 @@ import { Patient } from '../../../models/patient.model';
 export class PatientTreatmentComponent {
 
 
+
   patient: Patient | null = null;
   treatment: PatientTreatment | null = null;
   isEditOperation = false;
@@ -53,7 +54,7 @@ export class PatientTreatmentComponent {
   AddNewTreatmentDetails() {
     this.newTreatmentDetail = new PatientTreatmentDetail();
     const ids = this.treatment?.PatientTreatmentDetails?.map(x => x.ID) || [];
-    this.newTreatmentDetail.ID = ids.length > 0 ? Math.min(...ids) - 1 : 0;
+    this.newTreatmentDetail.ID = ids.length > 0 ? (Math.min(...ids) - 1 > 0 ?   0: Math.min(...ids) - 1) : 0;
     this.newTreatmentDetail.IsActive = 1;
     this.newTreatmentDetail.PatientTreatmentID = this.treatment.ID;
     this.newTreatmentDetail.UserID = this.patient.UserID;
@@ -63,9 +64,9 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail.Prescription = '';
   this.newTreatmentDetail.TreatmentDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
     this.newTreatmentDetail.CreatedBy = this.patient.UserID;
-  this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
+  this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newTreatmentDetail.ModifiedBy = this.patient.UserID;
-  this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
+  this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.isEditOperation = false;
   }
 
@@ -117,5 +118,12 @@ export class PatientTreatmentComponent {
       alert('Please fill in all required fields.');
     }
   }
-}
 
+
+ SetTreatmentValue<K extends keyof PatientTreatment>(key: K, value: PatientTreatment[K]) {
+    if (!this.treatment) {
+      this.treatment = new PatientTreatment();
+    }
+    this.treatment[key] = value;
+  }
+}

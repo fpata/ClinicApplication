@@ -16,5 +16,6 @@ export class PatientTreatmentDetail {
   ModifiedBy?: number = 1;
   user?: User;
   patientTreatment?: PatientTreatment;
+  FollowUpInstructions?: string;
   FollowUpDate?: string;
 }

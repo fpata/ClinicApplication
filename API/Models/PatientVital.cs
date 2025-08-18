@@ -13,7 +13,7 @@ namespace ClinicManager.Models
         public int PatientID { get; set; }
         
       
-        public DateTime RecordedDate { get; set; } = DateTime.UtcNow;
+        public DateTime RecordedDate { get; set; } = DateTime.Now;
         
         public int? BloodPressureSystolic { get; set; }
         public int? BloodPressureDiastolic { get; set; }
@@ -45,12 +45,6 @@ namespace ClinicManager.Models
         public string BloodPressure => BloodPressureSystolic.HasValue && BloodPressureDiastolic.HasValue 
             ? $"{BloodPressureSystolic}/{BloodPressureDiastolic}" 
             : string.Empty;
-        
-        // Navigation properties
-        [ForeignKey("PatientID")]
-        public virtual Patient? Patient { get; set; }
-        
-        [ForeignKey("RecordedBy")]
-        public virtual User? RecordedByUser { get; set; }
+   
     }
 }

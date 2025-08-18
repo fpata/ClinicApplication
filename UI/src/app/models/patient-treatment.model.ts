@@ -5,7 +5,6 @@ export class PatientTreatment {
   ID: number;
   UserID: number;
   ChiefComplaint: string;
-  Observation?: string;
   TreatmentPlan: string;
   PatientID?: number;
   IsActive?: number ;
@@ -22,7 +21,6 @@ export class PatientTreatment {
   ClinicalFindings?: string;
   Diagnosis?: string;
   Prescription?: string;
-  FollowUpInstructions?: string;
   PaymentStatus?: string;
   AppointmentID?: number;
   DoctorID?: number;

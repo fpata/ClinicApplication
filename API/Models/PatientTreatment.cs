@@ -33,8 +33,7 @@ namespace ClinicManager.Models
         [StringLength(500)]
         public string? Prescription { get; set; }
         
-        [StringLength(500)]
-        public string? FollowUpInstructions { get; set; }
+
       
         
         [StringLength(50)]

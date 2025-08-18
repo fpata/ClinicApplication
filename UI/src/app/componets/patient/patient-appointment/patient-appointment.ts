@@ -93,24 +93,25 @@ export class PatientAppointmentComponent {
     const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
     const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
 
-    if (this.newAppointment.StartDateTime && appointmentTime) {
+    // Normalize StartDateTime / EndDateTime as Date first
+    let baseStart = new Date(this.newAppointment.StartDateTime as any);
+    if (appointmentTime) {
       const [hours, minutes] = appointmentTime.split(':').map(Number);
-      const startDate = new Date(this.newAppointment.StartDateTime);
-      startDate.setHours(hours, minutes, 0, 0);
-      this.newAppointment.StartDateTime = startDate;
+      baseStart.setHours(hours, minutes, 0, 0);
     }
 
-    if (this.newAppointment.EndDateTime && appointmentEndTime) {
+    let baseEnd = new Date(this.newAppointment.EndDateTime as any || baseStart);
+    if (appointmentEndTime) {
       const [hours, minutes] = appointmentEndTime.split(':').map(Number);
-      // Assuming EndDateTime should be on the same day as StartDateTime
-      const endDate = new Date(this.newAppointment.StartDateTime);
-      endDate.setHours(hours, minutes, 0, 0);
-      this.newAppointment.EndDateTime = endDate;
+      baseEnd.setHours(hours, minutes, 0, 0);
     }
+
+    // Convert to local wall time strings (no timezone so DB keeps same clock time)
+    this.newAppointment.StartDateTime = this.util.toLocalDateTimeString(baseStart) as any;
+    this.newAppointment.EndDateTime = this.util.toLocalDateTimeString(baseEnd) as any;
 
     if (this.newAppointment.ID < 1) {
       this.appointments.push({ ...this.newAppointment });
-
     } else {
       const index = this.appointments.findIndex(a => a.ID === this.newAppointment.ID);
       if (index > -1) {
@@ -125,19 +126,30 @@ export class PatientAppointmentComponent {
   AddAppointment() {
     var user = this.dataService.getUser();
     this.newAppointment = new PatientAppointment();
-    this.newAppointment.ID = this.appointments.length > 0 ? Math.min(...this.appointments.map(a => a.ID)) - 1 : 0; // Initialize new appointment ID
+    if(this.appointments.length > 0)
+    {
+      var tempID = Math.min(...this.appointments.map(a => a.ID)) - 1;
+      if (tempID > 0) tempID = 0; // Ensure ID is not negative
+      this.newAppointment.ID = tempID;
+    }
     this.newAppointment.PatientID = this.patient?.ID || 1;
     this.newAppointment.UserID = user?.ID || 1;
-    this.newAppointment.StartDateTime = new Date();
-    this.newAppointment.EndDateTime = new Date(new Date().getTime() + 30 * 60000); // Default to 30 minutes later
+
+    const start = new Date();
+    const end = new Date(start.getTime() + 30 * 60000);
+
+    // Store as local wall time strings
+    this.newAppointment.StartDateTime = this.util.toLocalDateTimeString(start) as any;
+    this.newAppointment.EndDateTime = this.util.toLocalDateTimeString(end) as any;
+
     this.newAppointment.DoctorName = '';
     this.newAppointment.TreatmentName = '';
     this.newAppointment.PatientName = user?.FirstName + ' ' + user?.LastName || 'Unknown Patient';
     this.newAppointment.IsActive = 1;
     this.newAppointment.CreatedBy = user?.ID || 1;
     this.newAppointment.ModifiedBy = user?.ID || 1;
-  this.newAppointment.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
-  this.newAppointment.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
+    this.newAppointment.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
+    this.newAppointment.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newAppointment.DoctorID = this.dataService.getLoginUser()?.user?.ID || 1;
   }
 }

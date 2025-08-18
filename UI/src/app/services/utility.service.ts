@@ -66,4 +66,52 @@ export class UtilityService {
     }
     return null;
   }
+
+  /**
+   * Converts a local Date (interpreted in the current timezone) to a UTC Date object
+   * representing the same wall clock components. Useful only if you must persist wall time
+   * but backend interprets as UTC. (Usually prefer storing real UTC instant instead.)
+   */
+  localWallTimeToUtc(dateInput: Date | string | number): Date | null {
+    const d = this.coerce(dateInput);
+    if (!d) return null;
+    // Build a UTC date with same Y-M-D-H-M-S parts
+    return new Date(Date.UTC(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      d.getHours(),
+      d.getMinutes(),
+      d.getSeconds(),
+      d.getMilliseconds()
+    ));
+  }
+
+  /**
+   * Creates a local Date from a UTC date that was previously produced by localWallTimeToUtc.
+   * (Inverse operation for display.)
+   */
+  utcWallTimeToLocal(dateInput: Date | string | number): Date | null {
+    const d = this.coerce(dateInput);
+    if (!d) return null;
+    return new Date(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      d.getHours(),
+      d.getMinutes(),
+      d.getSeconds(),
+      d.getMilliseconds()
+    );
+  }
+
+  /**
+   * Returns a local wall time string (no timezone) suitable for storing without TZ shift.
+   * Format: yyyy-MM-ddTHH:mm:ss
+   */
+  toLocalDateTimeString(dateInput: Date | string | number): string {
+    return this.formatDateTime(dateInput, 'yyyy-MM-ddTHH:mm:ss');
+  }
+
+   
 }

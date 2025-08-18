@@ -10,10 +10,10 @@ namespace ClinicManager.Models
         public int ID { get; set; }
         
     
-        public DateTime? CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
         
 
-        public DateTime? ModifiedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? ModifiedDate { get; set; } = DateTime.Now;
         
 
         public int? CreatedBy { get; set; } = 1;

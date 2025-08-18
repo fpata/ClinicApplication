@@ -6,7 +6,7 @@
       <thead>
         <th>ID</th>
         <th>Chief Complaint</th>
-        <th>Observations</th>
+        <th>Clinical Findings</th>
         <th>Treatment Plan</th>
         <th>Treatment Date</th>
        
@@ -16,7 +16,7 @@
         <tr>
           <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(treatment.PatientID)">{{treatment.PatientID}}</a></td>
           <td>{{treatment.ChiefComplaint}}</td>
-          <td>{{treatment.Observation}}</td>
+          <td>{{treatment.ClinicalFindings}}</td>
           <td>{{treatment.TreatmentPlan}}</td>
           <td>{{treatment.TreatmentDate}}</td>
         </tr>
