@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './componets/login/login';
-import { PatientMasterComponent } from './componets/patient/patient-master/patient-master';
+import { LoginComponent } from './componets/login/login.component';
+import { PatientMasterComponent } from './componets/patient/patient-master/patient-master.component';
 import { SchedulerComponent } from './common/scheduler/scheduler';
-import { Dashboard } from './componets/dashboard/dashboard';
-import { DoctorAppointmentsComponent } from './componets/doctor/doctorappointments/doctorappointments';
-import { PatientCompleteHistoryComponent } from './componets/patient/patientcompletehistory/patientcompletehistory';
-import { UserMasterComponent } from './componets/user/user-master/user-master';
+import { Dashboard } from './componets/dashboard/dashboard.component';
+import { DoctorAppointmentsComponent } from './componets/doctor/doctorappointments/doctorappointments.component';
+import { PatientCompleteHistoryComponent } from './componets/patient/patientcompletehistory/patient-complete-history.component';
+import { UserMasterComponent } from './componets/user/user-master/user-master.component';
 import { authGuard } from './guards/auth.guard';
 
 

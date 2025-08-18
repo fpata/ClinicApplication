@@ -28,5 +28,34 @@
         Other = 3,
         PreferNotToSay = 4
     }
+    public enum InsuranceStatus
+    {
+        Pending = 1,
+        Submitted = 2,
+        Denied = 3,
+        Paid = 4,
+        Partial = 5
+    }
 
+    public enum BillingStatus
+    {
+        Draft = 1,
+        Submitted = 2,
+        PartiallyPaid = 3,
+        Paid = 4,
+        Voided = 5,
+        Adjusted = 6
+    }
+
+    public enum PaymentMethod
+    {
+        Cash = 1,
+        CreditCard = 2,
+        DebitCard = 3,
+        Check = 4,
+        BankTransfer = 5,
+        Insurance = 6,
+        Adjustment = 7,
+        WriteOff = 8
+    }
 }
