@@ -8,7 +8,7 @@ describe('UserMasterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserMasterComponent]
+      imports: [UserMasterComponent, HttpClientTestingModule]
     })
     .compileComponents();
 

@@ -15,7 +15,7 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
   calendarEvents: DayPilot.EventData[] = [];
   
   config: DayPilot.CalendarConfig = {
-    startDate: DayPilot.Date.today().firstDayOfWeek(1),
+    startDate: DayPilot?.Date?.today()?.firstDayOfWeek(1),
     days: 6,
     businessBeginsHour: 9,
     businessEndsHour: 20,

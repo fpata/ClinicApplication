@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Typeahead } from './typeahead';
+import { TypeaheadComponent  } from './typeahead';
 
-describe('Typeahead', () => {
-  let component: Typeahead;
-  let fixture: ComponentFixture<Typeahead>;
+describe('TypeaheadComponent', () => {
+  let component: TypeaheadComponent;
+  let fixture: ComponentFixture<TypeaheadComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Typeahead]
+      imports: [TypeaheadComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Typeahead);
+    fixture = TestBed.createComponent(TypeaheadComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

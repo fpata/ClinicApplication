@@ -47,8 +47,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.messageSubscription.unsubscribe();
-        this.routeSubscription.unsubscribe();
+        this.messageSubscription?.unsubscribe();
+        this.routeSubscription?.unsubscribe();
     }
 
     removeMessage(message: Message) {
