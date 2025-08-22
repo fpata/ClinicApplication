@@ -25,8 +25,8 @@ export class UserSearch {
   constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService, 
     private util: UtilityService) {
     this.searchPatient = new PatientSearchModel(this.util);
-    this.searchPatient.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd'); // Default to today
-    this.searchPatient.StartDate = this.util.formatDate(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'); // 365 days ago
+    this.searchPatient.EndDate = this.util.formatDate(new Date((Date.now() + 180 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // Default to 180 days from now
+    this.searchPatient.StartDate = this.util.formatDate(new Date((Date.now() - 365 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // 365 days ago
     this.searchResult = [];
   }
 
@@ -47,6 +47,8 @@ validateSearchInput() {
     if (this.searchLengthConstraintError) {
       return;
     }
+    this.searchPatient.StartDate = '2022-01-01';
+    console.log('Search User:', this.searchPatient);
     this.searchService.searchUser(this.searchPatient).subscribe({
       next: (result:any) => {
         this.searchResult = result;

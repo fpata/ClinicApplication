@@ -187,7 +187,7 @@ namespace ClinicManager.Controllers
         {
             _logger.LogInformation($"Searching appointments with criteria");
 
-            var cacheKey = $"appointment_search_{GetSearchCacheKey(model)}";
+            //var cacheKey = $"appointment_search_{GetSearchCacheKey(model)}";
           try
             {
                 // Use LINQ instead of raw SQL to prevent injection
@@ -246,9 +246,6 @@ namespace ClinicManager.Controllers
             }
         }
 
-        private string GetSearchCacheKey(SearchModel model)
-        {
-            return $"{model.FirstName}_{model.LastName}_{model.PrimaryEmail}_{model.PrimaryPhone}_{model.PermCity}_{model.DoctorID}_{model.PatientID}_{model.DoctorName}_{model.StartDate?.ToString("yyyy-MM-dd")}";
-        }
+     
     }
 }

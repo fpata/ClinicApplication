@@ -5,8 +5,8 @@ export class PatientSearchModel {
   constructor(private util: UtilityService) {
       // Make util non-enumerable so it won't appear in JSON
     Object.defineProperty(this, 'util', { enumerable: false });
-    this.StartDate = this.util.formatDate(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
-    this.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
+    this.StartDate = this.util.formatDate(new Date((Date.now() - 365 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd');
+    this.EndDate = this.util.formatDate(new Date((Date.now() + 180 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd');
   }
 
   PatientID?: number = 0;

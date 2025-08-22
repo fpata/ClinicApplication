@@ -20,8 +20,9 @@ namespace ClinicManager.Models
         public int? DoctorID { get; set; } = 0;
         public string? DoctorName { get; set; } = string.Empty;
         
-        public DateTime? StartDate { get; set; } = DateTime.Now.AddYears(-1);
-        public DateTime? EndDate { get; set; } = DateTime.Now;
+        // Apply date filters only if client provides them
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }
