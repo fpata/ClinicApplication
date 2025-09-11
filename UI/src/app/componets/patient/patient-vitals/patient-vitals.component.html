@@ -8,7 +8,7 @@
             </div>
             <div class="col-3">
                 <input type="number" id="txtBloodPressureSystolic" class="form-control"
-                    [ngModel]="vitals?.BloodPressureSystolic" (ngModelChange)="vitals.BloodPressureSystolic = $event" />
+                    [ngModel]="vitals?.BloodPressureSystolic" (ngModelChange)="this.vitals.BloodPressureSystolic = $event" />
             </div>
             <div class="col-1">&nbsp;</div>
             <div class="col-2">

@@ -8,6 +8,8 @@ import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
+import { Message } from '../../../models/message.model';
+import { MessageService } from '../../../services/message.service';
 @Component({
   selector: 'app-user-search',
   standalone: true,
@@ -22,8 +24,8 @@ export class UserSearch {
   searchLengthConstraintError: boolean = false;
   clearSearchClicked: boolean = false;
 
-  constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService, 
-    private util: UtilityService) {
+  constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService,
+    private util: UtilityService, private messageService: MessageService) {
     this.searchPatient = new PatientSearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date((Date.now() + 180 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // Default to 180 days from now
     this.searchPatient.StartDate = this.util.formatDate(new Date((Date.now() - 365 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // 365 days ago
@@ -48,7 +50,6 @@ validateSearchInput() {
       return;
     }
     this.searchPatient.StartDate = '2022-01-01';
-    console.log('Search User:', this.searchPatient);
     this.searchService.searchUser(this.searchPatient).subscribe({
       next: (result:any) => {
         this.searchResult = result;
@@ -59,7 +60,7 @@ validateSearchInput() {
       },
       error: (err:any) => {
         // Optionally handle error
-        alert('Error occurred while searching for patients.');
+        this.messageService.error('Error occurred while searching for patients.');
         console.error(err);
         this.searchResult = [];
         this.clearSearchClicked = false;
@@ -81,10 +82,10 @@ validateSearchInput() {
     this.userService.getUser(userId).subscribe({
       next: (user: User) => {
         this.dataService.setUser(user);
-          document.getElementById('tbPersonalInfo-tab')?.click();
+         document.getElementById('tbPatientVitals-tab')?.click();
       },
       error: (err: any) => {
-        console.error('Error fetching user data:', err);
+       this.messageService.error('Error fetching user data:', err);
       }
     });
   }

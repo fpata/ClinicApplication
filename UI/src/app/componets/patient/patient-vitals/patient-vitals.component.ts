@@ -4,6 +4,7 @@ import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
 import { PatientVitals } from '../../../models/patient-vitals.model';
 import { Subscription } from 'rxjs';
+import { MessageService } from '../../../services/message.service';
 
 @Component({
   selector: 'app-patient-vitals',
@@ -13,22 +14,33 @@ import { Subscription } from 'rxjs';
 })
 export class PatientVitalsComponent {
 
-vitals: PatientVitals;
-patient: Patient;
-patientSubscription: Subscription;
+vitals: PatientVitals | null = null;
+vitalsArray: PatientVitals[] | null = null;
+patient: Patient | null = null;
+private patientSubscription: Subscription = new Subscription();
 
-constructor(private dataService: DataService) {
+constructor(private dataService: DataService, private messageService: MessageService) {
  }
 
    ngOnInit() {
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.patient$.subscribe({
-      next: (patient:Patient) => {
-        this.patient = patient;
-        
-      },
+      next: (_newpatient:Patient) => {
+        this.patient = _newpatient;
+        if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {
+          this.vitalsArray = this.patient?.PatientVitals;
+          this.vitals = this.vitalsArray[0];
+        } else {
+          this.patient.PatientVitals = new Array<PatientVitals>(new PatientVitals());
+          this.vitals = this.patient?.PatientVitals[0] ;
+          this.vitals.PatientID = this.patient?.ID || 0;
+          this.vitals.UserID = this.patient?.UserID || 0;
+          this.dataService.setPatient(this.patient);
+      }
+      console.log('Patient updated in PatientVitalsComponent:', this.vitals);
+     } ,
       error: (error:any) => {
-        console.error('Error subscribing to patient changes:', error);
+        this.messageService.error('Error subscribing to patient changes:', error);
       }
     });
   }

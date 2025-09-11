@@ -5,7 +5,7 @@ import { PatientSearchModel } from '../../../models/patient-search.model';
 import { SearchService } from '../../../services/search.service';
 import { PatientService } from '../../../services/patient.service';
 import { DataService } from '../../../services/data.service';
-import { Patient } from '../../../models/patient.model';  
+import { Patient } from '../../../models/patient.model';
 import { User } from '../../../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../../services/user.service';
@@ -81,31 +81,33 @@ export class PatientSearchComponent {
     this.searchResult = [];
     this.clearSearchClicked = true;
   }
-  
+
   OnPatientIdClick(patientId: number, userId: number) {
-    if(patientId === 0 || patientId === undefined || patientId === null) {
+    if (patientId === 0 || patientId === undefined || patientId === null) {
       this.userService.getUser(userId).subscribe({
         next: (user: User) => {
           this.dataService.setUser(user);
         },
-        error: (err:Error) => {
+        error: (err: Error) => {
           console.error('Error fetching user data:', err);
         }
       });
-      return;
+      this.patientService.AddNewPatient();
+      document.getElementById('tbPersonalInfo-tab')?.click();
     }
-
-    this.patientService.getCompletePatient(patientId).subscribe({
-      next: (user) => {
-        // Handle the patient data as needed
-        console.log('User data:', user);
-        this.dataService.setUser(user);
-        this.dataService.setPatient(user?.Patients[0] || null);
-      },
-      error: (err) => {
-        console.error('Error fetching patient data:', err);
-      }
-    });
+    else {
+      this.patientService.getCompletePatient(patientId).subscribe({
+        next: (user) => {
+          // Handle the patient data as needed
+          console.log('User data:', user);
+          this.dataService.setUser(user);
+          this.dataService.setPatient(user?.Patients[0] || null);
+        },
+        error: (err) => {
+          console.error('Error fetching patient data:', err);
+        }
+      });
+    }
   }
 
   AddNewUser() {

@@ -70,7 +70,7 @@ namespace ClinicManager.Controllers
                 if (model.UserType.HasValue && model.UserType.Value > 0)
                     query = query.Where(x => x.user.UserType == model.UserType);
 
-                if (model.StartDate.HasValue)
+                if (model.StartDate.HasValue && model.StartDate.Value < DateTime.Now.Date.AddDays(-10))
                     query = query.Where(x => x.user.CreatedDate >= model.StartDate.Value);
 
                 if (model.PatientID.HasValue && model.PatientID.Value > 0)

@@ -34,6 +34,6 @@ namespace ClinicManager.Models
         public virtual ICollection<PatientReport>? PatientReports { get; set; }
         public virtual PatientTreatment? PatientTreatment { get; set; }
         
-        public virtual ICollection<PatientVital>? PatientVitals { get; set; }
+        public virtual ICollection<PatientVitals>? PatientVitals { get; set; }
     }
 }

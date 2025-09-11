@@ -4,16 +4,15 @@ using ClinicManager.Models;
 
 namespace ClinicManager.Models
 {
-    [Table("patientvital")]
-    public class PatientVital : BaseEntity
+    [Table("patientvitals")]
+    public class PatientVitals : BaseEntity
     {
+        public int? UserID { get; set; }
       
-        public int UserID { get; set; }
-      
-        public int PatientID { get; set; }
+        public int? PatientID { get; set; }
         
       
-        public DateTime RecordedDate { get; set; } = DateTime.Now;
+        public DateTime? RecordedDate { get; set; } = DateTime.Now;
         
         public int? BloodPressureSystolic { get; set; }
         public int? BloodPressureDiastolic { get; set; }
@@ -32,19 +31,19 @@ namespace ClinicManager.Models
         public string? BloodType { get; set; }
 
 
-        public int RecordedBy { get; set; } = 1;
+        public int? RecordedBy { get; set; } = 1;
 
 
-        [NotMapped]
-        public double? BMI => Weight.HasValue && Height.HasValue && Height > 0
-            ? Math.Round((double)(Weight / Math.Pow((double)(Height / 100), 2)), 2)
-            : null;
+        //[NotMapped]
+        //public double? BMI => Weight.HasValue && Height.HasValue && Height > 0
+        //    ? Math.Round((double)(Weight / Math.Pow((double)(Height / 100), 2)), 2)
+        //    : null;
 
 
-        [NotMapped]
-        public string BloodPressure => BloodPressureSystolic.HasValue && BloodPressureDiastolic.HasValue 
-            ? $"{BloodPressureSystolic}/{BloodPressureDiastolic}" 
-            : string.Empty;
+        //[NotMapped]
+        //public string BloodPressure => BloodPressureSystolic.HasValue && BloodPressureDiastolic.HasValue 
+        //    ? $"{BloodPressureSystolic}/{BloodPressureDiastolic}" 
+        //    : string.Empty;
    
     }
 }

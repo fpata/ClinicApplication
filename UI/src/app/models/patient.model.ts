@@ -21,5 +21,5 @@ export class Patient extends BaseEntity {
   PatientAppointments?: PatientAppointment[];
   PatientReports?: PatientReport[];
   PatientTreatment?: PatientTreatment;
-  PatientVitals?: PatientVitals;
+  PatientVitals?: PatientVitals[];
 }

@@ -34,6 +34,7 @@
       </div>
     </div>
   </div>
+  <br />
 <div class="container-fluid">
   @if(!isSearchTabSelected) {
     <div class="row">
@@ -53,12 +54,12 @@
     } 
     @if(isSearchTabSelected) {
     <div class="row">
-      <div class="col">
-        <button type="button" id="btnNewUser" class="btn btn-primary" style="width: 25%;" (click)="AddNewUser()">New
+      <div class="col" style="text-align: center;">
+        <button type="button" id="btnNewUser" class="btn btn-primary" style="width: 35%;" (click)="AddNewUser()">New
           User</button>
       </div>
-      <div class="col">
-        <button type="button" id="btnQuickCreateUser" class="btn btn-secondary" style="width: 25%;"
+      <div class="col" style="text-align: center;">
+        <button type="button" id="btnQuickCreateUser" class="btn btn-secondary" style="width: 35%;"
           (click)="QuickCreateUser()">Quick Create User</button>
       </div>
     </div>

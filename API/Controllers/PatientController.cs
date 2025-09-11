@@ -57,6 +57,7 @@ namespace ClinicManager.Controllers
                 .AsSplitQuery() // Use AsSplitQuery to optimize loading related entities
                 .Include(p => p.PatientAppointments)
                 .Include(p => p.PatientReports)
+                .Include(p => p.PatientVitals)
                 .Include(p => p.PatientTreatment)
                     .ThenInclude(pt => pt!.PatientTreatmentDetails)
                 .FirstOrDefaultAsync(p => p.ID == id && p.IsActive == 1);
@@ -101,6 +102,9 @@ namespace ClinicManager.Controllers
                                       PatientTreatment = _context.PatientTreatments
                                           .Where(pt => pt.PatientID == id)
                                           .FirstOrDefault(),
+                                      PatientVitals = _context.PatientVitals
+                                            .Where(pv => pv.PatientID == id)
+                                            .ToList(),
                                       PatientTreatmentDetails = _context.PatientTreatmentDetails
                                           .Where(ptd => ptd.PatientID == id)
                                           .ToList()
@@ -123,6 +127,7 @@ namespace ClinicManager.Controllers
             var patient = userData.Patient;
             patient.PatientAppointments = userData.PatientAppointments;
             patient.PatientReports = userData.PatientReports;
+            patient.PatientVitals = userData.PatientVitals;
             patient.PatientTreatment = userData.PatientTreatment;
             
             if (patient.PatientTreatment != null)
@@ -180,6 +185,20 @@ namespace ClinicManager.Controllers
                         appointment.ModifiedBy = appointment.ModifiedBy ?? 1; // Default to 1 if not set
                         appointment.PatientID = null; // Clear foreign key - EF will set it
                         appointment.IsActive = 1;
+                    }
+                }
+                if(patient.PatientVitals?.Any() == true)
+                {
+                    foreach (var vital in patient.PatientVitals)
+                    {
+                        vital.ID = 0;
+                        vital.UserID = patient.UserID;
+                        vital.CreatedDate = DateTime.Now;
+                        vital.ModifiedDate = DateTime.Now;
+                        vital.CreatedBy = vital.CreatedBy ?? 1; // Default to 1 if not set
+                        vital.ModifiedBy = vital.ModifiedBy ?? 1; // Default to 1 if not set
+                        vital.PatientID = null; // Clear foreign key - EF will set it
+                        vital.IsActive = 1;
                     }
                 }
 
@@ -272,7 +291,22 @@ namespace ClinicManager.Controllers
                     _context.Entry(report).State = report.ID < 1 ? EntityState.Added : EntityState.Modified;
                 }
             }
-            if(!(patient.PatientTreatment == null || String.IsNullOrWhiteSpace(patient.PatientTreatment?.ChiefComplaint)))
+
+            if(patient.PatientVitals?.Any() == true)
+            {
+                foreach (var vital in patient.PatientVitals)
+                {
+                    vital.PatientID = id; // Ensure the vital is linked to the correct patient
+                    vital.UserID = patient.UserID;
+                    vital.CreatedDate = vital.CreatedDate ?? DateTime.Now;
+                    vital.ModifiedDate = DateTime.Now;
+                    vital.CreatedBy = vital.CreatedBy ?? 1; // Default to 1 if not set
+                    vital.ModifiedBy = vital.ModifiedBy ?? 1; // Default to 1 if not set
+                    _context.Entry(vital).State = vital.ID < 1 ? EntityState.Added : EntityState.Modified;
+                }
+            }
+
+            if (!(patient.PatientTreatment == null || String.IsNullOrWhiteSpace(patient.PatientTreatment?.ChiefComplaint)))
             {
                 patient.PatientTreatment.PatientID = id; // Ensure the treatment is linked to the correct patient
                 patient.PatientTreatment.UserID = patient.UserID;

@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild, ViewChild } from '@angular/core';
 import { PatientAppointmentComponent } from '../patient-appointment/patient-appointment.component';
 import { PatientHistoryComponent } from '../patient-history/patient-history.component';
 import { PatientReportComponent } from '../patient-report/patient-report.component';
@@ -34,6 +34,7 @@ export class PatientMasterComponent {
   userID: number = 0;
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
   @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
+  @ViewChild(PatientVitalsComponent) patientVitalsComponent!: PatientVitalsComponent;
   constructor(private dataService: DataService, private patientService: PatientService, private util: UtilityService,
     private messageService: MessageService
   ) { }
@@ -104,20 +105,7 @@ export class PatientMasterComponent {
       this.messageService.info('No user present. Create a new user first');
       return;
     }
-    var patient: Patient = new Patient();
-    patient.UserID = this.dataService.getUser()?.ID || 0;
-    
-    patient.ID = 0; // New patient, so ID is 0
-    patient.CreatedBy = this.dataService.getUser()?.ID || 0;
-    patient.ModifiedBy = this.dataService.getUser()?.ID || 0;
-    patient.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
-    patient.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
-    patient.IsActive = 1;
-    patient.PatientAppointments = new Array<PatientAppointment>();
-    patient.PatientAppointments = [];
-    patient.PatientTreatment = new PatientTreatment();
-    patient.PatientReports = new Array<PatientReport>();
-    this.dataService.setPatient(patient);
+    this.patientService.AddNewPatient();
   }
 
   SavePatientInformation() {

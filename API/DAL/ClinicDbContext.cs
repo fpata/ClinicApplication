@@ -14,7 +14,7 @@ namespace ClinicManager.DAL
         public DbSet<PatientReport> PatientReports { get; set; }
         public DbSet<PatientTreatment> PatientTreatments { get; set; }
         public DbSet<PatientTreatmentDetail> PatientTreatmentDetails { get; set; }
-        public DbSet<PatientVital> PatientVitals { get; set; }
+        public DbSet<PatientVitals> PatientVitals { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<BillingRecord> BillingRecords { get; set; }
         public DbSet<Payment> Payments { get; set; }
