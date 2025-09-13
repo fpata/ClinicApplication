@@ -44,7 +44,7 @@ export class PatientAppointmentComponent {
           // Pass the appointments to the scheduler component
 
         }
-        console.log('Patient updated:', _newPatient);
+        //console.log('Patient updated:', _newPatient);
       },
       error: (error) => {
         console.error('Error subscribing to patient changes:', error);
@@ -129,8 +129,12 @@ export class PatientAppointmentComponent {
     if(this.appointments.length > 0)
     {
       var tempID = Math.min(...this.appointments.map(a => a.ID)) - 1;
-      if (tempID > 0) tempID = 0; // Ensure ID is not negative
+      if (tempID > 0 || tempID === null || tempID === undefined) tempID = 0; // Ensure ID is not negative
       this.newAppointment.ID = tempID;
+    }
+    else
+    {
+      this.newAppointment.ID = 0;
     }
     this.newAppointment.PatientID = this.patient?.ID || 1;
     this.newAppointment.UserID = user?.ID || 1;

@@ -36,7 +36,7 @@ export class PatientTreatmentComponent {
           this.treatment = newPatient.PatientTreatment;
         }
 
-        console.log('Patient updated:', this.patient);
+        //console.log('Patient updated:', this.patient);
       },
       error: (error) => {
         console.error('Error subscribing to patient changes:', error);
@@ -54,7 +54,12 @@ export class PatientTreatmentComponent {
   AddNewTreatmentDetails() {
     this.newTreatmentDetail = new PatientTreatmentDetail();
     const ids = this.treatment?.PatientTreatmentDetails?.map(x => x.ID) || [];
-    this.newTreatmentDetail.ID = ids.length > 0 ? (Math.min(...ids) - 1 > 0 ?   0: Math.min(...ids) - 1) : 0;
+    if (ids.length > 0) {
+      this.newTreatmentDetail.ID = Math.min(...ids) - 1;
+    }
+    else {
+      this.newTreatmentDetail.ID = 0;
+    }
     this.newTreatmentDetail.IsActive = 1;
     this.newTreatmentDetail.PatientTreatmentID = this.treatment.ID;
     this.newTreatmentDetail.UserID = this.patient.UserID;
@@ -62,11 +67,11 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail.Tooth = '';
     this.newTreatmentDetail.Procedure = '';
     this.newTreatmentDetail.Prescription = '';
-  this.newTreatmentDetail.TreatmentDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
+    this.newTreatmentDetail.TreatmentDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
     this.newTreatmentDetail.CreatedBy = this.patient.UserID;
-  this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
+    this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newTreatmentDetail.ModifiedBy = this.patient.UserID;
-  this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
+    this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.isEditOperation = false;
   }
 
@@ -99,7 +104,7 @@ export class PatientTreatmentComponent {
     if (this.newTreatmentDetail) {
       if (this.newTreatmentDetail.ID < 1 && this.isEditOperation === false) {
         // Add new treatment detail
-        if(this.treatment.PatientTreatmentDetails === undefined || this.treatment.PatientTreatmentDetails === null) {
+        if (this.treatment.PatientTreatmentDetails === undefined || this.treatment.PatientTreatmentDetails === null) {
           this.treatment.PatientTreatmentDetails = [];
         }
         this.treatment.PatientTreatmentDetails.push({ ...this.newTreatmentDetail });
@@ -120,7 +125,7 @@ export class PatientTreatmentComponent {
   }
 
 
- SetTreatmentValue<K extends keyof PatientTreatment>(key: K, value: PatientTreatment[K]) {
+  SetTreatmentValue<K extends keyof PatientTreatment>(key: K, value: PatientTreatment[K]) {
     if (!this.treatment) {
       this.treatment = new PatientTreatment();
     }

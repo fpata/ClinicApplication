@@ -99,7 +99,7 @@ export class PatientSearchComponent {
       this.patientService.getCompletePatient(patientId).subscribe({
         next: (user) => {
           // Handle the patient data as needed
-          console.log('User data:', user);
+         // console.log('User data:', user);
           this.dataService.setUser(user);
           this.dataService.setPatient(user?.Patients[0] || null);
         },

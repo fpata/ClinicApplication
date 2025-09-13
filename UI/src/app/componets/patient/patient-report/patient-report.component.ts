@@ -33,7 +33,7 @@ export class PatientReportComponent {
         else {
           this.reports = []; // Ensure reports is initialized to an empty array if no reports are
         }
-        console.log('Patient updated:', newPatient);
+        //console.log('Patient updated:', newPatient);
       },
       error: (error) => {
         console.error('Error subscribing to patient changes:', error);

@@ -1,4 +1,6 @@
-  export class PatientVitals {
+import { BaseEntity } from "./base.model";
+
+  export class PatientVitals extends BaseEntity {
     UserID: number;
     PatientID: number;
     RecordedDate: Date = new Date();
