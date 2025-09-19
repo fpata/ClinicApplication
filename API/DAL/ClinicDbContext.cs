@@ -19,5 +19,6 @@ namespace ClinicManager.DAL
         public DbSet<BillingRecord> BillingRecords { get; set; }
         public DbSet<Payment> Payments { get; set; }
 
+        public DbSet<AppConfig> AppConfigs { get; set; }
     }
 }

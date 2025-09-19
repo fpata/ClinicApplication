@@ -26,10 +26,11 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
     onTimeRangeSelected: (args: any) => this.onTimeRangeSelected(args),
     onEventClick: (args: any) => this.onEventClick(args),
     onEventMoved: (args: any) => this.onEventMoved(args),
-    onEventResized: (args: any) => this.onEventResized(args)
+    onEventResized: (args: any) => this.onEventResized(args),
   };
 
   private readonly eventColors = ['#3c8dbc', '#00a65a', '#f56954', '#f39c12', '#9b59b6', '#34495e'];
+
 
   ngOnInit(): void {
     // Initialize component
@@ -37,7 +38,10 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     // Component view initialized
+   
   }
+
+  
 
   onEventClick(args: any): void {
     const eventDetails = `

@@ -8,6 +8,7 @@ import { PatientCompleteHistoryComponent } from './componets/patient/patientcomp
 import { UserMasterComponent } from './componets/user/user-master/user-master.component';
 import { BillingrecordComponent } from './componets/billing/billingrecord.component/billingrecord.component'; 
 import { authGuard } from './guards/auth.guard';
+import { AppconfigComponent } from './componets/appconfig/appconfig.component';
 
 
 export const routes: Routes = [
@@ -20,5 +21,6 @@ export const routes: Routes = [
   { path : 'patienthistory', component: PatientCompleteHistoryComponent, canActivate: [authGuard] },
   { path: 'user', component : UserMasterComponent, canActivate: [authGuard] },
   { path: 'billing', component: BillingrecordComponent, canActivate: [authGuard] },
+  { path: 'appconfig', component: AppconfigComponent, canActivate: [authGuard] },
   // Add other routes here
 ];

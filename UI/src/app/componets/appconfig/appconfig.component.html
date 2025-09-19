@@ -1,0 +1,85 @@
+<div class="container-fluid">
+    <br>
+    <h3>Application Configuration</h3>
+    <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+        <div class="row">
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtClinicName" class="form-label">Clinic Name</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtClinicName" class="form-control" placeholder="Clinic Name"
+                    [ngModel]="config?.ClinicName" (ngModelChange)="config && (config.ClinicName = $event)"
+                    minlength="3" maxlength="50" required="">
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtClinicProp" class="form-label">Clinic Prop Name</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="text" id="txtClinicProp" class="form-control" placeholder="Clinic Prop"
+                    [ngModel]="config?.ClinicProp" (ngModelChange)="config && (config.ClinicProp = $event)"
+                    minlength="3" maxlength="50" required="">
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtClinicOpenTime" class="form-label">Clinic Open Time</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="time" id="txtClinicOpenTime" class="form-control" placeholder="Clinic Open Time"
+                    [ngModel]="config?.ClinicOpenTime" (ngModelChange)="config && (config.ClinicOpenTime = $event)"
+                    minlength="3" maxlength="50" required="">
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtClinicEndTime" class="form-label">Clinic End Time</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="time" id="txtClinicEndTime" class="form-control" placeholder="Clinic End Time"
+                    [ngModel]="config?.ClinicEndTime" (ngModelChange)="config && (config.ClinicEndTime = $event)"
+                    minlength="3" maxlength="50" required="">
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtPerPatientSlot" class="form-label">Per Patient Slot (Minutes)</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="time" id="txtPerPatientSlot" class="form-control" placeholder="Per Patient Slot"
+                    [ngModel]="config?.PerPatientSlotInMinutes"
+                    (ngModelChange)="config && (config.PerPatientSlotInMinutes = $event)" minlength="1" maxlength="3"
+                    required="">
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtLunchTime" class="form-label">Lunch Time</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="time" id="txtLunchTime" class="form-control" placeholder="Lunch Time"
+                    [ngModel]="config?.LunchTime" (ngModelChange)="config && (config.LunchTime = $event)" required="">
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtAddress" class="form-label">Address</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <button class="btn btn-primary" style="width: 100px;" (click)="saveConfig()">Save</button>
+                </div>
+            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+            <div class="col-xs-12 col-sm-5 col-md-2">
+               <button class="btn btn-secondary" style="width: 100px;" (click)="resetForm()">Reset</button>
+            </div>
+        </div>
+    </fieldset>
+</div>
