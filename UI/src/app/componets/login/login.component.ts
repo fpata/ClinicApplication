@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterModule,Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LoginService, LoginResponse } from '../../services/login.service';
@@ -9,7 +9,7 @@ import { DataService } from '../../services/data.service';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterModule],
   standalone: true
 })
 export class LoginComponent {
@@ -24,6 +24,14 @@ export class LoginComponent {
   ) {}
 
   login(): void {
+    if(!this.username || !this.password) {
+      this.error = 'Username and password are required';
+      return;
+    }
+    if(this.username.length < 3 || this.password.length < 3) {
+      this.error = 'Username and password must be at least 3 characters long';
+      return;
+    }
     this.loginService.login(this.username, this.password).subscribe({
       next: (res: LoginResponse) => {
         this.dataService.setLoginUser(res);

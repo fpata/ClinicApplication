@@ -6,6 +6,7 @@ import { Message, MessageType } from '../models/message.model';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
+  
     private subject = new Subject<Message>();
     private defaultId:number = 1;
 
@@ -40,5 +41,9 @@ export class MessageService {
     // clear alerts
     clear(id = this.defaultId) {
         this.subject.next(new Message({ id }));
+    }
+
+    sendMessage(email: string) {
+    //throw new Error('Method not implemented.');
     }
 }
