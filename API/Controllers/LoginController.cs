@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ClinicManager.DAL;
+using Castle.Core.Smtp;
 
 namespace ClinicManager.Controllers
 {
@@ -92,6 +93,22 @@ namespace ClinicManager.Controllers
                     user.LastLoginDate
                 }
             });
+        }
+
+        [HttpGet]
+        [Route("forgotpassword")]
+        public string  forgotpassword(string sendTo,bool isMobile=false )
+        {
+
+            if(isMobile)
+            {
+                return "OTP sent to mobile number "+sendTo;
+            }
+            else
+            {
+               
+                return "Reset link sent to email "+sendTo;
+            }
         }
     }
 }

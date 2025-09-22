@@ -9,7 +9,7 @@ import { UserMasterComponent } from './componets/user/user-master/user-master.co
 import { BillingrecordComponent } from './componets/billing/billingrecord.component/billingrecord.component'; 
 import { authGuard } from './guards/auth.guard';
 import { AppconfigComponent } from './componets/appconfig/appconfig.component';
-import { ForgotPasswordComponent } from './componets/login/forgotpassword.component/forgotpassword.component';
+import { ForgotPasswordComponent } from './componets/login/forgotpassword/forgotpassword.component';
 
 
 export const routes: Routes = [

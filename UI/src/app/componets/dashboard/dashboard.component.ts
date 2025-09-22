@@ -3,15 +3,20 @@ import { SchedulerComponent } from "../../common/scheduler/scheduler";
 import { PatientAppointment } from '../../models/patient-appointment.model';
 import { PatientAppointmentService } from '../../services/patient-appointment.service';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
+import { PagingComponent } from "../../common/paging/paging.component";
 
 @Component({
    selector: 'app-dashboard',
-   imports: [SchedulerComponent],
+   imports: [SchedulerComponent, PagingComponent],
    templateUrl: './dashboard.component.html',
    styleUrls: ['./dashboard.component.css'],
    providers: []
 })
 export class DashboardComponent implements OnInit {
+   currentPage: number = 1;
+   pageSize: number = 10;
+   totalItems: number = 0;
+
    appointments: PatientAppointment[] = [];
    @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
 
@@ -21,11 +26,17 @@ export class DashboardComponent implements OnInit {
       this.loadAppointments();
    }
 
+   onPageChange($event: number) {
+      this.currentPage = $event;
+      this.loadAppointments();
+   }
+
    private loadAppointments(): void {
       this.patientAppointmentService.getPatientAppointmentsByDoctorId(1)
          .subscribe({
             next: (appointments: PatientAppointment[]) => {
                this.appointments = appointments;
+               this.totalItems = 100; // Replace with actual total from backend if available
                this.addEventsToScheduler(appointments);
             },
             error: (error) => {

@@ -113,5 +113,15 @@ export class UtilityService {
     return this.formatDateTime(dateInput, 'yyyy-MM-ddTHH:mm:ss');
   }
 
+  validateEmail(email: string) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
+  validateMobile(mobile: string) {
+    // Allows digits, spaces, +, and - characters
+    const mobilePattern = /^[\d+\-\s]+$/;
+    return mobilePattern.test(mobile.trim());
+  }
    
 }

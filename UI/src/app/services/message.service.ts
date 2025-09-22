@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Message, MessageType } from '../models/message.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
   
     private subject = new Subject<Message>();
     private defaultId:number = 1;
+    constructor(private http: HttpClient) { }
 
     // enable subscribing to alerts observable
     onMessage(id = this.defaultId): Observable<Message> {
@@ -43,7 +45,15 @@ export class MessageService {
         this.subject.next(new Message({ id }));
     }
 
-    sendMessage(email: string) {
-    //throw new Error('Method not implemented.');
+    sendMessage(sendTo: string, ismobile: boolean = false) {
+        var apiUrl = `${environment.API_BASE_URL}/login/forgotpassword`;
+        if (ismobile) {
+            apiUrl += `?sendTo=${sendTo}&isMobile=${ismobile}`;
+        }
+        else {
+            apiUrl += `?sendTo=${sendTo}&isMobile=${ismobile}`;
+        }
+        // Here you would typically make an HTTP request to your backend API
+        return this.http.get(apiUrl, { responseType: 'text' });
     }
 }
