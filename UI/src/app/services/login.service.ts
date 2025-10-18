@@ -4,13 +4,14 @@ import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { UserType } from '../models/user.model';
 
 export interface LoginResponse {
   token: string;
   user: {
     ID: number;
     UserName: string;
-    UserType: string;
+    UserType: UserType;
     FirstName: string;
     LastName: string;
     DOB?: string;

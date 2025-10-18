@@ -25,4 +25,12 @@ namespace ClinicManager.Models
         public DateTime? EndDate { get; set; }
 
     }
+
+    public class AppointmentSearchResponse
+    {
+        public IEnumerable<PatientAppointment> Results { get; set; }
+        public int TotalCount { get; set; }
+        public bool HasMoreRecords { get; set; }
+        public string Message { get; set; }
+    }
 }

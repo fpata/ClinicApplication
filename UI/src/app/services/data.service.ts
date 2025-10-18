@@ -6,6 +6,7 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { LoginResponse } from './login.service';
 import { Contact } from '../models/contact.model';
 import { Address } from '../models/address.model';
+import { AppConfig } from '../models/appconfig.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,13 @@ export class DataService {
   private userSource = new BehaviorSubject<User | null>(null);
   private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
   private loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
+  private configSource = new BehaviorSubject<AppConfig | null>(null);
 
   readonly patient$: Observable<Patient> = this.patientSource.asObservable();
   readonly user$: Observable<User> = this.userSource.asObservable();
   readonly calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
   readonly loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
+  readonly config$: Observable<AppConfig> = this.configSource.asObservable();
 
  setPatient(patient: Patient): void {
         this.patientSource.next(patient);
@@ -51,5 +54,12 @@ export class DataService {
 
   setLoginUser(user: LoginResponse): void {
     this.loginUserSource.next(user);
+  }
+
+  getConfig(): AppConfig | null {
+    return this.configSource.value;
+  }
+  setConfig(config: AppConfig): void {
+    this.configSource.next(config);
   }
 }

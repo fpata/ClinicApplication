@@ -23,5 +23,9 @@ namespace ClinicManager.Models
 
         [StringLength(45)]
         public string? LunchTime { get; set; }
+
+        [StringLength(45)]
+        public int pageSize { get; set; } = 10;
+        
     }
 }

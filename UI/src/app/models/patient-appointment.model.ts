@@ -25,3 +25,11 @@ export class PatientAppointment extends BaseEntity {
 
   ReminderSentDate?: Date;
 }
+
+export class AppointmentSearchResponse
+{
+     PatientAppointments:PatientAppointment[] ;
+     TotalCount: number;
+     HasMoreRecords: boolean;
+     Message: string;
+}

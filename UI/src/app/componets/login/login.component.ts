@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LoginService, LoginResponse } from '../../services/login.service';
 import { DataService } from '../../services/data.service';
+import { AppConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private dataService: DataService
+    private dataService: DataService,
+    private configService: AppConfigService
   ) {}
 
   login(): void {
@@ -35,6 +37,9 @@ export class LoginComponent {
     this.loginService.login(this.username, this.password).subscribe({
       next: (res: LoginResponse) => {
         this.dataService.setLoginUser(res);
+        this.configService.getConfigs().subscribe(config => {
+          this.dataService.setConfig(config);
+        });
         this.error = '';
       },
       error: (err) => {

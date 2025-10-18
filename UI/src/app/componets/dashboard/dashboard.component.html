@@ -9,7 +9,7 @@
               <tr>
                 <th colspan="4" class="text-end">
                   <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#addAppointmentModal">
+                    data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
                     Add Row
                   </button>
                 </th>
@@ -46,6 +46,88 @@
     <div class="row">
       <div class="col">
         <app-scheduler></app-scheduler>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addAppointmentModal" tabindex="-1"
+  aria-labelledby="addAppointmentModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
+          </div>
+          <div class="col">
+            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31" 
+              [ngModel]="this.newAppointment?.StartDateTime" (ngModelChange)="newAppointment.StartDateTime = $event">
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
+          </div>
+          <div class="col">
+            <input type="time" id="txtAppointmentTime" class="form-control" step="1800">
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
+          </div>
+          <div class="col">
+            <input type="time" id="txtAppointmentEndTime" class="form-control">
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtApptPatientName" class="form-label">Patient Name</label>
+          </div>
+          <div class="col">
+            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients"
+                [displayWith]="displayName"
+              (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName; newAppointment.UserID = $event.UserID">
+            </app-typeahead>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
+          </div>
+          <div class="col">
+            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors"
+                [displayWith]="displayName"
+              (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName">
+            </app-typeahead>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtApptProcedure" class="form-label">Procedure</label>
+          </div>
+          <div class="col">
+            <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName" (ngModelChange)="newAppointment.TreatmentName = $event">
+          </div>
+        </div>
+        <br />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save
+          changes</button>
       </div>
     </div>
   </div>

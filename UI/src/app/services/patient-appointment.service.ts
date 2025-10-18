@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PatientAppointment } from '../models/patient-appointment.model';
+import { AppointmentSearchResponse, PatientAppointment } from '../models/patient-appointment.model';
 import { PatientSearchModel } from '../models/patient-search.model';
 import { environment } from '../../environments/environment';
 
@@ -16,8 +16,8 @@ export class PatientAppointmentService {
     return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
   }
 
-  getPatientAppointments(): Observable<PatientAppointment[]> {
-    return this.http.get<PatientAppointment[]>(this.apiUrl, { headers: this.getAuthHeaders() });
+  getPatientAppointments(): Observable<AppointmentSearchResponse> {
+    return this.http.get<AppointmentSearchResponse>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
   getPatientAppointment(id: number): Observable<PatientAppointment> {
@@ -40,11 +40,11 @@ export class PatientAppointmentService {
     return this.http.get<PatientAppointment[]>(`${this.apiUrl}/patient/${patientId}`, { headers: this.getAuthHeaders() });
   }
 
-  getPatientAppointmentsByDoctorId(doctorId: number): Observable<PatientAppointment[]> {
-    return this.http.get<PatientAppointment[]>(`${this.apiUrl}/doctor/${doctorId}`, { headers: this.getAuthHeaders() });
+  getPatientAppointmentsByDoctorId(doctorId: number): Observable<AppointmentSearchResponse> {
+    return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}/doctor/${doctorId}?pageNumber=1&pageSize=1`, { headers: this.getAuthHeaders() });
   }
 
-  searchAppointmentsForDoctor(searchPatient: PatientSearchModel): Observable<PatientAppointment[]> {
-    return this.http.post<PatientAppointment[]>(`${this.apiUrl}/doctor/search`, searchPatient, { headers: this.getAuthHeaders() });
+  searchAppointmentsForDoctor(searchPatient: PatientSearchModel): Observable<AppointmentSearchResponse> {
+    return this.http.post<AppointmentSearchResponse>(`${this.apiUrl}/doctor/search`, searchPatient, { headers: this.getAuthHeaders() });
   }
 }

@@ -49,13 +49,12 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Fetching patient appointment with ID: {id}");
             
             var cacheKey = $"appointment_{id}";
-          
+
 
             var entity = await _context.PatientAppointments
                 .AsNoTracking()
                 .FirstOrDefaultAsync(a => a.ID == id)
                 .ConfigureAwait(false);
-                
             if (entity == null)
             {
                 _logger.LogWarning($"Patient appointment with ID: {id} not found");
@@ -139,7 +138,7 @@ namespace ClinicManager.Controllers
         }
 
         [HttpGet("doctor/{doctorId}")]
-        public async Task<IActionResult> GetByDoctor(int doctorID)
+        public async Task<IActionResult> GetByDoctor(int doctorID, int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Get all appointments for Doctor ID: {doctorID}");
             
@@ -149,7 +148,8 @@ namespace ClinicManager.Controllers
                 .AsNoTracking()
                 .Where(a => a.DoctorID == doctorID)
                 .OrderByDescending(a => a.StartDateTime)
-                .Take(100) // Limit results for performance
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize) // Limit results for performance
                 .ToListAsync();
                 
             if (appointments.Count == 0)
@@ -161,7 +161,7 @@ namespace ClinicManager.Controllers
         }
 
         [HttpGet("patient/{patientID}")]
-        public async Task<IActionResult> GetByPatient(int patientID)
+        public async Task<IActionResult> GetByPatient(int patientID, int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Get all appointments for Patient ID: {patientID}");
             
@@ -171,7 +171,8 @@ namespace ClinicManager.Controllers
                 .AsNoTracking()
                 .Where(a => a.PatientID == patientID)
                 .OrderByDescending(a => a.StartDateTime)
-                .Take(100) // Limit results for performance
+                 .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize) // Limit results for performance
                 .ToListAsync();
                 
             if (appointments.Count == 0)
@@ -182,62 +183,64 @@ namespace ClinicManager.Controllers
             return Ok(appointments);
         }
 
+
+
         [HttpPost("doctor/search")]
-        public async Task<IActionResult> SearchAppointments([FromBody] SearchModel model)
+        public async Task<IActionResult> SearchAppointments([FromBody] SearchModel model, int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Searching appointments with criteria");
-
-            //var cacheKey = $"appointment_search_{GetSearchCacheKey(model)}";
-          try
+            try
             {
-                // Use LINQ instead of raw SQL to prevent injection
                 var query = from appointment in _context.PatientAppointments
-                           join user in _context.Users on appointment.UserID equals user.ID
-                           join address in _context.Addresses on user.ID equals address.UserID into addressGroup
-                           from address in addressGroup.DefaultIfEmpty()
-                           join contact in _context.Contacts on user.ID equals contact.UserID into contactGroup
-                           from contact in contactGroup.DefaultIfEmpty()
-                           where user.IsActive == 1 && 
-                                 (address == null || address.IsActive == 1) && 
-                                 (contact == null || contact.IsActive == 1)
-                           select new { appointment, user, address, contact };
+                            join user in _context.Users on appointment.UserID equals user.ID
+                            join address in _context.Addresses on user.ID equals address.UserID into addressGroup
+                            from address in addressGroup.DefaultIfEmpty()
+                            join contact in _context.Contacts on user.ID equals contact.UserID into contactGroup
+                            from contact in contactGroup.DefaultIfEmpty()
+                            where user.IsActive == 1 &&
+                                  (address == null || address.IsActive == 1) &&
+                                  (contact == null || contact.IsActive == 1)
+                            select new { appointment, user, address, contact };
 
                 // Apply filters
                 if (!string.IsNullOrWhiteSpace(model.FirstName))
                     query = query.Where(x => x.user.FirstName.Contains(model.FirstName));
-
                 if (!string.IsNullOrWhiteSpace(model.LastName))
                     query = query.Where(x => x.user.LastName.Contains(model.LastName));
-
                 if (!string.IsNullOrWhiteSpace(model.PrimaryEmail))
                     query = query.Where(x => x.contact != null && x.contact.PrimaryEmail!.Contains(model.PrimaryEmail));
-
                 if (!string.IsNullOrWhiteSpace(model.PrimaryPhone))
                     query = query.Where(x => x.contact != null && x.contact.PrimaryPhone!.Contains(model.PrimaryPhone));
-
                 if (!string.IsNullOrWhiteSpace(model.PermCity))
                     query = query.Where(x => x.address != null && x.address.PermCity!.Contains(model.PermCity));
-
                 if (model.DoctorID > 0)
                     query = query.Where(x => x.appointment.DoctorID == model.DoctorID);
-
                 if (model.PatientID > 0)
                     query = query.Where(x => x.appointment.PatientID == model.PatientID);
-
                 if (!string.IsNullOrWhiteSpace(model.DoctorName))
                     query = query.Where(x => x.appointment.DoctorName!.Contains(model.DoctorName));
-
                 if (model.StartDate.HasValue)
                     query = query.Where(x => x.appointment.StartDateTime >= model.StartDate.Value);
 
+                // Get total count before pagination
+                var totalCount = await query.CountAsync();
                 var results = await query
                     .Select(x => x.appointment)
                     .AsNoTracking()
                     .OrderByDescending(a => a.StartDateTime)
-                    .Take(100) // Limit results
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
-             
-                return Ok(results);
+                var hasMoreRecords = (pageNumber * pageSize) < totalCount;
+                var message = results.Count > 0 ? "Appointments found." : "No appointments found.";
+                var response = new AppointmentSearchResponse
+                {
+                    Results = results,
+                    TotalCount = totalCount,
+                    HasMoreRecords = hasMoreRecords,
+                    Message = message
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
