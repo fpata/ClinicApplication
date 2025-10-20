@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
 
    onPageChange($event: number) {
       this.currentPage = $event;
-      // this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
+      this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
    }
 
    private loadAppointments(startDate: Date, endDate: Date): void {
@@ -102,17 +102,17 @@ export class DashboardComponent implements OnInit {
       const appointmentToSave = { ...this.newAppointment };
 
       if (appointmentToSave.StartDateTime && appointmentTime) {
-          appointmentToSave.StartDateTime = this.util.createAppointmentDateTime(
-              appointmentToSave.StartDateTime,
-              appointmentTime
-          );
+         appointmentToSave.StartDateTime = this.util.createAppointmentDateTime(
+            appointmentToSave.StartDateTime,
+            appointmentTime
+         );
       }
 
       if (appointmentToSave.EndDateTime && appointmentEndTime) {
-          appointmentToSave.EndDateTime = this.util.createAppointmentDateTime(
-              appointmentToSave.StartDateTime,
-              appointmentEndTime
-          );
+         appointmentToSave.EndDateTime = this.util.createAppointmentDateTime(
+            appointmentToSave.StartDateTime,
+            appointmentEndTime
+         );
       }
 
       console.log('Start DateTime:', this.util.formatAppointmentDateTime(appointmentToSave.StartDateTime));
@@ -166,11 +166,11 @@ export class DashboardComponent implements OnInit {
    InitializeNewAppointment() {
       const loginUser: LoginResponse = this.dataService.getLoginUser();
       this.newAppointment = new PatientAppointment();
-      
+
       // Round current time to nearest 30-minute interval
       const now = this.util.roundToNearestInterval(new Date());
       const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
-      
+
       this.newAppointment.ID = 0;
       this.newAppointment.StartDateTime = now;
       this.newAppointment.EndDateTime = thirtyMinutesLater;
@@ -184,39 +184,51 @@ export class DashboardComponent implements OnInit {
       // Format times for display
       const startTime = now.toLocaleTimeString('en-GB').slice(0, 5);
       const endTime = thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5);
-      
+
       document.getElementById('txtAppointmentTime')!.setAttribute('value', startTime);
       document.getElementById('txtAppointmentEndTime')!.setAttribute('value', endTime);
 
       if (loginUser?.user?.UserType === UserType.Doctor) {
-          this.newAppointment.DoctorID = loginUser.user?.ID || 0;
-          this.newAppointment.DoctorName = loginUser.user?.FirstName + ' ' + loginUser.user?.LastName;
+         this.newAppointment.DoctorID = loginUser.user?.ID || 0;
+         this.newAppointment.DoctorName = loginUser.user?.FirstName + ' ' + loginUser.user?.LastName;
       }
    }
 
    NavigationChange($event: { action: string; date: DayPilot.Date; }) {
-       let startDate: Date;
-       let endDate: Date;
-   
-       switch ($event.action) {
-           case 'today':
-           case 'previous-week':
-           case 'next-week':
-               startDate = $event.date.firstDayOfWeek(1).toDate();
-               endDate = $event.date.firstDayOfWeek(1).addDays(6).toDate();
-               break;
-           case 'previous-day':
-           case 'next-day':
-               startDate = $event.date.toDate();
-               endDate = $event.date.toDate();
-               break;
-           default:
-               startDate = $event.date.toDate();
-               endDate = $event.date.addDays(6).toDate();
-       }
-   
-       // Reset page to 1 when navigation changes
-       this.currentPage = 1;
-       this.loadAppointments(startDate, endDate);
+      let startDate: Date;
+      let endDate: Date;
+
+      switch ($event.action) {
+         case 'today':
+         case 'previous-week':
+         case 'next-week':
+         case 'week':
+            startDate = $event.date.firstDayOfWeek(1).toDate();
+            endDate = $event.date.firstDayOfWeek(1).addDays(6).toDate();
+            break;
+         case 'previous-day':
+         case 'next-day':
+         case 'day':
+            startDate = $event.date.toDate();
+            endDate = $event.date.addHours(23).toDate();
+            break;
+         default:
+            startDate = $event.date.toDate();
+            endDate = $event.date.addDays(6).toDate();
+      }
+
+      // Reset page to 1 when navigation changes
+      this.currentPage = 1;
+      this.loadAppointments(startDate, endDate);
+   }
+
+   onTimeRangeSelectedEvent($event: any) {
+      document.getElementById('btnAddNewAppointment')!.click();
+      this.newAppointment!.StartDateTime = $event.startDateTime.toDate();
+      this.newAppointment!.EndDateTime = $event.endDateTime.toDate();
+      document.getElementById('appointmentDatePicker')!.setAttribute('value', this.util.formatAppointmentDateTime(this.newAppointment!.StartDateTime));
+      document.getElementById('txtAppointmentTime')!.setAttribute('value', this.newAppointment!.StartDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.StartDateTime.getMinutes().toString().padStart(2, '0'));
+      document.getElementById('txtAppointmentEndTime')!.setAttribute('value', this.newAppointment!.EndDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.EndDateTime.getMinutes().toString().padStart(2, '0'));
+
    }
 }

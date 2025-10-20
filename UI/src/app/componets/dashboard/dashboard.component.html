@@ -8,7 +8,7 @@
             <thead>
               <tr>
                 <th colspan="4" class="text-end">
-                  <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                  <button type="button" id="btnAddNewAppointment" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                     data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
                     Add Row
                   </button>
@@ -45,7 +45,7 @@
   <div class="rounded p-3 p-md-4" style="border:0.5px solid lightblue;">
     <div class="row">
       <div class="col">
-        <app-scheduler (onNavigationChange)="NavigationChange($event)">
+        <app-scheduler (onNavigationChange)="NavigationChange($event)"  (onTimeRangeSelectedEvent)="onTimeRangeSelectedEvent($event)">
         </app-scheduler>
       </div>
     </div>

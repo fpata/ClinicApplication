@@ -13,6 +13,7 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 export class SchedulerComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar') calendar!: DayPilotCalendarComponent;
   @Output() onNavigationChange = new EventEmitter<{ action: string, date: DayPilot.Date }>();
+  @Output() onTimeRangeSelectedEvent = new EventEmitter<{ startDateTime: DayPilot.Date, endDateTime: DayPilot.Date }>();
   calendarEvents: DayPilot.EventData[] = [];
   
   config: DayPilot.CalendarConfig = {
@@ -55,7 +56,7 @@ End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
   }
 
   onTimeRangeSelected(args: any): void {
-    const name = prompt('New appointment:');
+   /* const name = prompt('New appointment:');
     if (name) {
       const resource = prompt('Resource (Doctor/Room):') || 'General';
       const randomColor = this.getRandomColor();
@@ -70,7 +71,11 @@ End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
       };
       this.calendar.control.events.add(event);
     }
-    this.calendar.control.clearSelection();
+    this.calendar.control.clearSelection();*/
+    this.onTimeRangeSelectedEvent.emit({
+      startDateTime: args.start,
+      endDateTime: args.end
+    });
   }
 
   onEventMoved(args: any): void {
@@ -171,13 +176,22 @@ End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
 
   switchToWeekView(): void {
     this.config.days = 7;
+    this.config.startDate = DayPilot.Date.today().firstDayOfWeek().addDays(1);
     this.updateCalendar();
+      this.onNavigationChange.emit({ 
+      action: 'week',
+      date: this.config.startDate
+    });
   }
 
   switchToDayView(): void {
     this.config.days = 1;
     this.config.startDate = DayPilot.Date.today();
     this.updateCalendar();
+    this.onNavigationChange.emit({ 
+      action: 'day',
+      date: this.config.startDate
+    });
   }
 
   switchToWorkWeekView(): void {
