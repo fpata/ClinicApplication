@@ -25,6 +25,7 @@ import { LoginResponse } from '../../services/login.service';
 export class DashboardComponent implements OnInit {
 
 
+
    currentPage: number = 1;
    pageSize: number = 10;
    totalItems: number = 0;
@@ -46,25 +47,26 @@ export class DashboardComponent implements OnInit {
 
    ngOnInit(): void {
       this.pageSize = this.dataService.getConfig()?.pageSize || 10;
-      this.loadAppointments();
+      this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
    }
 
    onPageChange($event: number) {
       this.currentPage = $event;
-      this.loadAppointments();
+      // this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
    }
 
-   private loadAppointments(): void {
-      this.patientAppointmentService.getPatientAppointmentsByDoctorId(1)
+   private loadAppointments(startDate: Date, endDate: Date): void {
+
+      this.patientAppointmentService.getAllAppointments(startDate, endDate, this.currentPage, this.pageSize)
          .subscribe({
             next: (results: AppointmentSearchResponse) => {
-               if (results == null ||  results.PatientAppointments == null || results.PatientAppointments.length === 0) {
+               if (results == null || results.PatientAppointments == null || results.PatientAppointments.length === 0) {
                   this.messageService.info('No appointments found.');
                   this.appointments = [];
                   this.totalItems = 0;
                }
                else {
-                  this.messageService.success('Appointments loaded successfully.');
+                  // this.messageService.success('Appointments loaded successfully.');
                   this.appointments = results.PatientAppointments;
                   this.totalItems = results.TotalCount;
                   this.addEventsToScheduler(this.appointments);
@@ -78,7 +80,7 @@ export class DashboardComponent implements OnInit {
    }
 
    private addEventsToScheduler(appointments: PatientAppointment[]): void {
-      if (appointments == null || appointments === undefined || appointments.length === 0 ) {
+      if (appointments == null || appointments === undefined || appointments.length === 0) {
          return;
       }
       const events: DayPilot.EventData[] = appointments.map(appointment => ({
@@ -93,28 +95,33 @@ export class DashboardComponent implements OnInit {
    }
 
    SaveAppointment() {
-
       const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
-    const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
+      const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
 
-    // Create a temporary appointment object to avoid mutating the form-bound newAppointment
-    const appointmentToSave = { ...this.newAppointment };
+      // Create a temporary appointment object
+      const appointmentToSave = { ...this.newAppointment };
 
-    if (appointmentToSave.StartDateTime && appointmentTime) {
-      const [hours, minutes] = appointmentTime.split(':').map(Number);
-      const startDate = new Date(appointmentToSave.StartDateTime);
-      startDate.setHours(hours, minutes, 0, 0);
-      appointmentToSave.StartDateTime = startDate;
-    }
+      if (appointmentToSave.StartDateTime && appointmentTime) {
+          appointmentToSave.StartDateTime = this.util.createAppointmentDateTime(
+              appointmentToSave.StartDateTime,
+              appointmentTime
+          );
+      }
 
-    if (appointmentToSave.EndDateTime && appointmentEndTime) {
-      const [hours, minutes] = appointmentEndTime.split(':').map(Number);
-      // Assuming EndDateTime should be on the same day as StartDateTime
-      const endDate = new Date(appointmentToSave.StartDateTime);
-      endDate.setHours(hours, minutes, 0, 0);
-      appointmentToSave.EndDateTime = endDate;
-    }
+      if (appointmentToSave.EndDateTime && appointmentEndTime) {
+          appointmentToSave.EndDateTime = this.util.createAppointmentDateTime(
+              appointmentToSave.StartDateTime,
+              appointmentEndTime
+          );
+      }
 
+      console.log('Start DateTime:', this.util.formatAppointmentDateTime(appointmentToSave.StartDateTime));
+      console.log('End DateTime:', this.util.formatAppointmentDateTime(appointmentToSave.EndDateTime));
+
+      appointmentToSave.AppointmentStatus = 'Scheduled';
+      appointmentToSave.IsActive = 1;
+
+      // Continue with saving...
       this.patientAppointmentService.createPatientAppointment(appointmentToSave)
          .subscribe({
             next: (result) => {
@@ -157,21 +164,59 @@ export class DashboardComponent implements OnInit {
    }
 
    InitializeNewAppointment() {
-      var loginUser: LoginResponse = this.dataService.getLoginUser()
+      const loginUser: LoginResponse = this.dataService.getLoginUser();
       this.newAppointment = new PatientAppointment();
+      
+      // Round current time to nearest 30-minute interval
+      const now = this.util.roundToNearestInterval(new Date());
+      const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
+      
       this.newAppointment.ID = 0;
-      this.newAppointment.StartDateTime = this.util.formatDate(new Date()) as any;
-      this.newAppointment.EndDateTime = this.util.formatDate(new Date()) as any;
-      this.newAppointment.CreatedDate = this.util.formatDateTime(new Date());
-      this.newAppointment.ModifiedDate = this.util.formatDateTime(new Date());
+      this.newAppointment.StartDateTime = now;
+      this.newAppointment.EndDateTime = thirtyMinutesLater;
+      this.newAppointment.CreatedDate = now.toISOString();
+      this.newAppointment.ModifiedDate = now.toISOString();
       this.newAppointment.CreatedBy = loginUser?.user?.ID || 1;
       this.newAppointment.ModifiedBy = loginUser?.user?.ID || 1;
-      document.getElementById('txtAppointmentTime')!.setAttribute('value', new Date().toTimeString().slice(0, 5));
-      const thirtyMinutesLater = new Date(new Date().getTime() + 30 * 60000);
-      document.getElementById('txtAppointmentEndTime')!.setAttribute('value', thirtyMinutesLater.toTimeString().slice(0, 5));
+      this.newAppointment.IsActive = 1;
+      this.newAppointment.AppointmentStatus = 'Scheduled';
+
+      // Format times for display
+      const startTime = now.toLocaleTimeString('en-GB').slice(0, 5);
+      const endTime = thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5);
+      
+      document.getElementById('txtAppointmentTime')!.setAttribute('value', startTime);
+      document.getElementById('txtAppointmentEndTime')!.setAttribute('value', endTime);
+
       if (loginUser?.user?.UserType === UserType.Doctor) {
-         this.newAppointment.DoctorID = loginUser.user?.ID || 0;
-         this.newAppointment.DoctorName = loginUser.user?.FirstName || '';
+          this.newAppointment.DoctorID = loginUser.user?.ID || 0;
+          this.newAppointment.DoctorName = loginUser.user?.FirstName + ' ' + loginUser.user?.LastName;
       }
+   }
+
+   NavigationChange($event: { action: string; date: DayPilot.Date; }) {
+       let startDate: Date;
+       let endDate: Date;
+   
+       switch ($event.action) {
+           case 'today':
+           case 'previous-week':
+           case 'next-week':
+               startDate = $event.date.firstDayOfWeek(1).toDate();
+               endDate = $event.date.firstDayOfWeek(1).addDays(6).toDate();
+               break;
+           case 'previous-day':
+           case 'next-day':
+               startDate = $event.date.toDate();
+               endDate = $event.date.toDate();
+               break;
+           default:
+               startDate = $event.date.toDate();
+               endDate = $event.date.addDays(6).toDate();
+       }
+   
+       // Reset page to 1 when navigation changes
+       this.currentPage = 1;
+       this.loadAppointments(startDate, endDate);
    }
 }

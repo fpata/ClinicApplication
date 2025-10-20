@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ClinicManager.Controllers
 {
@@ -43,6 +44,41 @@ namespace ClinicManager.Controllers
             return appointments;
         }
 
+
+        [HttpGet]
+        [Route("all")]
+        public async Task<ActionResult<AppointmentSearchResponse>> GetAll(DateTime startDate, DateTime endDate,int pageNumber = 1, int pageSize = 10)
+        {
+            _logger.LogInformation($"Fetching patient appointments page {pageNumber} with size {pageSize}");
+
+            var query = _context.PatientAppointments
+                .AsNoTracking()
+                .Where(a => a.StartDateTime >= startDate)
+                .Where(a => a.EndDateTime <= endDate);
+
+            // Get total count before pagination
+            var totalCount = await query.CountAsync();
+
+            var results = await query
+                    .AsNoTracking()
+                    .OrderByDescending(a => a.StartDateTime)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+            var hasMoreRecords = (pageNumber * pageSize) < totalCount;
+         
+            var message = results.Count > 0 ? "Appointments found." : "No appointments found.";
+            var response = new AppointmentSearchResponse
+            {
+                PatientAppointments = results,
+                TotalCount = totalCount,
+                HasMoreRecords = hasMoreRecords,
+                Message = message
+            };
+            return Ok(response);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<PatientAppointment>> Get(int id)
         {
@@ -70,7 +106,8 @@ namespace ClinicManager.Controllers
         {
             appointment.CreatedDate = DateTime.Now;
             appointment.ModifiedDate = DateTime.Now;
-
+            appointment.IsActive = 1;
+            
             _context.PatientAppointments.Add(appointment);
             await _context.SaveChangesAsync();
             
@@ -235,7 +272,7 @@ namespace ClinicManager.Controllers
                 var message = results.Count > 0 ? "Appointments found." : "No appointments found.";
                 var response = new AppointmentSearchResponse
                 {
-                    Results = results,
+                    PatientAppointments = results,
                     TotalCount = totalCount,
                     HasMoreRecords = hasMoreRecords,
                     Message = message

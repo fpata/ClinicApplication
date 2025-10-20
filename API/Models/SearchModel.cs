@@ -28,7 +28,7 @@ namespace ClinicManager.Models
 
     public class AppointmentSearchResponse
     {
-        public IEnumerable<PatientAppointment> Results { get; set; }
+        public IEnumerable<PatientAppointment> PatientAppointments { get; set; }
         public int TotalCount { get; set; }
         public bool HasMoreRecords { get; set; }
         public string Message { get; set; }

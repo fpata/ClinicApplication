@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DayPilotCalendarComponent, DayPilotModule } from '@daypilot/daypilot-lite-angular';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
@@ -12,6 +12,7 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 })
 export class SchedulerComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar') calendar!: DayPilotCalendarComponent;
+  @Output() onNavigationChange = new EventEmitter<{ action: string, date: DayPilot.Date }>();
   calendarEvents: DayPilot.EventData[] = [];
   
   config: DayPilot.CalendarConfig = {
@@ -100,7 +101,7 @@ End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
     this.calendar.control.update(this.config);
   }
 
-  addAppointment(): void {
+  /*addAppointment(): void {
     const name = prompt('Appointment name:');
     const resource = prompt('Resource (Doctor/Room):') || 'General';
 
@@ -117,35 +118,55 @@ End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
       };
       this.calendar.control.events.add(event);
     }
-  }
+  }*/
 
   navigateToToday(): void {
     this.config.startDate = DayPilot.Date.today();
     this.updateCalendar();
+    this.onNavigationChange.emit({ 
+      action: 'today',
+      date: this.config.startDate
+    });
   }
 
   navigateToPreviousDay(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(-1);
     this.updateCalendar();
+    this.onNavigationChange.emit({ 
+      action: 'previous-day',
+      date: this.config.startDate
+    });
   }
 
   navigateToNextDay(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(1);
     this.updateCalendar();
+    this.onNavigationChange.emit({ 
+      action: 'next-day',
+      date: this.config.startDate
+    });
   }
 
   navigateToPreviousWeek(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(-7);
     this.updateCalendar();
+    this.onNavigationChange.emit({ 
+      action: 'previous-week',
+      date: this.config.startDate
+    });
   }
 
   navigateToNextWeek(): void {
     const currentStart = new DayPilot.Date(this.config.startDate);
     this.config.startDate = currentStart.addDays(7);
     this.updateCalendar();
+    this.onNavigationChange.emit({ 
+      action: 'next-week',
+      date: this.config.startDate
+    });
   }
 
   switchToWeekView(): void {

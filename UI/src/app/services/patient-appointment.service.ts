@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PatientAppointmentService {
+
   private readonly apiUrl = `${environment.API_BASE_URL}/PatientAppointment`;
 
   constructor(private http: HttpClient) {}
@@ -46,5 +47,15 @@ export class PatientAppointmentService {
 
   searchAppointmentsForDoctor(searchPatient: PatientSearchModel): Observable<AppointmentSearchResponse> {
     return this.http.post<AppointmentSearchResponse>(`${this.apiUrl}/doctor/search`, searchPatient, { headers: this.getAuthHeaders() });
+  }
+
+    getAllAppointments(startDate: Date, endDate: Date, currentPage: number, pageSize: number) {
+     const params = {
+       startDate: startDate.toISOString(),
+       endDate: endDate.toISOString(),
+       pageNumber: currentPage,
+       pageSize: pageSize
+     };
+     return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}/all`, { headers: this.getAuthHeaders(), params });
   }
 }

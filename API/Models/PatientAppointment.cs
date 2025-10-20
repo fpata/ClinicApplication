@@ -12,19 +12,22 @@ namespace ClinicManager.Models
 
 
         public int? PatientID { get; set; }
-        
+
+        public string? PatientName { get; set; }
+
 
         public int? DoctorID { get; set; }
 
         public string? DoctorName { get; set; }
+
+        public string? TreatmentName { get; set; }
 
 
         public DateTime? StartDateTime { get; set; }
         
 
         public DateTime? EndDateTime { get; set; }
-        
-
+             
         public string? AppointmentStatus { get; set; }
         
         [StringLength(500)]

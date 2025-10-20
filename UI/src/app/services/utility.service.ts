@@ -43,14 +43,14 @@ export class UtilityService {
       .replace(/tt/g, ampm);
   }
 
-  formatDate(dateInput: Date | string | number, dateformat?: string|null): string {
-    if(dateformat === null || dateformat === undefined)
+  formatDate(dateInput: Date | string | number, dateformat?: string | null): string {
+    if (dateformat === null || dateformat === undefined)
       dateformat = 'yyyy-MM-dd';
     return this.format(dateInput, dateformat);
   }
 
-  formatDateTime(dateInput: Date | string | number, dateformat?: string|null): string {
-    if(dateformat === null || dateformat === undefined)
+  formatDateTime(dateInput: Date | string | number, dateformat?: string | null): string {
+    if (dateformat === null || dateformat === undefined)
       dateformat = 'yyyy-MM-ddTHH:mm:ss';
     return this.format(dateInput, dateformat);
   }
@@ -123,5 +123,99 @@ export class UtilityService {
     const mobilePattern = /^[\d+\-\s]+$/;
     return mobilePattern.test(mobile.trim());
   }
-   
+
+
+
+  /**
+   * Handles appointment date/time conversion with timezone consideration
+   * @param date Base date
+   * @param timeString Time in HH:mm format
+   * @returns Date object with correct local time
+   */
+  createAppointmentDateTime(date: Date, timeString: string): Date {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const appointmentDate = new Date(date);
+    
+    // Create date using local timezone components
+    const localDate = new Date(
+        appointmentDate.getFullYear(),
+        appointmentDate.getMonth(),
+        appointmentDate.getDate(),
+        hours,
+        minutes,
+        0,
+        0
+    );
+
+    // Adjust for timezone offset
+    const tzOffset = localDate.getTimezoneOffset();
+    return new Date(localDate.getTime() - (tzOffset * 60000));
+  }
+
+  /**
+   * Creates a default appointment time range
+   * @returns Object containing start and end times
+   */
+  getDefaultAppointmentTimes(): { startTime: string, endTime: string } {
+    const now = new Date();
+    // Adjust for local timezone
+    const localNow = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    const thirtyMinutesLater = new Date(localNow.getTime() + 30 * 60000);
+
+    return {
+        startTime: localNow.toLocaleTimeString('en-GB').slice(0, 5),
+        endTime: thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5)
+    };
+  }
+
+  /**
+   * Formats date for display in local timezone
+   * @param date Date to format
+   * @returns Formatted date string
+   */
+  formatAppointmentDateTime(date: Date): string {
+    // Create a new date object adjusted for local timezone
+    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return localDate.toLocaleString('en-GB', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+  }
+
+  /**
+   * Converts UTC date to local date
+   * @param date UTC date
+   * @returns Local date
+   */
+  toLocalTime(date: Date): Date {
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+  }
+
+  /**
+   * Converts local date to UTC date
+   * @param date Local date
+   * @returns UTC date
+   */
+  toUTCTime(date: Date): Date {
+    return new Date(date.getTime() + (date.getTimezoneOffset() * 60000));
+  }
+
+  /**
+   * Rounds a date to the nearest 30-minute interval
+   * @param date Date to round
+   * @returns Date rounded to nearest 30-minute interval
+   */
+  roundToNearestInterval(date: Date, intervalMinutes: number = 30): Date {
+    const roundedDate = new Date(date);
+    const minutes = date.getMinutes();
+    const roundedMinutes = Math.round(minutes / intervalMinutes) * intervalMinutes;
+    roundedDate.setMinutes(roundedMinutes);
+    roundedDate.setSeconds(0);
+    roundedDate.setMilliseconds(0);
+    return roundedDate;
+  }
 }

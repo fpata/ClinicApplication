@@ -45,7 +45,8 @@
   <div class="rounded p-3 p-md-4" style="border:0.5px solid lightblue;">
     <div class="row">
       <div class="col">
-        <app-scheduler></app-scheduler>
+        <app-scheduler (onNavigationChange)="NavigationChange($event)">
+        </app-scheduler>
       </div>
     </div>
   </div>
@@ -97,7 +98,7 @@
           <div class="col">
             <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients"
                 [displayWith]="displayName"
-              (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName; newAppointment.UserID = $event.UserID">
+              (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName + ' ' + $event.LastName; newAppointment.UserID = $event.UserID">
             </app-typeahead>
           </div>
         </div>
@@ -109,7 +110,7 @@
           <div class="col">
             <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors"
                 [displayWith]="displayName"
-              (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName">
+              (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
             </app-typeahead>
           </div>
         </div>
