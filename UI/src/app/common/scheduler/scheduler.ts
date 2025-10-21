@@ -40,7 +40,10 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     // Component view initialized
-   
+   if(window.innerWidth < 768){
+      this.config.days = 1;
+      this.updateCalendar();
+    }
   }
 
   

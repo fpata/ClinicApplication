@@ -1,16 +1,16 @@
 <div class="container-fluid">
   <br />
   <div class="rounded p-3 p-md-4" style="border:0.5px solid lightblue;">
-    <div class="row">
-      <div class="col">
+    <div class="row d-none d-md-flex d-xl-none">
+      <div class="col-12">
         <div class="table-responsive">
-          <table class="table table-striped table-sm">
+          <table class="table table-striped">
             <thead>
               <tr>
                 <th colspan="4" class="text-end">
                   <button type="button" id="btnAddNewAppointment" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                     data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
-                    Add Row
+                    Add New Appointment
                   </button>
                 </th>
               </tr>
@@ -23,6 +23,7 @@
               </tr>
             </thead>
             <tbody>
+
               @for( appointment of appointments; track appointment.ID) {
               <tr>
                 <td class="text-nowrap">{{appointment.StartDateTime}}</td>
@@ -34,10 +35,45 @@
               }
             </tbody>
           </table>
-          <app-paging [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="currentPage"
-            (pageChange)="onPageChange($event)">
-          </app-paging>
         </div>
+      </div>
+    </div>
+    <!--Mobile Version Table-->
+    <div class="row d-block d-md-none">
+      <div class="col-12">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th colspan="2" class="text-end">
+                <button type="button" id="btnAddNewAppointmentMobile" class="btn btn-primary btn-sm"
+                  data-bs-toggle="modal" data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
+                  Add New Appointment
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for( appointment of appointments; track appointment.ID) {
+            <tr>
+              <td>
+                <strong>Start Date:</strong> {{appointment.StartDateTime}}<br />
+                <strong>End Date:</strong> {{appointment.EndDateTime}}<br />
+                <strong>Doctor:</strong> {{appointment.DoctorName}}<br />
+                <strong>Patient:</strong> {{appointment.PatientName}}<br />
+                <strong>Treatment:</strong> {{appointment.TreatmentName}}<br />
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col-12">
+        <app-paging [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)">
+        </app-paging>
       </div>
     </div>
   </div>
@@ -45,7 +81,8 @@
   <div class="rounded p-3 p-md-4" style="border:0.5px solid lightblue;">
     <div class="row">
       <div class="col">
-        <app-scheduler (onNavigationChange)="NavigationChange($event)"  (onTimeRangeSelectedEvent)="onTimeRangeSelectedEvent($event)">
+        <app-scheduler (onNavigationChange)="NavigationChange($event)"
+          (onTimeRangeSelectedEvent)="onTimeRangeSelectedEvent($event)">
         </app-scheduler>
       </div>
     </div>
@@ -68,7 +105,7 @@
             <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
           </div>
           <div class="col">
-            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31" 
+            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
               [ngModel]="this.newAppointment?.StartDateTime" (ngModelChange)="newAppointment.StartDateTime = $event">
           </div>
         </div>
@@ -96,8 +133,7 @@
             <label for="txtApptPatientName" class="form-label">Patient Name</label>
           </div>
           <div class="col">
-            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients"
-                [displayWith]="displayName"
+            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients" [displayWith]="displayName"
               (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName + ' ' + $event.LastName; newAppointment.UserID = $event.UserID">
             </app-typeahead>
           </div>
@@ -108,8 +144,7 @@
             <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
           </div>
           <div class="col">
-            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors"
-                [displayWith]="displayName"
+            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors" [displayWith]="displayName"
               (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
             </app-typeahead>
           </div>
@@ -120,7 +155,8 @@
             <label for="txtApptProcedure" class="form-label">Procedure</label>
           </div>
           <div class="col">
-            <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName" (ngModelChange)="newAppointment.TreatmentName = $event">
+            <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName"
+              (ngModelChange)="newAppointment.TreatmentName = $event">
           </div>
         </div>
         <br />
