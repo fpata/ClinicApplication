@@ -20,6 +20,7 @@ import { MessageService } from '../../../services/message.service';
 })
 export class UserMasterComponent {
 
+
   isSearchTabSelected: boolean = true;
   selectedTab: string = 'tbUserSearch';
   @ViewChild(UserQuickCreateComponent) quickCreateComponent!: UserQuickCreateComponent;
@@ -27,6 +28,10 @@ export class UserMasterComponent {
 
   constructor(private dataService: DataService, private userService: UserService, private messageService: MessageService) { }
 
+
+  ngAfterViewInit() {
+    this.ShowHideNavs("navUserSearch");
+  }
   tabSelectedEvent(event: MouseEvent) {
     // Logic to handle tab selection
     var targetId = (event.currentTarget as Element).id;
@@ -70,6 +75,7 @@ export class UserMasterComponent {
     user.Contact = new Contact();
     this.dataService.setUser(user);
     this.isSearchTabSelected = false;
+    this.ShowHideNavs("navPersonalInfo");
     document.getElementById('tbPersonalInfo-tab')?.click();
   }
 
@@ -119,6 +125,7 @@ export class UserMasterComponent {
     this.isSearchTabSelected = false;
     // Switch to quick create tab
     setTimeout(() => {
+      this.ShowHideNavs("navQuickCreate");
       const quickCreateTab = document.getElementById('tbQuickCreate-tab');
       if (quickCreateTab) {
         quickCreateTab.click();
@@ -126,7 +133,49 @@ export class UserMasterComponent {
     }, 100);
   }
 
+  mobileTabSelectedEvent($event: Event) {
+    const target = $event.target as HTMLSelectElement;
+    const targetValue = target.value;
+    if (targetValue.startsWith('tbUserSearch')) {
+      this.isSearchTabSelected = true;
+    } else {
+      this.isSearchTabSelected = false;
+    }
+    this.selectedTab = targetValue;
+    document.getElementById(targetValue + "-tab")?.click();
+  }
 
+
+  ShowHideNavs(showTab: string = "") {
+    switch (showTab) {
+      case "navUserSearch": {
+        document.getElementById("navUserSearch")?.classList.remove("d-none");
+        document.getElementById("navPersonalInfo")?.classList.add("d-none");
+        document.getElementById("navQuickCreate")?.classList.add("d-none");
+        this.isSearchTabSelected = true;
+        break;
+      }
+      case "navPersonalInfo": {
+        document.getElementById("navPersonalInfo")?.classList.remove("d-none");
+        document.getElementById("navUserSearch")?.classList.add("d-none");
+        document.getElementById("navQuickCreate")?.classList.add("d-none");
+        this.isSearchTabSelected = false;
+        break;
+      }
+      case "navQuickCreate": {
+        document.getElementById("navQuickCreate")?.classList.remove("d-none");
+        document.getElementById("navUserSearch")?.classList.add("d-none");
+        document.getElementById("navPersonalInfo")?.classList.add("d-none");
+        this.isSearchTabSelected = false;
+        break;
+      }
+      default: {
+        // default code block
+        break;
+      }
+    }
+
+  }
 }
 
 

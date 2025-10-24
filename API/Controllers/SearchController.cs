@@ -105,16 +105,28 @@ namespace ClinicManager.Controllers
                         DoctorName = string.Empty,
                         StartDate = g.Key.CreatedDate,
                         EndDate = g.Key.ModifiedDate
-                    }).Distinct();
+                    });
 
+                // Calculate total count after grouping but before pagination
+                var totalCount = await groupedQuery.CountAsync();
+                
                 var results = await groupedQuery
                     .AsNoTracking()
-                    .Take(100)
+                    .Skip((model.pageNumber - 1) * model.pageSize)
+                    .Take(model.pageSize)
                     .ToListAsync()
                     .ConfigureAwait(false);
 
-                _logger.LogInformation($"Found {results.Count} users matching search criteria");
-                return Ok(results);
+                var hasMoreRecords = (model.pageNumber * model.pageSize) < totalCount;
+                var response = new UserSearchResponse
+                {
+                    Users = results,
+                    TotalCount = totalCount,
+                    HasMoreRecords = hasMoreRecords,
+                    Message = hasMoreRecords ? "More records available." : "End of records."
+                };
+                _logger.LogInformation($"Found {results.Count} users matching search criteria out of {totalCount} total");
+                return Ok(response);
             }
             catch (Exception ex)
             {

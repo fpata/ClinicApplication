@@ -9,3 +9,9 @@ export class BaseEntity {
   CreatedByIP?: string;
   ModifiedByIP?: string;
 }
+
+export class BaseSearchResultModel {
+  TotalCount: number = 0;
+  HasMoreRecords: boolean = false;
+  Message: string = '';
+}

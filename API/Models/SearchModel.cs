@@ -24,13 +24,26 @@ namespace ClinicManager.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
+        public int pageNumber { get; set; } = 1;
+        public int pageSize { get; set; } = 10;
+
     }
 
-    public class AppointmentSearchResponse
+    public class AppointmentSearchResponse: BaseSearchResponse
     {
         public IEnumerable<PatientAppointment> PatientAppointments { get; set; }
+
+    }
+
+    public class UserSearchResponse: BaseSearchResponse
+    {
+        public IEnumerable<SearchModel> Users { get; set; }
+    }
+
+    public class BaseSearchResponse
+    {
         public int TotalCount { get; set; }
         public bool HasMoreRecords { get; set; }
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

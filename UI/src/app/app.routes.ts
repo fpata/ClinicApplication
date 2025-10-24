@@ -10,6 +10,9 @@ import { BillingrecordComponent } from './componets/billing/billingrecord.compon
 import { authGuard } from './guards/auth.guard';
 import { AppconfigComponent } from './componets/appconfig/appconfig.component';
 import { ForgotPasswordComponent } from './componets/login/forgotpassword/forgotpassword.component';
+import { UserSearch } from './componets/user/user-search/user-search.component';
+import { UserInfoComponent } from './componets/user/user-info/user-info.component';
+import { UserQuickCreateComponent } from './componets/user/user-quick-create/user-quick-create.component';
 
 
 export const routes: Routes = [
@@ -25,7 +28,9 @@ export const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'doctorAppointments', component: DoctorAppointmentsComponent, canActivate: [authGuard] },
   { path : 'patienthistory', component: PatientCompleteHistoryComponent, canActivate: [authGuard] },
-  { path: 'user', component : UserMasterComponent, canActivate: [authGuard] },
+  { path: 'user', component : UserSearch, canActivate: [authGuard] },
+  { path: 'user-info', component: UserInfoComponent, canActivate: [authGuard] },
+  { path: 'user-quick-create', component: UserQuickCreateComponent, canActivate: [authGuard] },
   { path: 'billing', component: BillingrecordComponent, canActivate: [authGuard] },
   { path: 'appconfig', component: AppconfigComponent, canActivate: [authGuard] },
   // Add other routes here

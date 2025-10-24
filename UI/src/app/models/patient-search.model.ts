@@ -1,6 +1,7 @@
 import { UtilityService } from "../services/utility.service";
+import { BaseSearchResultModel } from "./base.model";
 
-export class PatientSearchModel {
+export class UserSearchModel {
 
   constructor(private util: UtilityService) {
       // Make util non-enumerable so it won't appear in JSON
@@ -9,7 +10,6 @@ export class PatientSearchModel {
     this.EndDate = this.util.formatDate(new Date((Date.now() + 180 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd');
   }
 
-  PatientID?: number = 0;
   UserID?: number = 0;
   FirstName?: string;
   LastName?: string;
@@ -19,32 +19,22 @@ export class PatientSearchModel {
   PrimaryPhone?: string;
   PrimaryEmail?: string;
   PermCity?: string;
-  DoctorID?: number = 0;
-  DoctorName?: string;
   EndDate?: string;
   StartDate?: string;
+ pageNumber?: number = 1;
+ pageSize?: number = 10;
+}
 
-  // Ensure only relevant properties are serialized
-  toJSON() {
-    const {
-      PatientID, UserID, FirstName, LastName, UserName,
-      UserType, PrimaryPhone, PrimaryEmail, PermCity,
-      DoctorID, DoctorName, EndDate, StartDate
-    } = this;
-    return {
-      PatientID,
-      UserID,
-      FirstName,
-      LastName,
-      UserName,
-      UserType: UserType === undefined ? null : UserType,
-      PrimaryPhone,
-      PrimaryEmail,
-      PermCity,
-      DoctorID,
-      DoctorName,
-      EndDate,
-      StartDate
-    };
+export class PatientSearchModel extends UserSearchModel {
+  PatientID?: number = 0;
+  DoctorID?: number = 0;
+  DoctorName?: string;
+}
+
+  export class PatientSearchResultModel extends BaseSearchResultModel {
+    patients: UserSearchModel[] = [];
   }
+
+export class UserSearchResultModel extends BaseSearchResultModel {
+  Users: PatientSearchModel[] = [];
 }

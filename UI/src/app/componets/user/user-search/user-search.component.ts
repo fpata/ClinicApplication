@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UtilityService } from '../../../services/utility.service';
-import { PatientSearchModel } from '../../../models/patient-search.model';
+import { PatientSearchModel, UserSearchResultModel } from '../../../models/patient-search.model';
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding 
 import { SearchService } from '../../../services/search.service';
 import { DataService } from '../../../services/data.service';
@@ -8,28 +8,34 @@ import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
-import { Message } from '../../../models/message.model';
 import { MessageService } from '../../../services/message.service';
+import { Router } from '@angular/router';
+import { PagingComponent } from '../../../common/paging/paging.component';   
+
 @Component({
   selector: 'app-user-search',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, PagingComponent],
   templateUrl: './user-search.component.html',
   styleUrls: ['./user-search.component.css'],
   providers: [SearchService, UserService]
 })
 export class UserSearch {
+
+ currentPage: number = 1;
+   pageSize: number = 10;
+   totalItems: number = 0;
   searchPatient: PatientSearchModel;
-  searchResult: PatientSearchModel[];
+  searchResult: UserSearchResultModel;
   searchLengthConstraintError: boolean = false;
   clearSearchClicked: boolean = false;
 
   constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService,
-    private util: UtilityService, private messageService: MessageService) {
+    private util: UtilityService, private messageService: MessageService, private router: Router) {
     this.searchPatient = new PatientSearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date((Date.now() + 180 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // Default to 180 days from now
     this.searchPatient.StartDate = this.util.formatDate(new Date((Date.now() - 365 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // 365 days ago
-    this.searchResult = [];
+    this.searchResult = new UserSearchResultModel();
   }
 
 
@@ -54,15 +60,16 @@ validateSearchInput() {
       next: (result:any) => {
         this.searchResult = result;
         this.clearSearchClicked = false;
-        if (this.searchResult.length === 1) {
-          this.OnUserIdClick(this.searchResult[0].UserID);
+        if (this.searchResult.Users.length === 1) {
+          this.OnUserIdClick(this.searchResult.Users[0].UserID);
         }
+        this.totalItems = this.searchResult.TotalCount || 0;
       },
       error: (err:any) => {
         // Optionally handle error
-        this.messageService.error('Error occurred while searching for patients.');
+        this.messageService.error('Error occurred while searching for users.');
         console.error(err);
-        this.searchResult = [];
+        this.searchResult.Users = [];
         this.clearSearchClicked = false;
       }
     });
@@ -71,8 +78,7 @@ validateSearchInput() {
   clearSearch() {
     this.searchLengthConstraintError = false;
     this.searchPatient = new PatientSearchModel(this.util);
-
-    this.searchResult = [];
+    this.searchResult = new UserSearchResultModel();
     this.clearSearchClicked = true;
   }
 
@@ -82,7 +88,7 @@ validateSearchInput() {
     this.userService.getUser(userId).subscribe({
       next: (user: User) => {
         this.dataService.setUser(user);
-         document.getElementById('tbPatientVitals-tab')?.click();
+        this.router.navigate(['/user-info']);
       },
       error: (err: any) => {
        this.messageService.error('Error fetching user data:', err);
@@ -90,9 +96,42 @@ validateSearchInput() {
     });
   }
 
-  
+    QuickCreateUser() {
+ 
+    this.dataService.setUser(null);
+    var user: User = new User();
+    user.Address = new Address();
+    user.Contact = new Contact();
+    this.dataService.setUser(user);
+   this.router.navigate(['/user-quick-create']);
+   
+  }
+
+  AddNewUser() {
+    this.dataService.setUser(null);
+    var user: User = new User();
+    user.Address = new Address();
+    user.Contact = new Contact();
+    this.dataService.setUser(user);
+   this.router.navigate(['/user-info']);
+  }
+
+    ClearUserInformation() {
+    this.dataService.setUser(null);
+  }
+
+  onPageChange($event: number) {
+    this.currentPage = $event;
+    this.searchPatient.pageNumber = this.currentPage;
+    this.searchPatient.pageSize = this.pageSize;
+    this.SearchUser();
+    // Implement logic to fetch data for the new page if necessary
+  }
 
   
+   ngOnInit(): void {
+      this.pageSize = this.dataService.getConfig()?.pageSize || 5;
+   }
 }
 /*
 private mapToUserModel(response: any): User {

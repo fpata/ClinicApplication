@@ -1,6 +1,6 @@
 import { User } from './user.model';
 import { Patient } from './patient.model';
-import { BaseEntity } from './base.model';
+import { BaseEntity, BaseSearchResultModel } from './base.model';
 import { Time } from '@angular/common';
 
 export class PatientAppointment extends BaseEntity {
@@ -26,10 +26,8 @@ export class PatientAppointment extends BaseEntity {
   ReminderSentDate?: Date;
 }
 
-export class AppointmentSearchResponse
+export class AppointmentSearchResponse extends BaseSearchResultModel
 {
      PatientAppointments:PatientAppointment[] ;
-     TotalCount: number;
-     HasMoreRecords: boolean;
-     Message: string;
+
 }
