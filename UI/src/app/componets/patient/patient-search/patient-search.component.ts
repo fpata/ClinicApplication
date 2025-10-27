@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PatientSearchModel } from '../../../models/patient-search.model';
+import { SearchModel,SearchResultModel } from '../../../models/search.model';
 import { SearchService } from '../../../services/search.service';
 import { PatientService } from '../../../services/patient.service';
 import { DataService } from '../../../services/data.service';
@@ -22,18 +22,18 @@ import { UtilityService } from '../../../services/utility.service';
 })
 export class PatientSearchComponent {
 
-  searchPatient: PatientSearchModel;
-  searchResult: PatientSearchModel[];
+  searchPatient: SearchModel;
+  searchResult: SearchResultModel;
   searchLengthConstraintError: boolean = false;
   clearSearchClicked: boolean = false;
 
   constructor(private searchService: SearchService, private patientService: PatientService,
     private dataService: DataService, private userService: UserService, private router: Router, private util: UtilityService
   ) {
-    this.searchPatient = new PatientSearchModel(this.util);
+    this.searchPatient = new SearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
     this.searchPatient.StartDate = this.util.formatDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
-    this.searchResult = [];
+    this.searchResult = new SearchResultModel();
   }
 
   validateSearchInput() {
@@ -52,7 +52,7 @@ export class PatientSearchComponent {
     if (this.searchLengthConstraintError) {
       return;
     }
-    this.searchService.searchUser(this.searchPatient).subscribe({
+    this.searchService.Search(this.searchPatient).subscribe({
       next: (result) => {
         this.searchResult = result;
         this.clearSearchClicked = false;
@@ -61,7 +61,7 @@ export class PatientSearchComponent {
         // Optionally handle error
         alert('Error occurred while searching for patients.');
         console.error(err);
-        this.searchResult = [];
+        this.searchResult = new SearchResultModel();
         this.clearSearchClicked = false;
       }
     });
@@ -78,7 +78,7 @@ export class PatientSearchComponent {
     this.searchPatient.UserID = 0;
     this.searchPatient.UserName = '';
     this.searchPatient.UserType = 0;
-    this.searchResult = [];
+    this.searchResult = new SearchResultModel();
     this.clearSearchClicked = true;
   }
 

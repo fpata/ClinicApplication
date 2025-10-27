@@ -6,12 +6,13 @@ import { Contact } from '../../../models/contact.model';
 import { DataService } from '../../../services/data.service';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { AddressService } from '../../../services/address.service';
+import { UserService } from '../../../services/user.service';
+import { MessageService } from '../../../services/message.service';
 
 
 @Component({
   selector: 'app-user-info',
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './user-info.component.html',
   styleUrls: ['./user-info.component.css']
 })
@@ -25,21 +26,22 @@ export class UserInfoComponent {
   private userSubscription: Subscription;
 
 
-  constructor(private dataService: DataService) { 
+  constructor(private dataService: DataService, private messageService: MessageService, private userService: UserService) {
     // Don't initialize with new objects - wait for actual data
     this.user = null;
   }
 
-    ngOnInit() {
+  ngOnInit() {
     this.userSubscription = this.dataService.user$.subscribe({
-      next:(updatedUser: User | null | undefined) => {
-        if (!updatedUser) { 
-          return; 
+      next: (updatedUser: User | null | undefined) => {
+        if (!updatedUser) {
+          this.InitializeNewUser();
+        } else {
+          // Simply assign the updated user without overriding nested objects
+          this.user = updatedUser;
+          this.address = this.user.Address;
+          this.contact = this.user.Contact;
         }
-        // Simply assign the updated user without overriding nested objects
-        this.user = updatedUser;
-        this.address = this.user.Address;
-        this.contact = this.user.Contact;
       },
       error: (err: Error) => {
         console.error('Error occurred while updating user data:', err);
@@ -69,8 +71,72 @@ export class UserInfoComponent {
   }
 
   onUserTypeChange($event: any) {
-  if (this.user && $event === "2") {
-    this.user.UserType =  UserType.Doctor;
+    if (this.user && $event === "2") {
+      this.user.UserType = UserType.Doctor;
+    }
   }
-}
+
+  ClearUserInformation() {
+    this.dataService.setUser(null);
+    this.InitializeNewUser();
+  }
+
+  DeleteUserInformation() {
+    const currentUser = this.dataService.getUser();
+
+    if (!currentUser || !currentUser.ID) {
+      this.messageService.warn('No user selected for deletion');
+      return;
+    }
+
+    if (confirm(`Are you sure you want to delete user: ${currentUser.FirstName} ${currentUser.LastName}?`)) {
+      this.userService.deleteUser(currentUser.ID).subscribe({
+        next: () => {
+          this.messageService.success('User deleted successfully');
+          this.ClearUserInformation(); // Clear the user from data service
+        },
+        error: (error) => {
+          this.messageService.error('Error deleting user: ' + error.message);
+        }
+      });
+    }
+    this.InitializeNewUser();
+  }
+
+  SaveUserInformation() {
+    if (!this.user.ID || this.user.ID === 0) {
+      // Create new user (POST)
+      this.userService.createUser(this.user).subscribe({
+        next: (newUser) => {
+          this.messageService.success('User created successfully');
+          this.dataService.setUser(newUser); // Update with the new user data including ID
+        },
+        error: (error) => {
+          this.messageService.error('Error creating user: ' + error.message);
+        }
+      });
+    } else {
+      // Update existing user (PUT)
+      this.userService.updateUser(this.user.ID, this.user).subscribe({
+        next: (updatedUser) => {
+          this.messageService.success('User updated successfully');
+          this.dataService.setUser(updatedUser); // Update with the latest user data
+        },
+        error: (error) => {
+          this.messageService.error('Error updating user: ' + error.message);
+        }
+      });
+    }
+  }
+
+  InitializeNewUser() {
+    this.user = new User();
+    this.user.Address = new Address();
+    this.user.Contact = new Contact();
+    this.user.ID = 0; // Indicate new user
+    this.address = this.user.Address;
+    this.address.ID = 0;
+    this.contact = this.user.Contact;
+    this.contact.ID = 0;
+  }
 }

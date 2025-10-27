@@ -118,9 +118,9 @@ namespace ClinicManager.Controllers
                     .ConfigureAwait(false);
 
                 var hasMoreRecords = (model.pageNumber * model.pageSize) < totalCount;
-                var response = new UserSearchResponse
+                var response = new SearchResults
                 {
-                    Users = results,
+                    Results = results,
                     TotalCount = totalCount,
                     HasMoreRecords = hasMoreRecords,
                     Message = hasMoreRecords ? "More records available." : "End of records."

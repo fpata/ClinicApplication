@@ -118,7 +118,7 @@
                 <th>Phone Number</th>
               </thead>
               <tbody>
-                @for (result of searchResult.Users; track $index){
+                @for (result of searchResult.Results; track $index){
                 <tr>
                   <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;"
                       (click)="OnUserIdClick(result.UserID)">{{result.UserID}}</a></td>
@@ -129,7 +129,7 @@
                   <td>{{result.PrimaryPhone}}</td>
                 </tr>
                 }
-                @if (searchResult == undefined && searchResult.Users == undefined && searchResult.Users?.length == 0 &&
+                @if (searchResult == undefined && searchResult.Results == undefined && searchResult.Results?.length == 0 &&
                 clearSearchClicked==false){
                 <tr>
                   <td colspan="6"><label id="lblNoRecordsError">No record found matching the search criteria</label>
@@ -144,7 +144,7 @@
       <br />
       <!--Mobile Version Table-->
       <div class="d-block d-md-none">
-        @for (result of searchResult.Users; track $index){
+        @for (result of searchResult.Results; track $index){
         <div class="card mb-3">
           <div class="card-body">
             <div class="row g-2">
@@ -169,7 +169,7 @@
         </div>
         }
         
-        @if (searchResult == undefined && searchResult.Users == undefined && searchResult.Users?.length == 0 && clearSearchClicked==false){
+        @if (searchResult == undefined && searchResult.Results == undefined && searchResult.Results?.length == 0 && clearSearchClicked==false){
         <div class="alert alert-info text-center">
           <label id="lblNoRecordsError">No record found matching the search criteria</label>
         </div>
@@ -177,7 +177,7 @@
       </div>
       <div class="row">
         <div class="col-12">
-          @if(searchResult?.Users?.length > 0) {
+          @if(searchResult?.Results?.length > 0) {
           <app-paging [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="currentPage"
             (pageChange)="onPageChange($event)"> </app-paging>
           }

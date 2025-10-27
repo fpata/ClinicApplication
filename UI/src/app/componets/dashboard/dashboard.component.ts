@@ -7,11 +7,11 @@ import { PagingComponent } from "../../common/paging/paging.component";
 import { DataService } from '../../services/data.service';
 import { FormsModule } from '@angular/forms';
 import { SearchService } from '../../services/search.service';
-import { PatientSearchModel } from '../../models/patient-search.model';
+import { SearchModel, SearchResultModel } from '../../models/search.model';
 import { MessageService } from '../../services/message.service';
 import { UtilityService } from '../../services/utility.service';
 import { UserType } from '../../models/user.model';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { TypeaheadComponent } from '../../common/typeahead/typeahead';
 import { LoginResponse } from '../../services/login.service';
 
@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
    totalItems: number = 0;
    newAppointment: PatientAppointment | null = null;
    appointments: PatientAppointment[] = [];
-   doctors: PatientSearchModel[] | null = null;
+   doctors: SearchModel[] | null = null;
 
 
    @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
@@ -115,9 +115,6 @@ export class DashboardComponent implements OnInit {
          );
       }
 
-      console.log('Start DateTime:', this.util.formatAppointmentDateTime(appointmentToSave.StartDateTime));
-      console.log('End DateTime:', this.util.formatAppointmentDateTime(appointmentToSave.EndDateTime));
-
       appointmentToSave.AppointmentStatus = 'Scheduled';
       appointmentToSave.IsActive = 1;
 
@@ -140,18 +137,18 @@ export class DashboardComponent implements OnInit {
    }
 
 
-   getDoctors = (name: string): Observable<PatientSearchModel[]> => {
-      var searchModel: PatientSearchModel = new PatientSearchModel(this.util);
+   getDoctors = (name: string): Observable<SearchModel[]> => {
+      var searchModel: SearchModel = new  SearchModel(this.util);
       searchModel.UserType = UserType.Doctor;
       searchModel.FirstName = name;
-      return this.searchService.searchUser(searchModel);
+      return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
    }
 
-   getPatients = (name: string): Observable<PatientSearchModel[]> => {
-      const searchModel: PatientSearchModel = new PatientSearchModel(this.util);
+   getPatients = (name: string): Observable<SearchModel[]> => {
+      const searchModel: SearchModel = new SearchModel(this.util);
       searchModel.UserType = UserType.Patient;
       searchModel.FirstName = name;
-      return this.searchService.searchUser(searchModel);
+      return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
    }
 
 

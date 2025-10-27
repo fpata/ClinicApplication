@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppointmentSearchResponse, PatientAppointment } from '../models/patient-appointment.model';
-import { PatientSearchModel } from '../models/patient-search.model';
+import { SearchModel } from '../models/search.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -45,7 +45,7 @@ export class PatientAppointmentService {
     return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}/doctor/${doctorId}?pageNumber=1&pageSize=1`, { headers: this.getAuthHeaders() });
   }
 
-  searchAppointmentsForDoctor(searchPatient: PatientSearchModel): Observable<AppointmentSearchResponse> {
+  searchAppointmentsForDoctor(searchPatient: SearchModel): Observable<AppointmentSearchResponse> {
     return this.http.post<AppointmentSearchResponse>(`${this.apiUrl}/doctor/search`, searchPatient, { headers: this.getAuthHeaders() });
   }
 

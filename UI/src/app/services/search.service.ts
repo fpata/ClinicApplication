@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PatientSearchModel } from '../models/patient-search.model';
+import { SearchModel, SearchResultModel} from '../models/search.model';
 import { User } from '../models/user.model';
 import { Address } from '../models/address.model';
 import { Contact } from '../models/contact.model';
@@ -24,11 +24,12 @@ export class SearchService {
     };
   }
 
-  searchUser(model: PatientSearchModel): Observable<PatientSearchModel[]> {
-    return this.http.post<PatientSearchModel[]>(`${this.apiUrl}/user`, model, this.getAuthHeaders());
+  Search(model: SearchModel): Observable<SearchResultModel> {
+    return this.http.post<SearchResultModel>(`${this.apiUrl}/user`, model, this.getAuthHeaders());
   }
 
-  advancedSearch(model: PatientSearchModel): Observable<{ Users: User[]; Addresses: Address[]; Contacts: Contact[]; Patients: Patient[] }> {
+ 
+  AdvancedSearch(model: SearchModel): Observable<{ Users: User[]; Addresses: Address[]; Contacts: Contact[]; Patients: Patient[] }> {
     return this.http.post<{ Users: User[]; Addresses: Address[]; Contacts: Contact[]; Patients: Patient[] }>(`${this.apiUrl}/advanced`, model, this.getAuthHeaders());
   }
 }

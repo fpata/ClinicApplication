@@ -288,4 +288,13 @@ namespace ClinicManager.Controllers
 
      
     }
+
+    public class AppointmentSearchResponse 
+    {
+        public int TotalCount { get; set; }
+        public bool HasMoreRecords { get; set; }
+        public string? Message { get; set; }
+        public IEnumerable<PatientAppointment> PatientAppointments { get; set; }
+
+    }
 }

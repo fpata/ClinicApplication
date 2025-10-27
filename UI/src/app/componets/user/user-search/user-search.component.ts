@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UtilityService } from '../../../services/utility.service';
-import { PatientSearchModel, UserSearchResultModel } from '../../../models/patient-search.model';
+import { SearchModel, SearchResultModel} from '../../../models/search.model';
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding 
 import { SearchService } from '../../../services/search.service';
 import { DataService } from '../../../services/data.service';
@@ -25,17 +25,17 @@ export class UserSearch {
  currentPage: number = 1;
    pageSize: number = 10;
    totalItems: number = 0;
-  searchPatient: PatientSearchModel;
-  searchResult: UserSearchResultModel;
+  searchPatient: SearchModel;
+  searchResult: SearchResultModel;
   searchLengthConstraintError: boolean = false;
   clearSearchClicked: boolean = false;
 
   constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService,
     private util: UtilityService, private messageService: MessageService, private router: Router) {
-    this.searchPatient = new PatientSearchModel(this.util);
+    this.searchPatient = new SearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date((Date.now() + 180 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // Default to 180 days from now
     this.searchPatient.StartDate = this.util.formatDate(new Date((Date.now() - 365 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // 365 days ago
-    this.searchResult = new UserSearchResultModel();
+    this.searchResult = new SearchResultModel();
   }
 
 
@@ -56,12 +56,12 @@ validateSearchInput() {
       return;
     }
     this.searchPatient.StartDate = '2022-01-01';
-    this.searchService.searchUser(this.searchPatient).subscribe({
+    this.searchService.Search(this.searchPatient).subscribe({
       next: (result:any) => {
         this.searchResult = result;
         this.clearSearchClicked = false;
-        if (this.searchResult.Users.length === 1) {
-          this.OnUserIdClick(this.searchResult.Users[0].UserID);
+        if (this.searchResult.Results.length === 1) {
+          this.OnUserIdClick(this.searchResult.Results[0].UserID);
         }
         this.totalItems = this.searchResult.TotalCount || 0;
       },
@@ -69,7 +69,7 @@ validateSearchInput() {
         // Optionally handle error
         this.messageService.error('Error occurred while searching for users.');
         console.error(err);
-        this.searchResult.Users = [];
+        this.searchResult.Results = [];
         this.clearSearchClicked = false;
       }
     });
@@ -77,8 +77,8 @@ validateSearchInput() {
 
   clearSearch() {
     this.searchLengthConstraintError = false;
-    this.searchPatient = new PatientSearchModel(this.util);
-    this.searchResult = new UserSearchResultModel();
+    this.searchPatient = new SearchModel(this.util);
+    this.searchResult = new SearchResultModel();
     this.clearSearchClicked = true;
   }
 

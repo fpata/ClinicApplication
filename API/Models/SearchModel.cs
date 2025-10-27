@@ -27,23 +27,15 @@ namespace ClinicManager.Models
         public int pageNumber { get; set; } = 1;
         public int pageSize { get; set; } = 10;
 
-    }
+   }
 
-    public class AppointmentSearchResponse: BaseSearchResponse
+
+    public class SearchResults
     {
-        public IEnumerable<PatientAppointment> PatientAppointments { get; set; }
+        public int TotalCount { get; set; } =0;
+        public bool HasMoreRecords { get; set; }  = false;
+        public string? Message { get; set; } =String.Empty;
 
-    }
-
-    public class UserSearchResponse: BaseSearchResponse
-    {
-        public IEnumerable<SearchModel> Users { get; set; }
-    }
-
-    public class BaseSearchResponse
-    {
-        public int TotalCount { get; set; }
-        public bool HasMoreRecords { get; set; }
-        public string? Message { get; set; }
+        public IEnumerable<SearchModel>? Results { get; set; } = null;
     }
 }

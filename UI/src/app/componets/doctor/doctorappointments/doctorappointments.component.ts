@@ -3,13 +3,13 @@ import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { PatientAppointmentService } from '../../../services/patient-appointment.service';
-import { PatientSearchModel } from '../../../models/patient-search.model';
+import { SearchModel, SearchResultModel } from '../../../models/search.model';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { DataService } from '../../../services/data.service';
 import { SearchService } from '../../../services/search.service';
 import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
-import { Observable } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { MessagesComponent } from '../../../common/messages/messages.component';
 import { MessageService } from '../../../services/message.service';
 import { UtilityService } from '../../../services/utility.service';
@@ -28,10 +28,10 @@ export class DoctorAppointmentsComponent {
   searchResult: PatientAppointment[];
   @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
   appointments: PatientAppointment[] | null = null;
-  searchPatient: PatientSearchModel;
+  searchPatient: SearchModel;
   searchLengthConstraintError: any;
   newAppointment: PatientAppointment = new PatientAppointment();
-  doctors: PatientSearchModel[] | null = null;
+  doctors: SearchModel[] | null = null;
 
   constructor(private patientAppointmentService: PatientAppointmentService, 
     private dataService: DataService,
@@ -81,11 +81,11 @@ export class DoctorAppointmentsComponent {
   }
 
   getDoctors() :void {
-    var searchModel:PatientSearchModel = new PatientSearchModel(this.util);
+    var searchModel:SearchModel = new SearchModel(this.util);
     searchModel.UserType = UserType.Doctor;
-    this.searchService.searchUser(searchModel).subscribe({
-      next: (result: PatientSearchModel[]) => {
-        this.doctors = result;
+    this.searchService.Search(searchModel).subscribe({
+      next: (result: SearchResultModel) => {
+        this.doctors = result.Results as SearchModel[];
       },
       error: (err: any) => {
         console.error(err);
@@ -95,15 +95,17 @@ export class DoctorAppointmentsComponent {
     });
   }
 
-  getPatients = (name:string): Observable<PatientSearchModel[]> => {
-    const searchModel:PatientSearchModel = new PatientSearchModel(this.util);
+  getPatients = (name:string): Observable<SearchModel[]> => {
+    const searchModel:SearchModel = new SearchModel(this.util);
     searchModel.UserType = UserType.Patient;
     searchModel.FirstName = name;
-    return this.searchService.searchUser(searchModel);
+    return this.searchService.Search(searchModel).pipe(
+      map(result => result.Results as SearchModel[])
+    );
   }
 
   clearSearch() {
-    this.searchPatient = <PatientSearchModel> {
+    this.searchPatient = <SearchModel> {
       PatientID: 0,
       UserID: 0,
       FirstName: '',

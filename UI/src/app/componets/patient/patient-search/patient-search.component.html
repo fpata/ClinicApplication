@@ -76,7 +76,7 @@
         <th>Phone Number</th>
       </thead>
       <tbody>
-        @for (result of searchResult; track $index){
+        @for (result of searchResult.Results; track $index){
         <tr>
           <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(result.PatientID, result.UserID)">{{(result.PatientID === null? 0 : result.PatientID)}}</a></td>
           <td>{{result.FirstName}}</td>
@@ -86,7 +86,7 @@
           <td>{{result.PrimaryPhone}}</td>
         </tr>
        }
-       @if (searchResult != undefined && searchResult.length == 0 && clearSearchClicked==false){
+       @if (searchResult === undefined || searchResult.Results.length == 0)  {
         <tr >
           <td colspan="6"><label id="lblNoRecordsError">No record found matching the search criteria</label></td>
         @if(searchPatient.PatientID == null || searchPatient.PatientID == 0){

@@ -1,7 +1,6 @@
 import { UtilityService } from "../services/utility.service";
-import { BaseSearchResultModel } from "./base.model";
 
-export class UserSearchModel {
+export class SearchModel {
 
   constructor(private util: UtilityService) {
       // Make util non-enumerable so it won't appear in JSON
@@ -23,18 +22,20 @@ export class UserSearchModel {
   StartDate?: string;
  pageNumber?: number = 1;
  pageSize?: number = 10;
-}
-
-export class PatientSearchModel extends UserSearchModel {
-  PatientID?: number = 0;
+   PatientID?: number = 0;
   DoctorID?: number = 0;
   DoctorName?: string;
+
 }
 
-  export class PatientSearchResultModel extends BaseSearchResultModel {
-    patients: UserSearchModel[] = [];
-  }
 
-export class UserSearchResultModel extends BaseSearchResultModel {
-  Users: PatientSearchModel[] = [];
+
+export class SearchResultModel {
+  TotalCount: number = 0;
+  HasMoreRecords: boolean = false;
+  Message: string = '';
+  Results: any[] = [];
 }
+
+
+

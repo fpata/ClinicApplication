@@ -65,26 +65,6 @@ export class MockDataHelper {
     };
   }
 
-  static createMockAppointment(overrides?: Partial<PatientAppointment>): PatientAppointment {
-    return {
-      ID: 1,
-      PatientID: 1,
-      DoctorID: 2,
-      StartDateTime: new Date('2023-08-19T09:00:00Z'),
-      EndDateTime: new Date('2023-08-19T10:00:00Z'),
-      TreatmentName: 'Consultation',
-      AppointmentStatus: 'Scheduled',
-      Notes: 'Regular checkup',
-      PatientName: 'John Doe',
-      DoctorName: 'Dr. Jane Smith',
-      CreatedDate: '2023-08-18T00:00:00Z',
-      ModifiedDate: '2023-08-18T00:00:00Z',
-      CreatedBy: 1,
-      ModifiedBy: 1,
-      IsActive: 1,
-      ...overrides
-    };
-  }
 
   static createMockAddress(overrides?: Partial<Address>): Address {
     return {
