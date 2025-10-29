@@ -17,12 +17,14 @@ export class DataService {
   private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
   private loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
   private configSource = new BehaviorSubject<AppConfig | null>(null);
+  private userId = new BehaviorSubject<number | null>(null);
 
   readonly patient$: Observable<Patient> = this.patientSource.asObservable();
   readonly user$: Observable<User> = this.userSource.asObservable();
   readonly calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
   readonly loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
   readonly config$: Observable<AppConfig> = this.configSource.asObservable();
+  readonly userId$: Observable<number | null> = this.userId.asObservable();
 
  setPatient(patient: Patient): void {
         this.patientSource.next(patient);
@@ -61,5 +63,13 @@ export class DataService {
   }
   setConfig(config: AppConfig): void {
     this.configSource.next(config);
+  }
+
+  setUserId(id: number | null): void {
+    this.userId.next(id); 
+  }
+
+  getUserId(): number | null {
+    return this.userId.value;
   }
 }

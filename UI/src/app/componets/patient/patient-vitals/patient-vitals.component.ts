@@ -30,7 +30,13 @@ export class PatientVitalsComponent {
         this.patient = _newpatient;
         if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {
           this.vitalsArray = this.patient?.PatientVitals;
-          this.vitals = this.vitalsArray[0];
+          if (this.vitalsArray && this.vitalsArray.length > 0) {
+          this.vitals = this.vitalsArray[this.vitalsArray.length - 1];
+          } else {
+            this.vitals = new PatientVitals();
+            this.vitals.PatientID = this.patient?.ID || 0;
+            this.vitals.UserID = this.patient?.UserID || 0;
+          }
         } else {
           if (this.patient) {
             this.patient.PatientVitals = new Array<PatientVitals>(new PatientVitals());

@@ -6,7 +6,7 @@ import { SearchService } from '../../../services/search.service';
 import { PatientService } from '../../../services/patient.service';
 import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';
-import { User } from '../../../models/user.model';
+import { User, UserType } from '../../../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../../services/user.service';
 import { Router } from '@angular/router';
@@ -37,9 +37,11 @@ export class PatientSearchComponent {
   }
 
   validateSearchInput() {
-    if (this.searchPatient != null && this.searchPatient != undefined && this.searchPatient.FirstName?.length < 3 && this.searchPatient.LastName?.length < 3 &&
-      this.searchPatient.PrimaryEmail?.length < 3 && this.searchPatient.PermCity?.length < 3 &&
-      this.searchPatient.PrimaryPhone?.length < 3) {
+    if (this.searchPatient != null && this.searchPatient != undefined 
+      && (this.searchPatient.FirstName === undefined || this.searchPatient.FirstName?.length < 3)
+      && (this.searchPatient.LastName === undefined ||  this.searchPatient.LastName?.length < 3 )
+      && (this.searchPatient.PrimaryEmail === undefined || this.searchPatient.PrimaryEmail?.length < 3)
+      && (this.searchPatient.PrimaryPhone === undefined || this.searchPatient.PrimaryPhone?.length < 3)) {
       this.searchLengthConstraintError = true;
       this.clearSearchClicked = false;
     } else {
@@ -49,9 +51,11 @@ export class PatientSearchComponent {
   }
 
   SearchPatient() {
+    this.validateSearchInput();
     if (this.searchLengthConstraintError) {
       return;
     }
+    this.searchPatient.UserType = UserType.Patient; // Set UserType to Admin for searching all patients
     this.searchService.Search(this.searchPatient).subscribe({
       next: (result) => {
         this.searchResult = result;
@@ -87,6 +91,7 @@ export class PatientSearchComponent {
       this.userService.getUser(userId).subscribe({
         next: (user: User) => {
           this.dataService.setUser(user);
+          this.dataService.setUserId(user.ID);
         },
         error: (err: Error) => {
           console.error('Error fetching user data:', err);
@@ -101,6 +106,7 @@ export class PatientSearchComponent {
           // Handle the patient data as needed
          // console.log('User data:', user);
           this.dataService.setUser(user);
+          this.dataService.setUserId(user.ID);
           this.dataService.setPatient(user?.Patients[0] || null);
         },
         error: (err) => {

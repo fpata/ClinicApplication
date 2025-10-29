@@ -68,6 +68,7 @@
     <div class="table-responsive">
     <table class="table table-striped table-bordered" style="color: black;">
       <thead>
+        <th>User ID</th>
         <th>Patient ID</th>
         <th>First Name</th>
         <th>Last Name</th>
@@ -78,6 +79,7 @@
       <tbody>
         @for (result of searchResult.Results; track $index){
         <tr>
+          <td>{{(result.UserID === null? 0 : result.UserID)}}</td>
           <td><a style="text-decoration: underline solid blue 1px;cursor:pointer;" (click)="OnPatientIdClick(result.PatientID, result.UserID)">{{(result.PatientID === null? 0 : result.PatientID)}}</a></td>
           <td>{{result.FirstName}}</td>
           <td>{{result.LastName}}</td>
@@ -88,10 +90,7 @@
        }
        @if (searchResult === undefined || searchResult.Results.length == 0)  {
         <tr >
-          <td colspan="6"><label id="lblNoRecordsError">No record found matching the search criteria</label></td>
-        @if(searchPatient.PatientID == null || searchPatient.PatientID == 0){
-          <td colspan="6"><button type="button" class="btn btn-primary" (click)="AddNewUser()">Add New Patient</button></td>
-        }
+          <td colspan="7"><label id="lblNoRecordsError">No record found matching the search criteria</label></td>
         </tr>
       }
       </tbody>

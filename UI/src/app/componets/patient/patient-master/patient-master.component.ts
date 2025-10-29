@@ -15,7 +15,8 @@ import { PatientReport } from '../../../models/patient-report.model';
 import { PatientQuickCreateComponent } from '../patient-quick-create/patient-quick-create.component';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from '../../../services/message.service';
-import { PatientVitalsComponent } from '../patient-vitals/patient-vitals.component';  
+import { PatientVitalsComponent } from '../patient-vitals/patient-vitals.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-patient-master',
@@ -28,10 +29,14 @@ import { PatientVitalsComponent } from '../patient-vitals/patient-vitals.compone
   providers: [HttpClient]
 })
 export class PatientMasterComponent {
-
   isSearchTabSelected: boolean = true;
   selectedTab: string = 'tbPatientSearch';
   userID: number = 0;
+  showTabs: boolean = false;
+  showQuickCreateTab: boolean = false
+  private userIdSubscription: Subscription = new Subscription();
+
+
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
   @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
   @ViewChild(PatientVitalsComponent) patientVitalsComponent!: PatientVitalsComponent;
@@ -101,8 +106,8 @@ export class PatientMasterComponent {
 
   AddNewPatient() {
     var userID = this.dataService.getUser()?.ID || 0;
-    if(userID === 0) {
-      this.messageService.info('No user present. Create a new user first');
+    if (userID === 0) {
+      this.messageService.error('No user present. Create a new user first');
       return;
     }
     this.patientService.AddNewPatient();
@@ -159,5 +164,37 @@ export class PatientMasterComponent {
     }
   }
 
+  ngOnInit() {
+    this.userIdSubscription = this.dataService.userId$.subscribe({
+      next: (id: number | null) => {
+        this.userID = id || 0;
+        this.ShowHideTabs();
+      },
+      error: (error) => {
+        console.error('Error subscribing to userId changes:', error);
+      }
+    });
+    this.ShowHideTabs();
+  }
 
+  private ShowHideTabs() {
+    // Logic to show/hide tabs based on certain conditions
+    if (this.userID !== 0) {
+      if (this.showQuickCreateTab) {
+        this.showTabs = false;
+      } else {
+        this.showTabs = true;
+      }
+    } else {
+      this.showTabs = false;
+    }
+  }
+
+  QuickCreatePatient() {
+    this.showQuickCreateTab = true;
+    this.ShowHideTabs();
+    document.getElementById('tbQuickCreate-tab')?.click();
+    this.AddNewPatient();
+
+  }
 }
