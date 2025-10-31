@@ -28,6 +28,7 @@ export class DataService {
   readonly userId$: Observable<number | null> = this.userId.asObservable();
   readonly IsQuickCreateMode$: Observable<boolean> = this.IsQuickCreateMode.asObservable();
 
+  
 
  setPatient(patient: Patient): void {
         this.patientSource.next(patient);

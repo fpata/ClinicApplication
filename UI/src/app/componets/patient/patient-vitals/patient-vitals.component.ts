@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { PatientVitals } from '../../../models/patient-vitals.model';
 import { Subscription } from 'rxjs';
 import { MessageService } from '../../../services/message.service';
+import { UtilityService } from '../../../services/utility.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-patient-vitals',
@@ -21,7 +23,9 @@ export class PatientVitalsComponent {
   patient: Patient | null = null;
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService, private messageService: MessageService) {
+  constructor(private dataService: DataService, private messageService: MessageService,
+    private util: UtilityService, private authService :AuthService
+  ) {
   }
 
   ngOnInit() {
@@ -34,13 +38,13 @@ export class PatientVitalsComponent {
           if (this.vitalsArray && this.vitalsArray.length > 0) {
             this.vitals = this.vitalsArray[this.vitalsArray.length - 1];
           } else {
-            this.vitals = new PatientVitals();
+            this.vitals = new PatientVitals(this.util, this.dataService);
             this.vitals.PatientID = this.patient?.ID || 0;
             this.vitals.UserID = this.patient?.UserID || 0;
           }
         } else {
           if (this.patient) {
-            this.patient.PatientVitals = new Array<PatientVitals>(new PatientVitals());
+            this.patient.PatientVitals = new Array<PatientVitals>(new PatientVitals(this.util, this.dataService));
             this.vitals = this.patient?.PatientVitals[0];
             this.vitals.PatientID = this.patient?.ID || 0;
             this.vitals.UserID = this.patient?.UserID || 0;
@@ -64,18 +68,26 @@ export class PatientVitalsComponent {
 
   SetValuesForVitalID(vitalID: number) {
     if (this.vitalsArray) {
-      const selectedVital = this.vitalsArray.find(vital => vital.ID === vitalID);
+      var selectedVital = this.vitalsArray.find(vital => vital.ID === vitalID);
       if (selectedVital) {
-        this.vitals = { ...selectedVital };
+        // create a new PatientVitals instance so util and dataService are present,
+        // then copy the selected vital's properties onto it
+        var newVitals = new PatientVitals(this.util, this.dataService);
+        Object.assign(newVitals, selectedVital);
+        this.vitals = newVitals;
       }
     }
   }
 
   AddPatientVitals() {
-    this.vitals = new PatientVitals();
+    this.vitals = new PatientVitals(this.util, this.dataService);
     if (this.patient) {
       this.vitals.PatientID = this.patient.ID || 0;
       this.vitals.UserID = this.patient.UserID || 0;
+      this.vitals.RecordedBy = this.authService.getUser().ID || 0;
+      if (!this.vitalsArray) {
+        this.vitalsArray = [];
+      }
       this.vitalsArray.push(this.vitals);
       this.patient.PatientVitals = this.vitalsArray;
       this.dataService.setPatient(this.patient);

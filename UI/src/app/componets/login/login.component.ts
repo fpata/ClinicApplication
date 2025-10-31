@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { LoginService, LoginResponse } from '../../services/login.service';
 import { DataService } from '../../services/data.service';
 import { AppConfigService } from '../../services/config.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ export class LoginComponent {
     private loginService: LoginService,
     private router: Router,
     private dataService: DataService,
+    private authService:AuthService,
     private configService: AppConfigService
   ) {}
 
@@ -36,9 +38,10 @@ export class LoginComponent {
     }
     this.loginService.login(this.username, this.password).subscribe({
       next: (res: LoginResponse) => {
-        this.dataService.setLoginUser(res);
         this.configService.getConfigs().subscribe(config => {
           this.dataService.setConfig(config);
+          this.dataService.setLoginUser(res.user as any)
+          this.authService.setToken(res.token);
         });
         this.error = '';
       },

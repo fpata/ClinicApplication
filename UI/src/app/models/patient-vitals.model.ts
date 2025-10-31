@@ -1,9 +1,17 @@
+import { DataService } from "../services/data.service";
+import { UtilityService } from "../services/utility.service";
 import { BaseEntity } from "./base.model";
 
   export class PatientVitals extends BaseEntity {
+
+    constructor(private util:UtilityService, private dataService:DataService) { 
+      super();
+      this.RecordedDate = this.util.formatDate(new Date());
+      this.RecordedBy = this.dataService.getLoginUser().user.ID || 0;
+    }
     UserID: number;
     PatientID: number;
-    RecordedDate: Date = new Date();
+    RecordedDate: String;
     BloodPressureSystolic?: number;
     BloodPressureDiastolic?: number;
     HeartRate?: number;

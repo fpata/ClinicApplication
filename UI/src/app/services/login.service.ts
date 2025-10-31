@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
 import { UserType } from '../models/user.model';
+import { DataService } from './data.service';
 
 export interface LoginResponse {
   token: string;
@@ -26,7 +27,7 @@ export class LoginService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService, private dataService: DataService
   ) {}
 
   login(UserName: string, Password: string): Observable<LoginResponse> {

@@ -10,12 +10,13 @@ import { PatientTreatment } from '../models/patient-treatment.model';
 import { PatientAppointment } from '../models/patient-appointment.model';
 import { PatientReport } from '../models/patient-report.model';
 import { PatientVitals } from '../models/patient-vitals.model';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class PatientService {
   private readonly apiUrl = `${environment.API_BASE_URL}/patient`;
 
-  constructor(private http: HttpClient, private dataService: DataService, private util: UtilityService) {}
+  constructor(private http: HttpClient, private dataService: DataService, private util: UtilityService, private authService:AuthService) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -49,18 +50,19 @@ export class PatientService {
    AddNewPatient() {
    
     var patient: Patient = new Patient();
-    patient.UserID = this.dataService.getUser()?.ID || 0;
+    patient.UserID = this.authService.getUser()?.ID || 0;
     
     patient.ID = 0; // New patient, so ID is 0
-    patient.CreatedBy = this.dataService.getLoginUser()?.user?.ID || 0;
-    patient.ModifiedBy = this.dataService.getLoginUser()?.user?.ID || 0;
+    patient.CreatedBy = this.authService.getUser()?.ID || 0;
+    patient.ModifiedBy = this.dataService.getUser()?.ID || 0;
     patient.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     patient.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     patient.IsActive = 1;
     patient.UserID = this.dataService.getUser()?.ID || 0;
-    patient.PatientVitals = new Array<PatientVitals>(new PatientVitals());
+    patient.PatientVitals = new Array<PatientVitals>(new PatientVitals(this.util, this.dataService));
     patient.PatientVitals[0].PatientID = patient.ID;
     patient.PatientVitals[0].UserID = patient.UserID;
+    patient.PatientVitals[0].RecordedBy = this.dataService.getLoginUser()?.user?.ID || 0;
     patient.PatientAppointments = new Array<PatientAppointment>(new PatientAppointment());
     patient.PatientAppointments[0].PatientID = patient.ID;
     patient.PatientAppointments[0].UserID = patient.UserID;
