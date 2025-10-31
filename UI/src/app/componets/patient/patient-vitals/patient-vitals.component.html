@@ -3,6 +3,14 @@
     <br />
     <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
         <div class="row">
+            <div class="col-10">
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn btn-primary" (click)="AddPatientVitals()">Add Vitals</button>
+            </div>
+        </div>
+        <br />
+        <div class="row">
             <div class="col-2">
                 <label for="txtBloodPressureSystolic" class="form-label">Blood Pressure Systolic:</label>
             </div>
@@ -115,46 +123,48 @@
     <br />
     <br />
     <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-    <div class="row">
-        <div class="col-12">
-            <table class="table table-striped table-responsive">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Blood Pressure Systolic</th>
-                        <th>Blood Pressure Diastolic</th>
-                        <th>Heart Rate</th>
-                        <th>Temperature</th>
-                        <th>Weight</th>
-                        <th>Height</th>
-                        <th>Oxygen Saturation</th>
-                        <th>Respiratory Rate</th>
-                        <th>Blood Type</th>
-                        <th>Notes</th>
-                        <th>Recorded Date</th>
-                        <th>Recorded By</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for(vital of vitalsArray; track $index) {
-                    <tr>
-                        <td><a (click)="SetValuesForVitalID(vital?.ID)" style="cursor: pointer;">{{vital?.ID}}</a></td>
-                        <td>{{vital?.BloodPressureSystolic}}</td>
-                        <td>{{vital?.BloodPressureDiastolic}}</td>
-                        <td>{{vital?.HeartRate}}</td>
-                        <td>{{vital?.Temperature}}</td>
-                        <td>{{vital?.Weight}}</td>
-                        <td>{{vital?.Height}}</td>
-                        <td>{{vital?.OxygenSaturation}}</td>
-                        <td>{{vital?.RespiratoryRate}}</td>
-                        <td>{{vital?.BloodType}}</td>
-                        <td>{{vital?.Notes}}</td>
-                        <td>{{vital?.RecordedDate}}</td>
-                        <td>{{vital?.RecordedBy}}</td>
-                    </tr>
-                }
-            </table>
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped table-responsive">
+                    <thead>
+                        <tr>                            
+                            <th>Id</th>
+                            <th>Blood Pressure Systolic</th>
+                            <th>Blood Pressure Diastolic</th>
+                            <th>Heart Rate</th>
+                            <th>Temperature</th>
+                            <th>Weight</th>
+                            <th>Height</th>
+                            <th>Oxygen Saturation</th>
+                            <th>Respiratory Rate</th>
+                            <th>Blood Type</th>
+                            <th>Notes</th>
+                            <th>Recorded Date</th>
+                            <th>Recorded By</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(vital of vitalsArray; track $index) {
+                        <tr>
+                            <td><a (click)="SetValuesForVitalID(vital?.ID)" style="cursor: pointer; color: blue;">{{vital?.ID}}</a>
+                            </td>
+                            <td>{{vital?.BloodPressureSystolic}}</td>
+                            <td>{{vital?.BloodPressureDiastolic}}</td>
+                            <td>{{vital?.HeartRate}}</td>
+                            <td>{{vital?.Temperature}}</td>
+                            <td>{{vital?.Weight}}</td>
+                            <td>{{vital?.Height}}</td>
+                            <td>{{vital?.OxygenSaturation}}</td>
+                            <td>{{vital?.RespiratoryRate}}</td>
+                            <td>{{vital?.BloodType}}</td>
+                            <td>{{vital?.Notes}}</td>
+                            <td>{{vital?.RecordedDate}}</td>
+                            <td>{{vital?.RecordedBy}}</td>
+                        </tr>
+                        }
+                </table>
+            </div>
         </div>
-    </div>
     </div>
 </div>

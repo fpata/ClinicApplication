@@ -1,0 +1,41 @@
+.search-container {
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.results-container {
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1rem;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.patient-link {
+  color: #0d6efd;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.patient-link:hover {
+  color: #0a58ca;
+}
+
+.table th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.form-label {
+  font-weight: normal;
+  margin-bottom: 0;
+}

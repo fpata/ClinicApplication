@@ -1,18 +1,34 @@
 <form class="was-validated">
-  <div class="conatiner-fluid">
-    <!--Visible on medium and large screens only-->
-    <div class="d-none d-md-block d-lg-block">
-      <ul class="nav nav-tabs nav-justified flex-column flex-sm-row" id="tbpatient" role="tablist">
+  <div class="container-fluid">
+    <!-- Desktop Navigation -->
+    <div class="d-none d-md-block">
+      <ul class="nav nav-tabs nav-fill mb-3" id="tbpatient" role="tablist">
+        @if(showSearchTab) {
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tbPatientSearch-tab" data-bs-toggle="tab"
-            data-bs-target="#tbPatientSearch" type="button" role="tab" aria-controls="tbPatientSearch"
-            aria-selected="true" (click)="tabSelectedEvent($event)">Search</button>
+          <button class="nav-link rounded-0 px-4 py-3" 
+                  [class.active]="selectedTab === 'tbPatientSearch'"
+                  id="tbPatientSearch-tab" 
+                  data-bs-toggle="tab"
+                  data-bs-target="#tbPatientSearch" 
+                  type="button" 
+                  role="tab"
+                  (click)="tabSelectedEvent($event)">
+            <i class="bi bi-search me-2"></i>Search
+          </button>
         </li>
-        @if(this.showTabs) {
+        }
+        @if(showTabs) {
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tbPatientVitals-tab" data-bs-toggle="tab" data-bs-target="#tbPatientVitals"
-            type="button" role="tab" aria-controls="tbPatientVitals" aria-selected="false"
-            (click)="tabSelectedEvent($event)">Patient Vitals</button>
+          <button class="nav-link rounded-0 px-4 py-3" 
+                  [class.active]="selectedTab === 'tbPatientVitals'"
+                  id="tbPatientVitals-tab" 
+                  data-bs-toggle="tab" 
+                  data-bs-target="#tbPatientVitals"
+                  type="button" 
+                  role="tab" 
+                  (click)="tabSelectedEvent($event)">
+            <i class="bi bi-heart-pulse me-2"></i>Patient Vitals
+          </button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tbPatientHistory-tab" data-bs-toggle="tab" data-bs-target="#tbPatientHistory"
@@ -41,7 +57,7 @@
             (click)="tabSelectedEvent($event)">Previous Treatments</button>
         </li>
         }
-        @if(this.showQuickCreateTab) {
+        @if(showQuickCreate) {
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tbQuickCreate-tab" data-bs-toggle="tab" data-bs-target="#tbQuickCreate"
             type="button" role="tab" aria-controls="tbQuickCreate" aria-selected="false"
@@ -50,21 +66,26 @@
         }
       </ul>
     </div>
-    <!--Visible on Small screens only-->
-    <div class="d-xs-block d-sm-block d-md-none d-lg-none">
-      <ul class="nav nav-tabs nav-justified flex-column flex-sm-row" id="tbpatient" role="tablist">
-        <li class="nav-item dropdown" role="presentation">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-            aria-expanded="false">Patient</a>
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" id="tbPatientSearch-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientSearch"
-                aria-controls="tbPatientSearch" aria-selected="true">Search</a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="tbPatientVitals-tab1" data-bs-toggle="tab" data-bs-target="#tbPatientVitals"
-                aria-controls="tbPatientVitals" aria-selected="true">Vitals</a>
-            </li>
+
+    <!-- Mobile Navigation -->
+    <div class="d-md-none mb-3">
+      <div class="dropdown w-100">
+        <button class="btn btn-secondary dropdown-toggle w-100 py-2" 
+                type="button" 
+                data-bs-toggle="dropdown" 
+                aria-expanded="false">
+          Patient Menu
+        </button>
+        <ul class="dropdown-menu w-100">
+          @if(showSearchTab) {
+            <li><button class="dropdown-item py-2" 
+                        [class.active]="selectedTab === 'tbPatientSearch'"
+                        (click)="tabSelectedEvent($event)">Search</button></li>
+          }
+          @if(showTabs) {
+            <li><button class="dropdown-item py-2" 
+                        [class.active]="selectedTab === 'tbPatientVitals'"
+                        (click)="tabSelectedEvent($event)">Patient Vitals</button></li>
             <li>
               <a class="nav-link" id="tbPreviousInfo-tab1" data-bs-toggle="tab" data-bs-target="#tbPreviousInfo"
                 aria-controls="tbPreviousInfo" aria-selected="false">Paient Previous Treatments</a>
@@ -95,23 +116,27 @@
               <a class="dropdown-item" id="tbPreviousInfo-tab1" data-bs-toggle="tab" data-bs-target="#tbPreviousInfo"
                 aria-controls="tbPreviousInfo" aria-selected="false">Previous Treatments</a>
             </li>
-          </ul>
-        </li>
-      </ul>
+          }
+        </ul>
+      </div>
     </div>
 
-    <div class="tab-content" id="nav-tabContentPatientInfo">
-      <div class="tab-pane fade show active" id="tbPatientSearch" role="tabpanel" aria-labelledby="tbPatientSearch-tab">
+    <!-- Tab Content -->
+    <div class="tab-content shadow-sm rounded bg-white p-3" id="nav-tabContentPatientInfo">
+      @if(showSearchTab) {
+      <div class="tab-pane fade" 
+           [class.show]="selectedTab === 'tbPatientSearch'"
+           [class.active]="selectedTab === 'tbPatientSearch'"
+           id="tbPatientSearch" 
+           role="tabpanel">
         <app-patient-search></app-patient-search>
       </div>
-      <div class="tab-pane fade" id="tbPatientVitals" role="tabpanel" aria-labelledby="tbPatientVitals-tab">
+      }
+      @if(showTabs) {
+      <div class="tab-pane fade" [class.show]="selectedTab === 'tbPatientVitals'"
+        [class.active]="selectedTab === 'tbPatientVitals'"
+        id="tbPatientVitals" role="tabpanel">
         <app-patient-vitals></app-patient-vitals>
-      </div>
-      <div class="tab-pane fade" id="tbQuickCreate" role="tabpanel" aria-labelledby="tbQuickCreate-tab">
-        <app-patient-quick-create></app-patient-quick-create>
-      </div>
-      <div class="tab-pane fade" id="tbPreviousInfo" role="tabpanel" aria-labelledby="tbPreviousInfo-tab">
-        <app-patientcompletehistory></app-patientcompletehistory>
       </div>
       <div class="tab-pane fade" id="tbPatientHistory" role="tabpanel" aria-labelledby="tbPatientHistory-tab">
         <app-patient-history></app-patient-history>
@@ -128,38 +153,53 @@
       <div class="tab-pane fade" id="tbPatientReport" role="tabpanel" aria-labelledby="tbPatientReport-tab">
         <app-patient-report></app-patient-report>
       </div>
+      <div class="tab-pane fade" id="tbPreviousInfo" role="tabpanel" aria-labelledby="tbPreviousInfo-tab">
+        <app-patientcompletehistory></app-patientcompletehistory>
+      </div>
+      }
+      @if(showQuickCreate) {
+      <div class="tab-pane fade" id="tbQuickCreate" role="tabpanel" aria-labelledby="tbQuickCreate-tab">
+        <app-patient-quick-create></app-patient-quick-create>
+      </div>
+      }
     </div>
-  </div>
-  <br />
-  <div class="conatiner-fluid">
+
+    <!-- Action Buttons -->
     @if(!isSearchTabSelected) {
-    <div class="row">
-      <div class="col">
-        <button type="button" id="btnPatientSave" class="btn btn-primary" style="width: 25%;"
-          (click)="SavePatientInformation()">Save</button>
+    <div class="row mt-4 g-3">
+      <div class="col-md-3 col-6">
+        <button type="button" 
+                id="btnPatientSave" 
+                class="btn btn-primary w-100"
+                (click)="SavePatientInformation()">
+          <i class="bi bi-save me-2"></i>Save
+        </button>
       </div>
-      <div class="col">
-        <button type="button" id="btnPatientClear" class="btn btn-secondary" style="width: 25%;"
-          (click)="ClearPatientInformation()">Clear</button>
+      <div class="col-md-3 col-6">
+        <button type="button" 
+                id="btnPatientClear" 
+                class="btn btn-outline-secondary w-100"
+                (click)="ClearPatientInformation()">
+          <i class="bi bi-x-circle me-2"></i>Clear
+        </button>
       </div>
-      <div class="col">
-        <button type="button" id="btnPatientDelete" class="btn btn-secondary" style="width: 25%;"
-          (click)="DeletePatientInformation()">Delete</button>
+      <div class="col-md-3 col-6">
+        <button type="button" 
+                id="btnPatientDelete" 
+                class="btn btn-danger w-100"
+                (click)="DeletePatientInformation()">
+          <i class="bi bi-trash me-2"></i>Delete
+        </button>
       </div>
-    </div>
-    }
-    @if(isSearchTabSelected) {
-    <div class="row">
-      <div class="col">
-        <button type="button" id="btnNewPatient" class="btn btn-primary" style="width: 25%;"
-          (click)="AddNewPatient()">Add New Patient</button>
-      </div>
-      <div class="col">
-        <button type="button" id="btnQuickCreatePatient" class="btn btn-secondary" style="width: 25%;"
-          (click)="QuickCreatePatient()">Quick Create Patient</button>
+      <div class="col-md-3 col-6">
+        <button type="button" 
+                id="btnPatientSearch" 
+                class="btn btn-outline-primary w-100"
+                (click)="SearchPatientInformation()">
+          <i class="bi bi-search me-2"></i>Search
+        </button>
       </div>
     </div>
     }
   </div>
 </form>
-<br />

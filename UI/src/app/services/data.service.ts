@@ -18,6 +18,7 @@ export class DataService {
   private loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
   private configSource = new BehaviorSubject<AppConfig | null>(null);
   private userId = new BehaviorSubject<number | null>(null);
+  private IsQuickCreateMode = new BehaviorSubject<boolean>(false);
 
   readonly patient$: Observable<Patient> = this.patientSource.asObservable();
   readonly user$: Observable<User> = this.userSource.asObservable();
@@ -25,6 +26,8 @@ export class DataService {
   readonly loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
   readonly config$: Observable<AppConfig> = this.configSource.asObservable();
   readonly userId$: Observable<number | null> = this.userId.asObservable();
+  readonly IsQuickCreateMode$: Observable<boolean> = this.IsQuickCreateMode.asObservable();
+
 
  setPatient(patient: Patient): void {
         this.patientSource.next(patient);
@@ -71,5 +74,13 @@ export class DataService {
 
   getUserId(): number | null {
     return this.userId.value;
+  }
+
+  setQuickCreateMode(isQuickCreate: boolean): void {
+    this.IsQuickCreateMode.next(isQuickCreate); 
+  }
+
+  getQuickCreateMode(): boolean {
+    return this.IsQuickCreateMode.value;
   }
 }

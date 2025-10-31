@@ -29,11 +29,13 @@ import { Subscription } from 'rxjs';
   providers: [HttpClient]
 })
 export class PatientMasterComponent {
+
   isSearchTabSelected: boolean = true;
   selectedTab: string = 'tbPatientSearch';
   userID: number = 0;
   showTabs: boolean = false;
-  showQuickCreateTab: boolean = false
+  showQuickCreate: boolean = false;
+  showSearchTab: boolean = true;
   private userIdSubscription: Subscription = new Subscription();
 
 
@@ -45,29 +47,24 @@ export class PatientMasterComponent {
   ) { }
 
   tabSelectedEvent(event: MouseEvent) {
-    // Logic to handle tab selection
-    var targetId = (event.currentTarget as Element).id;
+    const targetElement = event.currentTarget as HTMLElement;
+    const targetId = targetElement.id;
+    
+    // Remove -tab suffix to get the base id
+    this.selectedTab = targetId.replace('-tab', '');
+    
     if (targetId.startsWith('tbPatientSearch')) {
       this.isSearchTabSelected = true;
     } else {
       this.isSearchTabSelected = false;
     }
+
     if (targetId.startsWith('tbPreviousInfo')) {
-      this.userID = this.dataService.getUser()?.ID;
-      if (this.userID >= 0 && this.patientCompleteHistoryComponent) {
+      this.userID = this.dataService.getUser()?.ID ?? 0;
+      if (this.userID > 0 && this.patientCompleteHistoryComponent) {
         this.patientCompleteHistoryComponent.GetAllTreatmentsForUser(this.userID);
       }
     }
-    if (targetId.startsWith('tbQuickCreate')) {
-      this.userID = this.dataService.getUser()?.ID;
-      if (this.userID == undefined || this.userID == 0) {
-        document.getElementById('tbPatientSearch-tab')?.click();
-        return true; // Prevent default action if needed
-      }
-    }
-    console.log('Selected Tab:', targetId);
-    this.selectedTab = targetId;
-    return true;
   }
 
   ClearPatientInformation() {
@@ -174,27 +171,60 @@ export class PatientMasterComponent {
         console.error('Error subscribing to userId changes:', error);
       }
     });
-    this.ShowHideTabs();
+    this.dataService.IsQuickCreateMode$.subscribe({
+      next: (isQuickCreate) => {
+        this.showQuickCreate = isQuickCreate;
+        if (this.showQuickCreate) {
+          this.showTabs = false;
+          document.getElementById('tbQuickCreate-tab')?.click();
+        }
+        this.ShowHideTabs();
+      },
+      error: (error) => {
+        console.error('Error subscribing to IsQuickCreateMode changes:', error);
+      }
+    });
   }
 
   private ShowHideTabs() {
     // Logic to show/hide tabs based on certain conditions
     if (this.userID !== 0) {
-      if (this.showQuickCreateTab) {
+      if (this.showQuickCreate) {
         this.showTabs = false;
+        this.showSearchTab = false;
+        this.selectedTab = 'tbQuickCreate';
+        this.isSearchTabSelected = false;
       } else {
         this.showTabs = true;
+        this.showSearchTab = false;
+        this.showQuickCreate = false;
+        this.isSearchTabSelected = false;
+        this.selectedTab = 'tbPatientVitals';
       }
     } else {
       this.showTabs = false;
+      this.showSearchTab = true;
+      this.showQuickCreate = false;
+      this.selectedTab = 'tbPatientSearch';
+      this.isSearchTabSelected = true;
     }
   }
 
   QuickCreatePatient() {
-    this.showQuickCreateTab = true;
+    this.showQuickCreate = true;
     this.ShowHideTabs();
-    document.getElementById('tbQuickCreate-tab')?.click();
     this.AddNewPatient();
-
   }
+  SearchPatientInformation() {
+    // Update state variables
+    this.showQuickCreate = false;
+    this.showTabs = false;
+    this.showSearchTab = true;
+    this.selectedTab = 'tbPatientSearch';
+    this.isSearchTabSelected = true;
+    
+    // Clear any existing patient data
+    this.ClearPatientInformation();
+  }
+
 }

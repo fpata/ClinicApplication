@@ -15,6 +15,7 @@ import { MessageService } from '../../../services/message.service';
 export class PatientVitalsComponent {
 
 
+
   vitals: PatientVitals | null = null;
   vitalsArray: PatientVitals[] | null = null;
   patient: Patient | null = null;
@@ -31,7 +32,7 @@ export class PatientVitalsComponent {
         if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {
           this.vitalsArray = this.patient?.PatientVitals;
           if (this.vitalsArray && this.vitalsArray.length > 0) {
-          this.vitals = this.vitalsArray[this.vitalsArray.length - 1];
+            this.vitals = this.vitalsArray[this.vitalsArray.length - 1];
           } else {
             this.vitals = new PatientVitals();
             this.vitals.PatientID = this.patient?.ID || 0;
@@ -46,7 +47,7 @@ export class PatientVitalsComponent {
             this.dataService.setPatient(this.patient);
           }
         }
-       // console.log('Patient updated in PatientVitalsComponent:', this.vitals);
+        // console.log('Patient updated in PatientVitalsComponent:', this.vitals);
       },
       error: (error: any) => {
         this.messageService.error('Error subscribing to patient changes:', error);
@@ -67,6 +68,17 @@ export class PatientVitalsComponent {
       if (selectedVital) {
         this.vitals = { ...selectedVital };
       }
+    }
+  }
+
+  AddPatientVitals() {
+    this.vitals = new PatientVitals();
+    if (this.patient) {
+      this.vitals.PatientID = this.patient.ID || 0;
+      this.vitals.UserID = this.patient.UserID || 0;
+      this.vitalsArray.push(this.vitals);
+      this.patient.PatientVitals = this.vitalsArray;
+      this.dataService.setPatient(this.patient);
     }
   }
 }
