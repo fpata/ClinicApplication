@@ -1,4 +1,4 @@
-<div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+<div class="rounded p-md-5" style="border:0.5px solid lightblue;">
   <!-- Search Form Section -->
   <div class="search-container rounded p-4">
     <!-- Search Fields -->
@@ -105,7 +105,7 @@
 <br />
   <!-- Results Table -->
 
-<div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+<div class="rounded p-md-5" style="border:0.5px solid lightblue;">
       <div class="row">
         <div class="col-12" style="background-color: cornflowerblue;color: white">
           <label class="align-center">Search Results: {{searchResult?.TotalCount}} record(s) found</label>
@@ -126,33 +126,33 @@
               <th>City</th>
               <th>Email</th>
               <th>Phone</th>
-              <th>User ID</th>
-              <th>Patient ID</th>
+              <th style="display: none;">User ID</th>
+              <th style="display: none;">Patient ID</th>
             </tr>
           </thead>
           <tbody>
             @for (result of searchResult.Results; track $index){
             <tr>
               <td class="text-center">
-                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Add New Patient"
-                  (click)="AddNewPatient(result)">
+                <button type="button" class="btn btn-light btn-lg" data-bs-toggle="tooltip" title="Add New Patient"
+                  (click)="AddNewPatient(result,false)">
                   <i class="bi bi-person-fill-add"></i>
                 </button>
               </td>
               <td class="text-center">
-                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Update Patient"
+                <button type="button" class="btn btn-light btn-lg" data-bs-toggle="tooltip" title="Update Patient"
                   (click)="UpdatePatient(result)">
                   <i class="bi bi-person-fill-gear"></i>
                 </button>
               </td>
               <td class="text-center">
-                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Quick Create Patient"
-                  (click)="QuickCreatePatient(result)">
+                <button type="button" class="btn btn-light btn-lg" data-bs-toggle="tooltip" title="Quick Create Patient"
+                  (click)="AddNewPatient(result,true)">
                   <i class="bi bi-person-fill-check"></i>
                 </button>
               </td>
               <td class="text-center">
-                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Delete Patient"
+                <button type="button" class="btn btn-light btn-lg" data-bs-toggle="tooltip" title="Delete Patient"
                   (click)="DeletePatient(result)">
                   <i class="bi bi-person-fill-x"></i>
                 </button>
@@ -162,10 +162,8 @@
               <td>{{result.PermCity}}</td>
               <td>{{result.PrimaryEmail}}</td>
               <td>{{result.PrimaryPhone}}</td>
-              <td>{{(result.UserID === null? 0 : result.UserID)}}</td>
-              <td>
-                {{(result.PatientID === null? 0 : result.PatientID)}}
-              </td>
+              <td style="display: none;">{{(result.UserID === null? 0 : result.UserID)}}</td>
+              <td style="display: none;">{{(result.PatientID === null? 0 : result.PatientID)}}</td>
             </tr>
             }
             @if (searchResult === undefined || searchResult.Results.length == 0) {
@@ -188,23 +186,22 @@
             <tr>
               <td>
                 <div class="d-flex justify-content-between align-items-center mb-3 p-2 border rounded">
-                  <div>
+                  <div style="display: block;">
                     <strong>{{result.FirstName}} {{result.LastName}}</strong><br>
                     <small class="text-muted">City: {{result.PermCity}} | Email: {{result.PrimaryEmail}} | Phone:
-                      {{result.PrimaryPhone}} | User ID: {{(result.UserID === null? 0 : result.UserID)}} | Patient ID:
-                      {{(result.PatientID === null? 0 : result.PatientID)}}</small>
+                      {{result.PrimaryPhone}}</small>
                   </div>
-                  <div class="btn-group" role="group" aria-label="Patient Actions">
+                  <div class="btn-group" role="group" aria-label="Patient Actions" style="display: block;">
                     <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Add New Patient"
-                      (click)="AddNewPatient(result)">
-                      <i class="bi bi-person-fill-add"></i>
+                      (click)="AddNewPatient(result,false)">
+                      <i class="bi bi-person-fill-add" alt="Add"></i>
                     </button>
                     <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Update Patient"
                       (click)="UpdatePatient(result)">
                       <i class="bi bi-person-fill-gear"></i>
                     </button>
                     <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip"
-                      title="Quick Create Patient" (click)="QuickCreatePatient(result)">
+                      title="Quick Create Patient" (click)="AddNewPatient(result,true)">
                       <i class="bi bi-person-fill-check"></i>
                     </button>
                     <button type="button" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Delete Patient"

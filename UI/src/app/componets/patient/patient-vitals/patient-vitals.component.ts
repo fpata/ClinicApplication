@@ -15,12 +15,10 @@ import { AuthService } from '../../../services/auth.service';
   styleUrls: ['./patient-vitals.component.css']
 })
 export class PatientVitalsComponent {
-
-
-
   vitals: PatientVitals | null = null;
   vitalsArray: PatientVitals[] | null = null;
   patient: Patient | null = null;
+
   private patientSubscription: Subscription = new Subscription();
 
   constructor(private dataService: DataService, private messageService: MessageService,

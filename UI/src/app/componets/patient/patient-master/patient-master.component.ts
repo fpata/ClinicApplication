@@ -17,6 +17,7 @@ import { HttpClient } from '@angular/common/http';
 import { MessageService } from '../../../services/message.service';
 import { PatientVitalsComponent } from '../patient-vitals/patient-vitals.component';
 import { Subscription } from 'rxjs';
+import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-patient-master',
@@ -29,15 +30,11 @@ import { Subscription } from 'rxjs';
   providers: [HttpClient]
 })
 export class PatientMasterComponent {
-
-  isSearchTabSelected: boolean = true;
-  selectedTab: string = 'tbPatientSearch';
-  userID: number = 0;
+  selectedTab: string = 'Search';
   showTabs: boolean = false;
   showQuickCreate: boolean = false;
-  showSearchTab: boolean = true;
-  private userIdSubscription: Subscription = new Subscription();
-
+  user:User|null = null; 
+  private subscriptions :Subscription[] = [];
 
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
   @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
@@ -48,30 +45,21 @@ export class PatientMasterComponent {
 
   tabSelectedEvent(event: MouseEvent) {
     const targetElement = event.currentTarget as HTMLElement;
-    const targetId = targetElement.id;
-    
     // Remove -tab suffix to get the base id
-    this.selectedTab = targetId.replace('-tab', '');
-    
-    if (targetId.startsWith('tbPatientSearch')) {
-      this.isSearchTabSelected = true;
-    } else {
-      this.isSearchTabSelected = false;
-    }
-
-    if (targetId.startsWith('tbPreviousInfo')) {
-      this.userID = this.dataService.getUser()?.ID ?? 0;
-      if (this.userID > 0 && this.patientCompleteHistoryComponent) {
-        this.patientCompleteHistoryComponent.GetAllTreatmentsForUser(this.userID);
+    if (targetElement.innerText.startsWith('Previous')) {
+      this.user.ID = this.dataService.getUser()?.ID ?? 0;
+      if (this.user.ID > 0 && this.patientCompleteHistoryComponent) {
+        this.patientCompleteHistoryComponent.GetAllTreatmentsForUser(this.user.ID);
       }
     }
+    this.selectedTab = targetElement.innerText;
+     console.log("Selected Tab = " + this.selectedTab)
   }
 
   ClearPatientInformation() {
     this.dataService.setPatient(null);
     this.dataService.setUser(null);
-    this.patientCompleteHistoryComponent.patientTreatments = [];
-    this.userID = 0;
+   // this.patientCompleteHistoryComponent?.patientTreatments = []|null;
   }
 
   DeletePatientInformation() {
@@ -112,7 +100,7 @@ export class PatientMasterComponent {
 
   SavePatientInformation() {
     var currentPatient = this.dataService.getPatient();
-    if (this.selectedTab.startsWith('tbQuickCreate')) {
+    if (this.selectedTab.startsWith('Quick')) {
       currentPatient = this.quickCreateComponent.patient;
       currentPatient.UserID = this.dataService.getUser()?.ID || 0;
       currentPatient.PatientTreatment.UserID = this.dataService.getUser()?.ID || 0;
@@ -162,51 +150,41 @@ export class PatientMasterComponent {
   }
 
   ngOnInit() {
-    this.userIdSubscription = this.dataService.userId$.subscribe({
-      next: (id: number | null) => {
-        this.userID = id || 0;
-        this.ShowHideTabs();
-      },
-      error: (error) => {
-        console.error('Error subscribing to userId changes:', error);
-      }
-    });
-    this.dataService.IsQuickCreateMode$.subscribe({
+   this.subscriptions.push(this.dataService.IsQuickCreateMode$.subscribe({
       next: (isQuickCreate) => {
         this.showQuickCreate = isQuickCreate;
-        if (this.showQuickCreate) {
-          this.showTabs = false;
-          document.getElementById('tbQuickCreate-tab')?.click();
-        }
         this.ShowHideTabs();
       },
       error: (error) => {
         console.error('Error subscribing to IsQuickCreateMode changes:', error);
       }
-    });
+    }));
+      this.subscriptions.push(this.dataService.user$.subscribe({
+      next: (newUser) => {
+        this.user = newUser;
+        this.ShowHideTabs();
+      },
+      error: (error) => {
+        console.error('Error subscribing to IsQuickCreateMode changes:', error);
+      }
+    }));
   }
 
+
   private ShowHideTabs() {
-    // Logic to show/hide tabs based on certain conditions
-    if (this.userID !== 0) {
+    if (this.user) {
       if (this.showQuickCreate) {
         this.showTabs = false;
-        this.showSearchTab = false;
-        this.selectedTab = 'tbQuickCreate';
-        this.isSearchTabSelected = false;
+        this.selectedTab = 'Quick Create';
       } else {
         this.showTabs = true;
-        this.showSearchTab = false;
         this.showQuickCreate = false;
-        this.isSearchTabSelected = false;
-        this.selectedTab = 'tbPatientVitals';
+        this.selectedTab = 'Patient Vitals';
       }
     } else {
       this.showTabs = false;
-      this.showSearchTab = true;
       this.showQuickCreate = false;
-      this.selectedTab = 'tbPatientSearch';
-      this.isSearchTabSelected = true;
+      this.selectedTab = 'Search';
     }
   }
 
@@ -215,16 +193,19 @@ export class PatientMasterComponent {
     this.ShowHideTabs();
     this.AddNewPatient();
   }
+  
   SearchPatientInformation() {
     // Update state variables
     this.showQuickCreate = false;
     this.showTabs = false;
-    this.showSearchTab = true;
-    this.selectedTab = 'tbPatientSearch';
-    this.isSearchTabSelected = true;
-    
+    this.selectedTab = 'Search';
+   
     // Clear any existing patient data
     this.ClearPatientInformation();
   }
 
+  ngOnDestroy() {
+    // Clean up all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
 }

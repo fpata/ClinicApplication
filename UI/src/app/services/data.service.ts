@@ -7,6 +7,8 @@ import { LoginResponse } from './login.service';
 import { Contact } from '../models/contact.model';
 import { Address } from '../models/address.model';
 import { AppConfig } from '../models/appconfig.model';
+import { AuthService } from './auth.service';
+import { Token } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -28,10 +30,11 @@ export class DataService {
   readonly userId$: Observable<number | null> = this.userId.asObservable();
   readonly IsQuickCreateMode$: Observable<boolean> = this.IsQuickCreateMode.asObservable();
 
-  
+  private tokenKey = 'token';
+  private userKey = 'user';
 
- setPatient(patient: Patient): void {
-        this.patientSource.next(patient);
+  setPatient(patient: Patient): void {
+    this.patientSource.next(patient);
   }
 
   getPatient(): Patient | null {
@@ -55,6 +58,12 @@ export class DataService {
   }
 
   getLoginUser(): LoginResponse {
+    if (this.loginUserSource.value === null) {
+      var response = new LoginResponse();
+      response.token = localStorage.getItem(this.tokenKey);
+      response.user = JSON.parse(localStorage.getItem(this.userKey));
+      this.setLoginUser(response);
+    }
     return this.loginUserSource.value;
   }
 
@@ -70,7 +79,7 @@ export class DataService {
   }
 
   setUserId(id: number | null): void {
-    this.userId.next(id); 
+    this.userId.next(id);
   }
 
   getUserId(): number | null {
@@ -78,7 +87,7 @@ export class DataService {
   }
 
   setQuickCreateMode(isQuickCreate: boolean): void {
-    this.IsQuickCreateMode.next(isQuickCreate); 
+    this.IsQuickCreateMode.next(isQuickCreate);
   }
 
   getQuickCreateMode(): boolean {

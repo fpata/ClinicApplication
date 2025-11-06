@@ -7,7 +7,7 @@ import { BaseEntity } from "./base.model";
     constructor(private util:UtilityService, private dataService:DataService) { 
       super();
       this.RecordedDate = this.util.formatDate(new Date());
-      this.RecordedBy = this.dataService.getLoginUser().user.ID || 0;
+      this.RecordedBy = this.dataService.getLoginUser()?.user?.ID || 0;
     }
     UserID: number;
     PatientID: number;

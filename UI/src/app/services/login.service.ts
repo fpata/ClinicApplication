@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 import { UserType } from '../models/user.model';
 import { DataService } from './data.service';
 
-export interface LoginResponse {
+export class LoginResponse {
   token: string;
   user: {
     ID: number;

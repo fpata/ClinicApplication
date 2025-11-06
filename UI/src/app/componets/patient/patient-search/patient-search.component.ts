@@ -138,41 +138,41 @@ export class PatientSearchComponent {
     }
   }
 
-  QuickCreatePatient(result: SearchModel) {
-    this.dataService.setQuickCreateMode(true);
-    this.AddNewPatient(result);
-  }
+
 
   UpdatePatient(result: SearchModel) {
     if (result.PatientID && result.PatientID > 0) {
       this.patientService.getCompletePatient(result.PatientID).subscribe({
-        next: (user) => {
+        next: (newUser:User) => {
           // Handle the patient data as needed
           // console.log('User data:', user);
-          this.dataService.setUser(user);
-          this.dataService.setUserId(user.ID);
-          this.dataService.setPatient(user?.Patients[0] || null);
+          this.dataService.setUser(newUser);
+          this.dataService.setUserId(newUser.ID);
+          let index =  newUser?.Patients?.length ===0 ? 0: newUser?.Patients.length -1;
+          this.dataService.setPatient(newUser?.Patients[index] || null);
         },
         error: (err) => {
           console.error('Error fetching patient data:', err);
         }
       });
     } else {
-      this.AddNewPatient(result);
+      this.AddNewPatient(result,false);
     }
   }
 
-  AddNewPatient(result: SearchModel) {
+  AddNewPatient(result: SearchModel, isQuickCreateMode:boolean) {
     this.userService.getUser(result.UserID).subscribe({
       next: (user: User) => {
         this.dataService.setUser(user);
         this.dataService.setUserId(user.ID);
+        this.dataService.setQuickCreateMode(isQuickCreateMode);
       },
       error: (err: Error) => {
         console.error('Error fetching user data:', err);
       }
     });
     this.patientService.AddNewPatient();
+
   }
 
      onPageChanged($event: number) {

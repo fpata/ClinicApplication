@@ -32,9 +32,9 @@
                 <td>{{appointment.TreatmentName}}</td>
                 <td>
                   <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal"
-                    (click)="EditAppointment(appointment.ID)">&nbsp;Edit</button>
+                    (click)="EditAppointment(appointment.ID)" role="button" type="button">&nbsp;Edit</button>
                   &nbsp;&nbsp;<button class="btn btn-secondary"
-                    (click)="DeleteAppointment(appointment.ID)">&nbsp;Delete</button>
+                    (click)="DeleteAppointment(appointment.ID)" role="button" type="button">&nbsp;Delete</button>
                 </td>
               </tr>
               }
