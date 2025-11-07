@@ -24,6 +24,9 @@ export class PatientAppointment extends BaseEntity {
   CancellationReason?: string;
 
   ReminderSentDate?: Date;
+
+  StartTime?: string;
+  EndTime?:string;
 }
 
 export class AppointmentSearchResponse 

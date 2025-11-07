@@ -34,6 +34,7 @@ export class PatientTreatmentComponent {
         this.patient = newPatient;
         if (newPatient && newPatient.PatientTreatment) {
           this.treatment = newPatient.PatientTreatment;
+          this.newTreatmentDetail = null;
         }
 
         //console.log('Patient updated:', this.patient);
@@ -55,7 +56,8 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail = new PatientTreatmentDetail();
     const ids = this.treatment?.PatientTreatmentDetails?.map(x => x.ID) || [];
     if (ids.length > 0) {
-      this.newTreatmentDetail.ID = Math.min(...ids) - 1;
+      let minVal = Math.min(...ids) - 1 > 0 ? 0 :Math.min(...ids) - 1
+      this.newTreatmentDetail.ID = minVal;
     }
     else {
       this.newTreatmentDetail.ID = 0;
@@ -105,7 +107,7 @@ export class PatientTreatmentComponent {
       if (this.newTreatmentDetail.ID < 1 && this.isEditOperation === false) {
         // Add new treatment detail
         if (this.treatment.PatientTreatmentDetails === undefined || this.treatment.PatientTreatmentDetails === null) {
-          this.treatment.PatientTreatmentDetails = [];
+          this.treatment.PatientTreatmentDetails = new Array<PatientTreatmentDetail>();
         }
         this.treatment.PatientTreatmentDetails.push({ ...this.newTreatmentDetail });
       } else {

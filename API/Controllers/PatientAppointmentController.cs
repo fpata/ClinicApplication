@@ -294,7 +294,7 @@ namespace ClinicManager.Controllers
         public int TotalCount { get; set; }
         public bool HasMoreRecords { get; set; }
         public string? Message { get; set; }
-        public IEnumerable<PatientAppointment> PatientAppointments { get; set; }
+        public IEnumerable<PatientAppointment>? PatientAppointments { get; set; }
 
     }
 }

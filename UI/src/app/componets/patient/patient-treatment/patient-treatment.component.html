@@ -94,6 +94,7 @@
                 <th>Procedure</th>
                 <th>Advice/Medications</th>
                 <th>Follow Up Instructions</th>
+                <th>Treatment ID</th>
                 <th>ID</th>
               </tr>
             </thead>
@@ -103,9 +104,9 @@
                 <td>
                   <button class="btn btn-primary" type="button" data-bs-toggle="modal"
                     data-bs-target="#addTreatmentModal"
-                    (click)="EditTreatmentDetails(treatmentdetail.ID)">&nbsp;Edit</button>
-                  &nbsp;&nbsp;<button class="btn btn-secondary" type="button"
-                    (click)="DeleteTreatmentDetails(treatmentdetail.ID)">&nbsp;Delete</button>
+                    (click)="EditTreatmentDetails(treatmentdetail.ID)" title="Edit Treatment">&nbsp;    <i class="bi bi-person-fill-gear"></i></button>
+                  &nbsp;&nbsp;<button class="btn btn-secondary" type="button" title="Delete Treatment"
+                    (click)="DeleteTreatmentDetails(treatmentdetail.ID)"> <i class="bi bi-person-fill-x"></i></button>
                 </td>
                 <td>{{treatmentdetail.TreatmentDate}}</td>
                 <td>{{treatmentdetail.Tooth}}</td>
@@ -113,6 +114,7 @@
                 <td>{{treatmentdetail.Prescription}}</td>
                 <td>{{treatmentdetail.FollowUpInstructions}}</td>
                 <td>{{treatmentdetail.PatientTreatmentID}}</td>
+                <td>{{treatmentdetail.ID}}</td>
               </tr>
               }
             </tbody>
@@ -122,33 +124,37 @@
     </div>
 
     <!--Table for Mobile Screens-->
-      <div class="row d-block d-md-none">
-            <div class="table-responsive">
-                <table class="table table-borderless">
-                    <tbody>
-                        @for (treatmentdetail of treatment?.PatientTreatmentDetails;track treatmentdetail.ID){
-                        <tr>
-                            <td>
-                                <div class="d-flex justify-content-between align-items-center mb-3 border rounded">
-                                    <div style="display: block;">
-                                        <div style="display: block;">
-                                            <small>
-                                              Treatment Date : {{treatmentdetail.TreatmentDate}} <br>
-                                               Tooth : {{treatmentdetail.Tooth}} <br> 
-                                               Procedure: {{treatmentdetail.Tooth}} <br>                                             
-                                                Prescription :{{treatmentdetail.Tooth}} <br> 
-                                                Treament Id: {{treatmentdetail.PatientTreatmentID}}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="row d-block d-md-none">
+      <div class="table-responsive">
+        <table class="table table-borderless">
+          <tbody>
+            @for (treatmentdetail of treatment?.PatientTreatmentDetails;track $index){
+            <tr>
+              <td>
+                <div class="d-flex justify-content-between align-items-center mb-3 border rounded">
+                  <div style="display: block;">
+                      Treatment Date : {{treatmentdetail.TreatmentDate}} <br>
+                      Tooth : {{treatmentdetail.Tooth}} <br>
+                      Procedure: {{treatmentdetail.Tooth}} <br>
+                      Prescription :{{treatmentdetail.Tooth}} <br>
+                      Treament Id: {{treatmentdetail.PatientTreatmentID}}<br>
+                      ID : {{treatmentdetail.ID}}
+                  </div>
+                </div>
+              </td>
+               <td class="block">
+                  <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addTreatmentModal"
+                    (click)="EditTreatmentDetails(treatmentdetail.ID)" title="Edit Treatment"> <i class="bi bi-person-fill-gear"></i></button>
+                  <br> <br />
+                  <button class="btn btn-secondary" type="button" title="Delete Treatment"   
+                  (click)="DeleteTreatmentDetails(treatmentdetail.ID)"> <i class="bi bi-person-fill-x"></i></button>
+                </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
   </fieldset>
 </div>
 
