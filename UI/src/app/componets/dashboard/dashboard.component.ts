@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit {
    newAppointment: PatientAppointment | null = null;
    appointments: PatientAppointment[] = [];
    doctors: SearchModel[] | null = null;
-
+   newStartDateString: string = '';
 
    @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
 
@@ -95,23 +95,23 @@ export class DashboardComponent implements OnInit {
    }
 
    SaveAppointment() {
-      const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
-      const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
+    //  const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
+     // const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
 
       // Create a temporary appointment object
       const appointmentToSave = { ...this.newAppointment };
 
-      if (appointmentToSave.StartDateTime && appointmentTime) {
+      if (appointmentToSave.StartDateTime && this.newAppointment.StartTime) {
          appointmentToSave.StartDateTime = this.util.createAppointmentDateTime(
             appointmentToSave.StartDateTime,
-            appointmentTime
+            this.newAppointment.StartTime
          );
       }
 
-      if (appointmentToSave.EndDateTime && appointmentEndTime) {
+      if (appointmentToSave.EndDateTime && this.newAppointment.EndTime) {
          appointmentToSave.EndDateTime = this.util.createAppointmentDateTime(
             appointmentToSave.StartDateTime,
-            appointmentEndTime
+            this.newAppointment.EndTime
          );
       }
 
@@ -177,14 +177,14 @@ export class DashboardComponent implements OnInit {
       this.newAppointment.ModifiedBy = loginUser?.user?.ID || 1;
       this.newAppointment.IsActive = 1;
       this.newAppointment.AppointmentStatus = 'Scheduled';
-
+      this.newStartDateString = now.toISOString().split('T')[0];
       // Format times for display
       const startTime = now.toLocaleTimeString('en-GB').slice(0, 5);
       const endTime = thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5);
+      this.newAppointment.StartTime = startTime;
+      this.newAppointment.EndTime = endTime;
 
-      document.getElementById('txtAppointmentTime')!.setAttribute('value', startTime);
-      document.getElementById('txtAppointmentEndTime')!.setAttribute('value', endTime);
-
+     
       if (loginUser?.user?.UserType === UserType.Doctor) {
          this.newAppointment.DoctorID = loginUser.user?.ID || 0;
          this.newAppointment.DoctorName = loginUser.user?.FirstName + ' ' + loginUser.user?.LastName;
@@ -224,8 +224,7 @@ export class DashboardComponent implements OnInit {
       this.newAppointment!.StartDateTime = $event.startDateTime.toDate();
       this.newAppointment!.EndDateTime = $event.endDateTime.toDate();
       document.getElementById('appointmentDatePicker')!.setAttribute('value', this.util.formatAppointmentDateTime(this.newAppointment!.StartDateTime));
-      document.getElementById('txtAppointmentTime')!.setAttribute('value', this.newAppointment!.StartDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.StartDateTime.getMinutes().toString().padStart(2, '0'));
-      document.getElementById('txtAppointmentEndTime')!.setAttribute('value', this.newAppointment!.EndDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.EndDateTime.getMinutes().toString().padStart(2, '0'));
-
+     // document.getElementById('txtAppointmentTime')!.setAttribute('value', this.newAppointment!.StartDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.StartDateTime.getMinutes().toString().padStart(2, '0'));
+      //document.getElementById('txtAppointmentEndTime')!.setAttribute('value', this.newAppointment!.EndDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.EndDateTime.getMinutes().toString().padStart(2, '0'));
    }
 }

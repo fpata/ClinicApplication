@@ -1,17 +1,20 @@
 import { Component, ViewChild, viewChild } from '@angular/core';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
-import { Subscription } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { DataService } from '../../../services/data.service';
 import { UtilityService } from '../../../services/utility.service';
-import { User } from '../../../models/user.model';
+import { User, UserType } from '../../../models/user.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilotModule, DayPilot } from '@daypilot/daypilot-lite-angular';
 import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
+import { SearchModel } from '../../../models/search.model';
+import { SearchService } from '../../../services/search.service';
+import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
 
 @Component({
   selector: 'app-patient-appointment',
-  imports: [SchedulerComponent, DayPilotModule, FormsModule],
+  imports: [SchedulerComponent, DayPilotModule, FormsModule,TypeaheadComponent],
   templateUrl: './patient-appointment.component.html',
   styleUrls: ['./patient-appointment.component.css']
 })
@@ -23,10 +26,11 @@ export class PatientAppointmentComponent {
   patient: Patient | null = null;
   appointments: PatientAppointment[] | null = [];
   newAppointment: PatientAppointment = new PatientAppointment();
+  newStartDateString: string;
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService, private util: UtilityService) { }
+  constructor(private dataService: DataService, private util: UtilityService, private searchService: SearchService) { }
 
   ngOnInit() {
     // Subscribe to patient changes from the data service
@@ -139,13 +143,10 @@ export class PatientAppointmentComponent {
     this.newAppointment.PatientID = this.patient?.ID || 1;
     this.newAppointment.UserID = user?.ID || 1;
 
-    const start = new Date();
-    const end = new Date(start.getTime() + 30 * 60000);
-
     // Store as local wall time strings
-    this.newAppointment.StartDateTime = this.util.toLocalDateTimeString(start) as any;
-    this.newAppointment.EndDateTime = this.util.toLocalDateTimeString(end) as any;
-
+    this.newAppointment.StartDateTime = new Date();
+    this.newAppointment.EndDateTime = new Date();
+    this.newStartDateString = this.util.formatDate(new Date());
     this.newAppointment.DoctorName = '';
     this.newAppointment.TreatmentName = '';
     this.newAppointment.PatientName = user?.FirstName + ' ' + user?.LastName || 'Unknown Patient';
@@ -155,5 +156,30 @@ export class PatientAppointmentComponent {
     this.newAppointment.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newAppointment.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newAppointment.DoctorID = this.dataService.getLoginUser()?.user?.ID || 1;
+
+     const now = this.util.roundToNearestInterval(new Date());
+     const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
+
+    this.newAppointment.StartTime =  now.toLocaleTimeString('en-GB').slice(0, 5);
+    this.newAppointment.EndTime = thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5);;
+
+   // document.getElementById('txtAppointmentTime')!.setAttribute('value', startTime);
+   // document.getElementById('txtAppointmentEndTime')!.setAttribute('value', endTime);
   }
+
+     getDoctors = (name: string): Observable<SearchModel[]> => {
+        var searchModel: SearchModel = new  SearchModel(this.util);
+        searchModel.UserType = UserType.Doctor;
+        searchModel.FirstName = name;
+        return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+     }
+
+      displayName(d: any): string {
+      if (!d) return 'Unknown Patient';
+      const first = d.FirstName || '';
+      const last = d.LastName || '';
+      const name = (first + ' ' + last).trim();
+      return name.length ? name : 'Unknown Patient';
+   }
+
 }

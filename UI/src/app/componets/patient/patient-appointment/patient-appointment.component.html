@@ -70,8 +70,8 @@
             <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
           </div>
           <div class="col">
-            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
-              [ngModel]="this.newAppointment?.StartDateTime" (ngModelChange)="newAppointment.StartDateTime = $event">
+            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01T00:00:00" max="2025-12-31T00:00:00"
+              [ngModel]="this.newStartDateString" (ngModelChange)="newStartDateString = $event">
           </div>
         </div>
         <br />
@@ -80,7 +80,7 @@
             <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
           </div>
           <div class="col">
-            <input type="time" id="txtAppointmentTime" class="form-control">
+            <input type="time" id="txtAppointmentTime" class="form-control" [ngModel]="this.newAppointment.StartTime" (ngModelChange)="newAppointment.StartTime = $event">
           </div>
         </div>
         <br />
@@ -89,7 +89,7 @@
             <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
           </div>
           <div class="col">
-            <input type="time" id="txtAppointmentEndTime" class="form-control">
+            <input type="time" id="txtAppointmentEndTime" class="form-control" [ngModel]="this.newAppointment.EndTime" (ngModelChange)="newAppointment.EndTime = $event">
           </div>
         </div>
         <br />
@@ -98,7 +98,9 @@
             <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
           </div>
           <div class="col">
-            <input type="text" id="txtApptDoctorName" class="form-control" [ngModel]="newAppointment?.DoctorName" (ngModelChange)="newAppointment.DoctorName = $event">
+                 <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors" [displayWith]="displayName"
+              (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
+            </app-typeahead>
           </div>
         </div>
         <br />

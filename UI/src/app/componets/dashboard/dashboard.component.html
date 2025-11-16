@@ -111,7 +111,7 @@
           </div>
           <div class="col">
             <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
-              [ngModel]="this.newAppointment?.StartDateTime" (ngModelChange)="newAppointment.StartDateTime = $event">
+              [ngModel]="this.newStartDateString" (ngModelChange)="newStartDateString = $event">
           </div>
         </div>
         <br />
@@ -120,7 +120,7 @@
             <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
           </div>
           <div class="col">
-            <input type="time" id="txtAppointmentTime" class="form-control" step="1800">
+            <input type="time" id="txtAppointmentTime" class="form-control" step="1800" [ngModel]="this.newAppointment.StartTime" (ngModelChange)="newAppointment.StartTime = $event">
           </div>
         </div>
         <br />
@@ -129,7 +129,7 @@
             <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
           </div>
           <div class="col">
-            <input type="time" id="txtAppointmentEndTime" class="form-control">
+            <input type="time" id="txtAppointmentEndTime" class="form-control" step="1800" [ngModel]="this.newAppointment.EndTime" (ngModelChange)="newAppointment.EndTime = $event">
           </div>
         </div>
         <br />
