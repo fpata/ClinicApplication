@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { SearchModel } from '../../../models/search.model';
 import { SearchService } from '../../../services/search.service';
 import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
+import { PatientAppointmentService } from '../../../services/patient-appointment.service';
 
 @Component({
   selector: 'app-patient-appointment',
@@ -30,7 +31,7 @@ export class PatientAppointmentComponent {
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService, private util: UtilityService, private searchService: SearchService) { }
+  constructor(private dataService: DataService, private util: UtilityService, private searchService: SearchService  ) { }
 
   ngOnInit() {
     // Subscribe to patient changes from the data service
@@ -86,9 +87,16 @@ export class PatientAppointmentComponent {
   }
 
   DeleteAppointment(appointmentID: number) {
-    this.appointments = this.appointments.filter(a => a.ID !== appointmentID);
+  
+    //this.appointments = this.appointments.filter(a => a.ID !== appointmentID);
     this.scheduler.deleteEvent(appointmentID.toString());
-    this.patient.PatientAppointments = this.appointments;
+    const index = this.appointments.findIndex(x => x.ID === appointmentID);
+      if (index > -1) {
+        this.appointments.splice(index, 1);
+        this.patient.PatientAppointments = this.appointments;
+      } else {
+        alert('Appointment not found.');
+      }
     this.dataService.setPatient(this.patient);
   }
 

@@ -59,7 +59,7 @@ export class PatientService {
     patient.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     patient.IsActive = 1;
     patient.UserID = this.dataService.getUser()?.ID || 0;
-    patient.PatientVitals = new Array<PatientVitals>(new PatientVitals(this.util, this.dataService));
+    patient.PatientVitals = new Array<PatientVitals>(new PatientVitals());
     patient.PatientVitals[0].PatientID = patient.ID;
     patient.PatientVitals[0].UserID = patient.UserID;
     patient.PatientVitals[0].RecordedBy = this.dataService.getLoginUser()?.user?.ID || 0;

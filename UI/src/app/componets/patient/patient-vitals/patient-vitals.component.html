@@ -144,7 +144,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for(vital of vitalsArray; track $index) {
+                        @for(vital of patient?.PatientVitals; track $index) {
                         <tr>
                             <td><a (click)="SetValuesForVitalID(vital?.ID)"
                                     style="cursor: pointer; color: blue;">{{vital?.ID}}</a>
@@ -172,7 +172,7 @@
             <div class="table-responsive">
                 <table class="table table-borderless">
                     <tbody>
-                        @for (vital of vitalsArray; track $index){
+                        @for (vital of patient?.PatientVitals; track $index){
                         <tr>
                             <td>
                                 <div class="d-flex justify-content-between align-items-center mb-3 p-2 border rounded">

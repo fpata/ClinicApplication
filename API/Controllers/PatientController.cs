@@ -263,83 +263,318 @@ namespace ClinicManager.Controllers
                 return BadRequest();
             }
 
-            // Update timestamp
-            patient.ModifiedDate = DateTime.Now;
-            if (patient.PatientAppointments?.Any() == true)
-            {
-                foreach (var appointment in patient.PatientAppointments)
-                {
-                    appointment.PatientID = id; // Ensure the appointment is linked to the correct patient
-                    appointment.UserID = patient.UserID;
-                    appointment.CreatedDate = appointment.CreatedDate ?? DateTime.Now;
-                    appointment.ModifiedDate = DateTime.Now;
-                    appointment.CreatedBy = appointment.CreatedBy ?? 1; // Default to 1 if not set
-                    appointment.ModifiedBy = appointment.ModifiedBy ?? 1; // Default to 1 if not set
-                    _context.Entry(appointment).State = appointment.ID < 1 ? EntityState.Added : EntityState.Modified;
-                }
-            }
-            if(patient.PatientReports?.Any() == true)
-            {
-                foreach (var report in patient.PatientReports)
-                {
-                    report.PatientID = id; // Ensure the report is linked to the correct patient
-                    report.UserID = patient.UserID;
-                    report.CreatedDate = report.CreatedDate ?? DateTime.Now;
-                    report.ModifiedDate = DateTime.Now;
-                    report.CreatedBy = report.CreatedBy ?? 1; // Default to 1 if not set
-                    report.ModifiedBy = report.ModifiedBy ?? 1; // Default to 1 if not set
-                    _context.Entry(report).State = report.ID < 1 ? EntityState.Added : EntityState.Modified;
-                }
-            }
+            using var dbContextTransaction = await _context.Database.BeginTransactionAsync();
 
-            if(patient.PatientVitals?.Any() == true)
+            try
             {
-                foreach (var vital in patient.PatientVitals)
-                {
-                    vital.PatientID = id; // Ensure the vital is linked to the correct patient
-                    vital.UserID = patient.UserID;
-                    vital.CreatedDate = vital.CreatedDate ?? DateTime.Now;
-                    vital.ModifiedDate = DateTime.Now;
-                    vital.CreatedBy = vital.CreatedBy ?? 1; // Default to 1 if not set
-                    vital.ModifiedBy = vital.ModifiedBy ?? 1; // Default to 1 if not set
-                    _context.Entry(vital).State = vital.ID < 1 ? EntityState.Added : EntityState.Modified;
-                }
-            }
+                // Fetch existing tracked entities
+                var existingPatient = await _context.Patients
+                    .Include(p => p.PatientAppointments)
+                    .Include(p => p.PatientReports)
+                    .Include(p => p.PatientVitals)
+                    .Include(p => p.PatientTreatment)
+                        .ThenInclude(pt => pt!.PatientTreatmentDetails)
+                    .FirstOrDefaultAsync(p => p.ID == id);
 
-            if (!(patient.PatientTreatment == null || String.IsNullOrWhiteSpace(patient.PatientTreatment?.ChiefComplaint)))
-            {
-                patient.PatientTreatment.PatientID = id; // Ensure the treatment is linked to the correct patient
-                patient.PatientTreatment.UserID = patient.UserID;
-                patient.PatientTreatment.CreatedDate = patient.PatientTreatment.CreatedDate ?? DateTime.Now;
-                patient.PatientTreatment.ModifiedDate = DateTime.Now;
-                patient.PatientTreatment.CreatedBy = patient.PatientTreatment.CreatedBy ?? 1; // Default to 1 if not set
-                patient.PatientTreatment.ModifiedBy = patient.PatientTreatment.ModifiedBy ?? 1; // Default to 1 if not set
-                patient.PatientTreatment.IsActive = 1; // Ensure treatment is active
-                _context.Entry(patient.PatientTreatment).State = patient.PatientTreatment.ID < 1 ? EntityState.Added : EntityState.Modified;
-                if (patient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
+                if (existingPatient == null)
                 {
-                    foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
+                    _logger.LogWarning($"Patient with ID: {id} not found for update");
+                    return NotFound();
+                }
+
+                // Update patient scalar properties
+                existingPatient.UserID = patient.UserID;
+                existingPatient.Allergies = patient.Allergies;
+                existingPatient.Medications = patient.Medications;
+                existingPatient.FatherMedicalHistory = patient.FatherMedicalHistory;
+                existingPatient.MotherMedicalHistory = patient.MotherMedicalHistory;
+                existingPatient.PersonalMedicalHistory = patient.PersonalMedicalHistory;
+                existingPatient.InsuranceProvider = patient.InsuranceProvider;
+                existingPatient.InsurancePolicyNumber = patient.InsurancePolicyNumber;
+                existingPatient.ModifiedDate = DateTime.Now;
+                existingPatient.ModifiedBy = patient.ModifiedBy ?? 1;
+
+                // Handle PatientAppointments
+                if (patient.PatientAppointments?.Any() == true)
+                {
+                    var incomingIds = patient.PatientAppointments.Select(pa => pa.ID).ToHashSet();
+                    var appointmentsToRemove = existingPatient.PatientAppointments
+                        .Where(pa => !incomingIds.Contains(pa.ID))
+                        .ToList();
+
+                    foreach (var toRemove in appointmentsToRemove)
                     {
-                        detail.ID= detail.ID < 1 ? 0 : detail.ID; // Reset ID for new details
-                        detail.UserID = patient.UserID;
-                        detail.PatientID = id; // Ensure the detail is linked to the correct patient
-                        detail.CreatedDate = detail.CreatedDate ?? DateTime.Now;
-                        detail.ModifiedDate = DateTime.Now;
-                        detail.CreatedBy = detail.CreatedBy ?? 1; // Default to 1 if not set
-                        detail.ModifiedBy = detail.ModifiedBy ?? 1; // Default to 1 if not set
-                        detail.PatientTreatmentID = patient.PatientTreatment.ID; // Link to the treatment
-                        detail.IsActive = 1; // Ensure detail is active
-                        _context.Entry(detail).State = detail.ID < 1 ? EntityState.Added : EntityState.Modified;
+                        _context.PatientAppointments.Remove(toRemove);
+                    }
+
+                    foreach (var incomingAppointment in patient.PatientAppointments)
+                    {
+                        var existingAppointment = existingPatient.PatientAppointments
+                            .FirstOrDefault(pa => pa.ID == incomingAppointment.ID);
+
+                        if (existingAppointment != null)
+                        {
+                            // Update existing tracked entity
+                            _context.Entry(existingAppointment).CurrentValues.SetValues(incomingAppointment);
+                            existingAppointment.PatientID = id;
+                            existingAppointment.UserID = patient.UserID;
+                            existingAppointment.ModifiedDate = DateTime.Now;
+                            existingAppointment.ModifiedBy = incomingAppointment.ModifiedBy ?? 1;
+                        }
+                        else
+                        {
+                            // Add new appointment
+                            incomingAppointment.ID = 0;
+                            incomingAppointment.PatientID = id;
+                            incomingAppointment.UserID = patient.UserID;
+                            incomingAppointment.CreatedDate = DateTime.Now;
+                            incomingAppointment.ModifiedDate = DateTime.Now;
+                            incomingAppointment.CreatedBy = incomingAppointment.CreatedBy ?? 1;
+                            incomingAppointment.ModifiedBy = incomingAppointment.ModifiedBy ?? 1;
+                            incomingAppointment.IsActive = 1;
+                            existingPatient.PatientAppointments?.Add(incomingAppointment);
+                        }
                     }
                 }
-            }
+                else if (existingPatient.PatientAppointments?.Any() == true)
+                {
+                    foreach (var appointment in existingPatient.PatientAppointments.ToList())
+                    {
+                        _context.PatientAppointments.Remove(appointment);
+                    }
+                }
 
-            _context.Entry(patient).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            
-           _logger  .LogInformation($"Updated patient with ID: {id}");
-            patient = Get(id).Result.Value!; // Refresh patient to get full details including related entities
-            return Ok(patient);
+                // Handle PatientReports
+                if (patient.PatientReports?.Any() == true)
+                {
+                    var incomingIds = patient.PatientReports.Select(pr => pr.ID).ToHashSet();
+                    var reportsToRemove = existingPatient.PatientReports
+                        .Where(pr => !incomingIds.Contains(pr.ID))
+                        .ToList();
+
+                    foreach (var toRemove in reportsToRemove)
+                    {
+                        _context.PatientReports.Remove(toRemove);
+                    }
+
+                    foreach (var incomingReport in patient.PatientReports)
+                    {
+                        var existingReport = existingPatient.PatientReports
+                            .FirstOrDefault(pr => pr.ID == incomingReport.ID);
+
+                        if (existingReport != null)
+                        {
+                            _context.Entry(existingReport).CurrentValues.SetValues(incomingReport);
+                            existingReport.PatientID = id;
+                            existingReport.UserID = patient.UserID;
+                            existingReport.ModifiedDate = DateTime.Now;
+                            existingReport.ModifiedBy = incomingReport.ModifiedBy ?? 1;
+                        }
+                        else
+                        {
+                            incomingReport.ID = 0;
+                            incomingReport.PatientID = id;
+                            incomingReport.UserID = patient.UserID;
+                            incomingReport.CreatedDate = DateTime.Now;
+                            incomingReport.ModifiedDate = DateTime.Now;
+                            incomingReport.CreatedBy = incomingReport.CreatedBy ?? 1;
+                            incomingReport.ModifiedBy = incomingReport.ModifiedBy ?? 1;
+                            incomingReport.IsActive = 1;
+                            existingPatient.PatientReports?.Add(incomingReport);
+                        }
+                    }
+                }
+                else if (existingPatient.PatientReports?.Any() == true)
+                {
+                    foreach (var report in existingPatient.PatientReports.ToList())
+                    {
+                        _context.PatientReports.Remove(report);
+                    }
+                }
+
+                // Handle PatientVitals
+                if (patient.PatientVitals?.Any() == true)
+                {
+                    var incomingIds = patient.PatientVitals.Select(pv => pv.ID).ToHashSet();
+                    var vitalsToRemove = existingPatient.PatientVitals
+                        .Where(pv => !incomingIds.Contains(pv.ID))
+                        .ToList();
+
+                    foreach (var toRemove in vitalsToRemove)
+                    {
+                        _context.PatientVitals.Remove(toRemove);
+                    }
+
+                    foreach (var incomingVital in patient.PatientVitals)
+                    {
+                        var existingVital = existingPatient.PatientVitals
+                            .FirstOrDefault(pv => pv.ID == incomingVital.ID);
+
+                        if (existingVital != null)
+                        {
+                            _context.Entry(existingVital).CurrentValues.SetValues(incomingVital);
+                            existingVital.PatientID = id;
+                            existingVital.UserID = patient.UserID;
+                            existingVital.ModifiedDate = DateTime.Now;
+                            existingVital.ModifiedBy = incomingVital.ModifiedBy ?? 1;
+                        }
+                        else
+                        {
+                            incomingVital.ID = 0;
+                            incomingVital.PatientID = id;
+                            incomingVital.UserID = patient.UserID;
+                            incomingVital.CreatedDate = DateTime.Now;
+                            incomingVital.ModifiedDate = DateTime.Now;
+                            incomingVital.CreatedBy = incomingVital.CreatedBy ?? 1;
+                            incomingVital.ModifiedBy = incomingVital.ModifiedBy ?? 1;
+                            incomingVital.IsActive = 1;
+                            existingPatient.PatientVitals?.Add(incomingVital);
+                        }
+                    }
+                }
+                else if (existingPatient.PatientVitals?.Any() == true)
+                {
+                    foreach (var vital in existingPatient.PatientVitals.ToList())
+                    {
+                        _context.PatientVitals.Remove(vital);
+                    }
+                }
+
+                // Handle PatientTreatment
+                if (!(patient.PatientTreatment == null || string.IsNullOrWhiteSpace(patient.PatientTreatment?.ChiefComplaint)))
+                {
+                    var incomingTreatment = patient.PatientTreatment;
+
+                    if (existingPatient.PatientTreatment != null && existingPatient.PatientTreatment.ID == incomingTreatment.ID)
+                    {
+                        // Update existing treatment
+                        _context.Entry(existingPatient.PatientTreatment).CurrentValues.SetValues(incomingTreatment);
+                        existingPatient.PatientTreatment.PatientID = id;
+                        existingPatient.PatientTreatment.UserID = patient.UserID;
+                        existingPatient.PatientTreatment.ModifiedDate = DateTime.Now;
+                        existingPatient.PatientTreatment.ModifiedBy = incomingTreatment.ModifiedBy ?? 1;
+                        existingPatient.PatientTreatment.IsActive = 1;
+
+                        // Handle treatment details
+                        if (incomingTreatment.PatientTreatmentDetails?.Any() == true)
+                        {
+                            var incomingDetailIds = incomingTreatment.PatientTreatmentDetails.Select(ptd => ptd.ID).ToHashSet();
+                            var detailsToRemove = existingPatient.PatientTreatment.PatientTreatmentDetails
+                                .Where(ptd => !incomingDetailIds.Contains(ptd.ID))
+                                .ToList();
+
+                            foreach (var toRemove in detailsToRemove)
+                            {
+                                _context.PatientTreatmentDetails.Remove(toRemove);
+                            }
+
+                            foreach (var incomingDetail in incomingTreatment.PatientTreatmentDetails)
+                            {
+                                var existingDetail = existingPatient.PatientTreatment.PatientTreatmentDetails
+                                    .FirstOrDefault(ptd => ptd.ID == incomingDetail.ID);
+
+                                if (existingDetail != null)
+                                {
+                                    _context.Entry(existingDetail).CurrentValues.SetValues(incomingDetail);
+                                    existingDetail.PatientTreatmentID = existingPatient.PatientTreatment.ID;
+                                    existingDetail.PatientID = id;
+                                    existingDetail.UserID = patient.UserID;
+                                    existingDetail.ModifiedDate = DateTime.Now;
+                                    existingDetail.ModifiedBy = incomingDetail.ModifiedBy ?? 1;
+                                }
+                                else
+                                {
+                                    incomingDetail.ID = 0;
+                                    incomingDetail.PatientTreatmentID = existingPatient.PatientTreatment.ID;
+                                    incomingDetail.PatientID = id;
+                                    incomingDetail.UserID = patient.UserID;
+                                    incomingDetail.CreatedDate = DateTime.Now;
+                                    incomingDetail.ModifiedDate = DateTime.Now;
+                                    incomingDetail.CreatedBy = incomingDetail.CreatedBy ?? 1;
+                                    incomingDetail.ModifiedBy = incomingDetail.ModifiedBy ?? 1;
+                                    incomingDetail.IsActive = 1;
+                                    existingPatient.PatientTreatment.PatientTreatmentDetails?.Add(incomingDetail);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (var detail in existingPatient.PatientTreatment.PatientTreatmentDetails?.ToList() ?? new List<PatientTreatmentDetail>())
+                            {
+                                _context.PatientTreatmentDetails.Remove(detail);
+                            }
+                        }
+                    }
+                    else if (existingPatient.PatientTreatment == null)
+                    {
+                        // Create new treatment
+                        var newTreatment = new PatientTreatment
+                        {
+                            PatientID = id,
+                            UserID = patient.UserID,
+                            CreatedDate = DateTime.Now,
+                            ModifiedDate = DateTime.Now,
+                            CreatedBy = incomingTreatment.CreatedBy ?? 1,
+                            ModifiedBy = incomingTreatment.ModifiedBy ?? 1,
+                            IsActive = 1
+                        };
+
+                        // Copy scalar properties from incoming treatment
+                        _context.Entry(newTreatment).CurrentValues.SetValues(incomingTreatment);
+                        newTreatment.PatientID = id;
+                        newTreatment.UserID = patient.UserID;
+
+                        existingPatient.PatientTreatment = newTreatment;
+
+                        if (incomingTreatment.PatientTreatmentDetails?.Any() == true)
+                        {
+                            foreach (var incomingDetail in incomingTreatment.PatientTreatmentDetails)
+                            {
+                                var newDetail = new PatientTreatmentDetail
+                                {
+                                    PatientTreatmentID = newTreatment.ID,
+                                    PatientID = id,
+                                    UserID = patient.UserID,
+                                    CreatedDate = DateTime.Now,
+                                    ModifiedDate = DateTime.Now,
+                                    CreatedBy = incomingDetail.CreatedBy ?? 1,
+                                    ModifiedBy = incomingDetail.ModifiedBy ?? 1,
+                                    IsActive = 1
+                                };
+                                _context.Entry(newDetail).CurrentValues.SetValues(incomingDetail);
+                                newTreatment.PatientTreatmentDetails?.Add(newDetail);
+                            }
+                        }
+                    }
+                }
+                else if (existingPatient.PatientTreatment != null)
+                {
+                    // Remove existing treatment and details
+                    if (existingPatient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
+                    {
+                        foreach (var detail in existingPatient.PatientTreatment.PatientTreatmentDetails.ToList())
+                        {
+                            _context.PatientTreatmentDetails.Remove(detail);
+                        }
+                    }
+                    _context.PatientTreatments.Remove(existingPatient.PatientTreatment);
+                    existingPatient.PatientTreatment = null;
+                }
+
+                await _context.SaveChangesAsync();
+                await dbContextTransaction.CommitAsync();
+
+                _logger.LogInformation($"Updated patient with ID: {id}");
+
+                var refreshed = await Get(id);
+                return Ok(refreshed.Value!);
+            }
+            catch (Exception ex)
+            {
+                await dbContextTransaction.RollbackAsync();
+                _logger.LogError(ex, $"Error updating patient with ID: {id}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [HttpPatch("{id}")]

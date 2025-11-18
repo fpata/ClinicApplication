@@ -16,7 +16,6 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class PatientVitalsComponent {
   vitals: PatientVitals | null = null;
-  vitalsArray: PatientVitals[] | null = null;
   patient: Patient | null = null;
 
   private patientSubscription: Subscription = new Subscription();
@@ -24,6 +23,7 @@ export class PatientVitalsComponent {
   constructor(private dataService: DataService, private messageService: MessageService,
     private util: UtilityService, private authService :AuthService
   ) {
+      this.vitals = new PatientVitals();
   }
 
   ngOnInit() {
@@ -32,27 +32,12 @@ export class PatientVitalsComponent {
       next: (_newpatient: Patient) => {
         this.patient = _newpatient;
         if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {
-          this.vitalsArray = this.patient?.PatientVitals;
-          if (this.vitalsArray && this.vitalsArray.length > 0) {
-            this.vitals = this.vitalsArray[this.vitalsArray.length - 1];
-          } else {
-            this.vitals = new PatientVitals(this.util, this.dataService);
-            this.vitals.PatientID = this.patient?.ID || 0;
-            this.vitals.UserID = this.patient?.UserID || 0;
-          }
-        } else {
-          if (this.patient) {
-            this.patient.PatientVitals = new Array<PatientVitals>(new PatientVitals(this.util, this.dataService));
-            this.vitals = this.patient?.PatientVitals[0];
-            this.vitals.PatientID = this.patient?.ID || 0;
-            this.vitals.UserID = this.patient?.UserID || 0;
-            this.dataService.setPatient(this.patient);
-          }
-        }
-        // console.log('Patient updated in PatientVitalsComponent:', this.vitals);
+            
+            Object.assign(this.vitals, this.patient.PatientVitals[this.patient.PatientVitals.length - 1] as PatientVitals); // get the last vitals entry
+        } 
       },
       error: (error: any) => {
-        this.messageService.error('Error subscribing to patient changes:', error);
+        this.messageService.error('Error subscribing to patient changes:', error?.message || error?.toString());
       }
     });
   }
@@ -65,30 +50,24 @@ export class PatientVitalsComponent {
   }
 
   SetValuesForVitalID(vitalID: number) {
-    if (this.vitalsArray) {
-      var selectedVital = this.vitalsArray.find(vital => vital.ID === vitalID);
-      if (selectedVital) {
-        // create a new PatientVitals instance so util and dataService are present,
-        // then copy the selected vital's properties onto it
-        var newVitals = new PatientVitals(this.util, this.dataService);
-        Object.assign(newVitals, selectedVital);
-        this.vitals = newVitals;
+    if (this.patient?.PatientVitals) {
+      var selectedVital = this.patient.PatientVitals.find(vital => vital.ID === vitalID);
+      if (selectedVital && this.vitals) {
+        this.vitals = selectedVital;
       }
     }
   }
 
   AddPatientVitals() {
-    this.vitals = new PatientVitals(this.util, this.dataService);
+    this.vitals = new PatientVitals();
     if (this.patient) {
       this.vitals.PatientID = this.patient.ID || 0;
       this.vitals.UserID = this.patient.UserID || 0;
       this.vitals.RecordedBy = this.authService.getUser().ID || 0;
-      if (!this.vitalsArray) {
-        this.vitalsArray = [];
+      if (!this.patient.PatientVitals) {
+        this.patient.PatientVitals = [];
       }
-      this.vitalsArray.push(this.vitals);
-      this.patient.PatientVitals = this.vitalsArray;
-      this.dataService.setPatient(this.patient);
+      this.patient.PatientVitals.push(this.vitals);
     }
   }
 }

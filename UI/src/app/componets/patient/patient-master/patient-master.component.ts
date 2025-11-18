@@ -38,7 +38,6 @@ export class PatientMasterComponent {
 
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
   @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
-  @ViewChild(PatientVitalsComponent) patientVitalsComponent!: PatientVitalsComponent;
   constructor(private dataService: DataService, private patientService: PatientService, private util: UtilityService,
     private messageService: MessageService
   ) { }
@@ -82,7 +81,7 @@ export class PatientMasterComponent {
           this.ClearPatientInformation(); // Clear the patient from data service
         },
         error: (error) => {
-          console.error('Error deleting patient:', error);
+          console.error('Error deleting patient:', error?.message || error?.toString());
           this.messageService.error('Error occurred while deleting patient. Please try again.');
         }
       });
@@ -125,11 +124,10 @@ export class PatientMasterComponent {
       this.patientService.createPatient(currentPatient).subscribe({
         next: (savedPatient) => {
           this.messageService.success('Patient information saved successfully');
-          // Update the patient in data service with the returned patient (which includes the new ID)
           this.dataService.setPatient(savedPatient);
         },
         error: (error) => {
-          console.error('Error creating patient:', error);
+          console.error('Error creating patient:', error?.message || error?.toString());
           this.messageService.error('Error occurred while saving patient information. Please try again.');
         }
       });
@@ -142,8 +140,8 @@ export class PatientMasterComponent {
           this.dataService.setPatient(updatedPatient);
         },
         error: (error) => {
-          console.error('Error updating patient:', error);
           this.messageService.error('Error occurred while updating patient information. Please try again.');
+          console.log('Error updating patient:', error);
         }
       });
     }
@@ -156,7 +154,7 @@ export class PatientMasterComponent {
         this.ShowHideTabs();
       },
       error: (error) => {
-        console.error('Error subscribing to IsQuickCreateMode changes:', error);
+        console.error('Error subscribing to IsQuickCreateMode changes:', error?.message || error?.toString());
       }
     }));
       this.subscriptions.push(this.dataService.user$.subscribe({
@@ -165,7 +163,7 @@ export class PatientMasterComponent {
         this.ShowHideTabs();
       },
       error: (error) => {
-        console.error('Error subscribing to IsQuickCreateMode changes:', error);
+        console.error('Error subscribing to IsQuickCreateMode changes:', error?.message || error?.toString());
       }
     }));
   }

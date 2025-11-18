@@ -64,7 +64,7 @@ namespace ClinicManager.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName!), // userName validated above
                 new Claim("userid", user.ID.ToString()),
-                new Claim("usertype", user.UserType.ToString()),
+                new Claim("usertype", user.UserType?.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
