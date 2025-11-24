@@ -1,27 +1,38 @@
 import { Component } from '@angular/core';
 import { PatientReport } from '../../../models/patient-report.model';
-import { User } from '../../../models/user.model';
+import { User, UserType } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
 import { UtilityService } from '../../../services/utility.service';
-import { Subscription } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
+import { FileUploadComponent } from '../../../common/fileupload/fileupload.component';
+import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
+import { SearchModel } from '../../../models/search.model';
+import { SearchService } from '../../../services/search.service';
+import { MessageService } from '../../../services/message.service';
+import { PatientReportService } from '../../../services/patient-report.service';
 @Component({
   selector: 'app-patient-report',
-  imports: [FormsModule],
+  imports: [FormsModule, FileUploadComponent, TypeaheadComponent],
   templateUrl: './patient-report.component.html',
   styleUrls: ['./patient-report.component.css']
 })
 export class PatientReportComponent {
 
+
   reports: PatientReport[] = [];
   private patientSubscription: Subscription = new Subscription();
   patient: Patient | null = null;
-  newReport: PatientReport|null = null; // Initialize new report object
-  
-  constructor(private dataService: DataService, private util: UtilityService) {
-   }
-  
+  newReport: PatientReport | null = null; // Initialize new report object
+
+  constructor(private dataService: DataService, private util: UtilityService,
+    private searchService: SearchService,
+    private messageService: MessageService,
+    private reportService: PatientReportService
+  ) {
+  }
+
   ngOnInit() {
     // Subscribe to user changes from the data service
     this.patientSubscription = this.dataService.patient$.subscribe({
@@ -33,7 +44,6 @@ export class PatientReportComponent {
         else {
           this.reports = []; // Ensure reports is initialized to an empty array if no reports are
         }
-        //console.log('Patient updated:', newPatient);
       },
       error: (error) => {
         console.error('Error subscribing to patient changes:', error);
@@ -50,19 +60,19 @@ export class PatientReportComponent {
 
   AddReport() {
     var user: User | null = this.dataService.getUser();
-    this.newReport = <PatientReport>  {
+    this.newReport = <PatientReport>{
       ID: this.reports.length > 0 ? Math.min(...this.reports.map(r => r.ID)) - 1 : 0,
       UserID: user?.ID || 0,
       PatientID: this.patient?.ID || 0,
-      IsActive :1,
-      ReportDate: new Date().toString().split('T')[0],
+      IsActive: 1,
+      ReportDate: this.util.formatDate(new Date(), 'yyyy-MM-dd'),
       ReportName: '',
       DoctorName: '',
       ReportDetails: '',
       CreatedBy: user?.ID || 0,
       ModifiedBy: user?.ID || 0,
-  ModifiedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd'),
-  CreatedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd') 
+      ModifiedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd'),
+      CreatedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd')
     };
   }
 
@@ -96,5 +106,44 @@ export class PatientReportComponent {
     }
   }
 
+  getDoctors = (name: string): Observable<SearchModel[]> => {
+    var searchModel: SearchModel = new SearchModel(this.util);
+    searchModel.UserType = UserType.Doctor;
+    searchModel.FirstName = name;
+    return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+  }
 
+  displayName(d: any): string {
+    if (!d) return 'Unknown Patient';
+    const first = d.FirstName || '';
+    const last = d.LastName || '';
+    const name = (first + ' ' + last).trim();
+    return name.length ? name : 'Unknown Patient';
+  }
+
+  onFileUploaded($event: any) {
+    this.newReport.ReportFilePath = $event.ReportFilePath;
+    console.log('File uploaded event received:', $event);
+    alert('File uploaded successfully.');
+  }
+
+  DownloadReport(filePath: string) {
+    if (!filePath) {
+      alert('No file available for download.');
+      return;
+    }
+    this.reportService.downloadReport(filePath).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.util.getFileNameFromPath(filePath);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+
+    });
+  }
 }

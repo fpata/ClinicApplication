@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit {
          resource: appointment.DoctorName || 'General',
          backColor: '#bc8f3cff'
       }));
-      this.scheduler.addEvents(events);
+      if(this.scheduler)this.scheduler.addEvents(events);
    }
 
    SaveAppointment() {

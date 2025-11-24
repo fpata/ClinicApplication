@@ -125,9 +125,11 @@
             }
           </div>
           <br>
-          <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-            <div class="row">
-              <div class="col">
+
+          <div class="rounded" style="border:0.5px solid lightblue;">
+            <!--Desktop search result table-->
+            <div class="row d-none d-md-block">
+              <div class="col-12">
                 <div class="table-responsive">
                   <table class="table table-striped">
                     <thead>
@@ -149,7 +151,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      @for(appointment of searchResult; track $index) {
+                      @for(appointment of searchResult?.PatientAppointments; track $index) {
                       <tr>
                         <td>{{appointment.StartDateTime}}</td>
                         <td>{{appointment.EndDateTime}}</td>
@@ -169,30 +171,67 @@
                 </div>
               </div>
             </div>
+            <!--Mobile search result table-->
+            <div class="row d-block d-md-none">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  @for(appointment of searchResult?.PatientAppointments; track $index) {
+                  <tr>
+                    <td>
+                      <div class="d-flex justify-content-between align-items-center mb-3 border rounded p-2">
+                        <div style="display: block;">
+                          Start Date : {{appointment.StartDateTime}} <br>
+                          End Date : {{appointment.EndDateTime}} <br>
+                          Patient : {{appointment.PatientName}} <br>
+                          Treatment : {{appointment.TreatmentName}} <br>
+                          Doctor : {{appointment.DoctorName}} <br>
+                        </div>
+                        <div>
+                          <button class="btn btn-primary mb-2" data-bs-toggle="modal"
+                            data-bs-target="#addAppointmentModal" (click)="EditAppointment(appointment.ID)"><i
+                              class="bi bi-person-fill-gear"></i></button>
+                          <br />
+                          <button class="btn btn-secondary" (click)="DeleteAppointment(appointment.ID)"><i
+                              class="bi bi-trash-fill"></i></button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  }
+                </table>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 d-flex justify-content-center">
+                <app-paging [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="currentPage"
+                  (pageChange)="onPageChanged($event)">
+                </app-paging>
+              </div>
+            </div>
+            <br />
           </div>
-          <br />
         </div>
       </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingTwo">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
-          aria-expanded="true" aria-controls="collapseTwo">
-          Appointment Scheduler
-        </button>
-      </h2>
-      <div style="text-align: center;align-items: center;">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal"
-          (click)="AddNewAppointment()">Add
-          New Appointment</button>
-      </div>
-      <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo"
-        data-bs-parent="#doctorAppointmentsAccordion">
-        <div class="accordion-body">
-          <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-            <div class="row">
-              <div class="col">
-                <app-scheduler></app-scheduler>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+            aria-expanded="true" aria-controls="collapseTwo">
+            Appointment Scheduler
+          </button>
+        </h2>
+        <div style="text-align: center;align-items: center;">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal"
+            (click)="AddNewAppointment()">Add
+            New Appointment</button>
+        </div>
+        <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo"
+          data-bs-parent="#doctorAppointmentsAccordion">
+          <div class="accordion-body">
+            <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+              <div class="row">
+                <div class="col">
+                  <app-scheduler></app-scheduler>
+                </div>
               </div>
             </div>
           </div>
@@ -200,89 +239,88 @@
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal -->
-<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addAppointmentModal" tabindex="-1"
-  aria-labelledby="addAppointmentModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
-          </div>
-          <div class="col">
-            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
-              [ngModel]="newAppointment?.StartDateTime" (ngModelChange)="newAppointment.StartDateTime = $event">
-          </div>
+  <!-- Modal -->
+  <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addAppointmentModal" tabindex="-1"
+    aria-labelledby="addAppointmentModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
+        <div class="modal-body">
+          <br />
+          <div class="row">
+            <div class="col">
+              <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
+            </div>
+            <div class="col">
+              <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
+                [ngModel]="appointmentDateString" (ngModelChange)="appointmentDateString = $event">
+            </div>
           </div>
-          <div class="col">
-            <input type="time" id="txtAppointmentTime" class="form-control">
+          <br />
+          <div class="row">
+            <div class="col">
+              <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
+            </div>
+            <div class="col">
+              <input type="time" id="txtAppointmentTime" class="form-control" [ngModel]="newAppointment?.StartTime"
+                (ngModelChange)="newAppointment.StartTime = $event">
+            </div>
           </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
+          <br />
+          <div class="row">
+            <div class="col">
+              <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
+            </div>
+            <div class="col">
+              <input type="time" id="txtAppointmentEndTime" class="form-control" [ngModel]="newAppointment?.EndTime"
+                (ngModelChange)="newAppointment.EndTime = $event">
+            </div>
           </div>
-          <div class="col">
-            <input type="time" id="txtAppointmentEndTime" class="form-control">
+          <br />
+          <div class="row">
+            <div class="col">
+              <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
+            </div>
+            <div class="col">
+             <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors"
+                [displayWith]="displayName"
+                (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
+              </app-typeahead>
+            </div>
           </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
-          </div>
-          <div class="col">
-            <select id="cbxApptDoctorName" class="form-control" [ngModel]="newAppointment?.DoctorID"
-              (ngModelChange)="newAppointment.DoctorID = $event">
-              @for(doctor of doctors; track $index) {
-              <option [value]="doctor.UserID">{{ doctor.FirstName }} {{ doctor.LastName }}</option>
-              }
-            </select>
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtApptPatientName" class="form-label">Patient Name</label>
-          </div>
-          <div class="col">
+          <br />
+          <div class="row">
+            <div class="col">
+              <label for="txtApptPatientName" class="form-label">Patient Name</label>
+            </div>
+            <div class="col">
               <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients"
                 [displayWith]="displayPatientName"
-              (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName">
-            </app-typeahead>
+                (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName">
+              </app-typeahead>
+            </div>
           </div>
+          <br />
+          <div class="row">
+            <div class="col">
+              <label for="txtApptProcedure" class="form-label">Procedure</label>
+            </div>
+            <div class="col">
+              <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName"
+                (ngModelChange)="newAppointment.TreatmentName = $event">
+            </div>
+          </div>
+          <br />
         </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtApptProcedure" class="form-label">Procedure</label>
-          </div>
-          <div class="col">
-            <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName"
-              (ngModelChange)="newAppointment.TreatmentName = $event">
-          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save
+            changes</button>
         </div>
-        <br />
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save
-          changes</button>
       </div>
     </div>
   </div>
-</div>

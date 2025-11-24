@@ -1,5 +1,5 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { PatientAppointment } from '../../../models/patient-appointment.model';
+import { AppointmentSearchResponse, PatientAppointment } from '../../../models/patient-appointment.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { PatientAppointmentService } from '../../../services/patient-appointment.service';
@@ -10,14 +10,14 @@ import { DataService } from '../../../services/data.service';
 import { SearchService } from '../../../services/search.service';
 import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
 import { Observable, tap, map } from 'rxjs';
-import { MessagesComponent } from '../../../common/messages/messages.component';
 import { MessageService } from '../../../services/message.service';
 import { UtilityService } from '../../../services/utility.service';
 import { UserType } from '../../../models/user.model';
+import { PagingComponent } from '../../../common/paging/paging.component';
 
 @Component({
   selector: 'app-doctor-appointments',
-  imports: [SchedulerComponent, FormsModule, TypeaheadComponent],
+  imports: [SchedulerComponent, FormsModule, TypeaheadComponent, PagingComponent],
   templateUrl: './doctorappointments.component.html',
   styleUrls: ['./doctorappointments.component.css'],
   providers: [HttpClient]
@@ -25,23 +25,23 @@ import { UserType } from '../../../models/user.model';
 export class DoctorAppointmentsComponent {
 
   clearSearchClicked: boolean;
-  searchResult: PatientAppointment[];
+  searchResult: AppointmentSearchResponse;
   @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
-  appointments: PatientAppointment[] | null = null;
   searchPatient: SearchModel;
   searchLengthConstraintError: any;
   newAppointment: PatientAppointment = new PatientAppointment();
   doctors: SearchModel[] | null = null;
+  currentPage: number = 1;
+  pageSize: number = 3;
+  totalItems: number = 0;
+  appointmentDateString: string = '';
 
-  constructor(private patientAppointmentService: PatientAppointmentService, 
+  constructor(private patientAppointmentService: PatientAppointmentService,
     private dataService: DataService,
     private searchService: SearchService,
     private messageService: MessageService,
     private util: UtilityService
   ) {
-    this.clearNewAppointment();
-    this.appointments = new Array<PatientAppointment>();
-    this.appointments = [];
   }
 
   // Placeholder methods for the unimplemented methods
@@ -60,43 +60,39 @@ export class DoctorAppointmentsComponent {
     if (this.searchLengthConstraintError) {
       return;
     }
+    this.searchPatient.pageSize = this.pageSize;
+    this.searchPatient.pageNumber = this.currentPage;
     this.patientAppointmentService.searchAppointmentsForDoctor(this.searchPatient).subscribe({
-      next: (result: any) => {
+      next: (result: AppointmentSearchResponse) => {
         this.searchResult = result;
         this.clearSearchClicked = false;
-        if (!this.searchResult || this.searchResult.length === 0) {
-          alert('No appointments found.');
+        if (!this.searchResult.PatientAppointments || this.searchResult.PatientAppointments.length === 0) {
+          this.messageService.info('No appointments found.');
+          this.totalItems = 0;
         } else {
-          this.AddEventsToScheduler(this.searchResult);
+          this.totalItems = this.searchResult.TotalCount || 0;  
+          this.AddEventsToScheduler(this.searchResult.PatientAppointments);
         }
       },
       error: (err: any) => {
         // Optionally handle error
-        alert('Error occurred while searching for patients.');
+        this.messageService.error('Error occurred while searching for patients.');
         console.error(err);
-        this.searchResult = [];
+        this.searchResult = null;
         this.clearSearchClicked = false;
       }
     });
   }
 
-  getDoctors() :void {
-    var searchModel:SearchModel = new SearchModel(this.util);
-    searchModel.UserType = UserType.Doctor;
-    this.searchService.Search(searchModel).subscribe({
-      next: (result: SearchResultModel) => {
-        this.doctors = result.Results as SearchModel[];
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.messageService.error('Error occurred while fetching doctors.');
-        this.doctors = [];
-      }
-    });
-  }
+ getDoctors = (name: string): Observable<SearchModel[]> => {
+        var searchModel: SearchModel = new  SearchModel(this.util);
+        searchModel.UserType = UserType.Doctor;
+        searchModel.FirstName = name;
+        return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+     }
 
-  getPatients = (name:string): Observable<SearchModel[]> => {
-    const searchModel:SearchModel = new SearchModel(this.util);
+  getPatients = (name: string): Observable<SearchModel[]> => {
+    const searchModel: SearchModel = new SearchModel(this.util);
     searchModel.UserType = UserType.Patient;
     searchModel.FirstName = name;
     return this.searchService.Search(searchModel).pipe(
@@ -104,151 +100,128 @@ export class DoctorAppointmentsComponent {
     );
   }
 
+   displayName(d: any): string {
+      if (!d) return 'Unknown Patient';
+      const first = d.FirstName || '';
+      const last = d.LastName || '';
+      const name = (first + ' ' + last).trim();
+      return name.length ? name : 'Unknown Patient';
+   }
+   
   clearSearch() {
-    this.searchPatient = <SearchModel> {
-      PatientID: 0,
-      UserID: 0,
-      FirstName: '',
-      LastName: '',
-      PrimaryPhone: '',
-      PrimaryEmail: '',
-      PermCity: '',
-      UserName: '',
-      UserType: UserType.Patient,
-      DoctorID: 0,
-      DoctorName: '',
-  EndDate: this.util.formatDate(new Date()),
-  StartDate: this.util.formatDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))    
-    };
-    this.searchResult = [];
-    this.clearSearchClicked = false;
+    this.searchPatient = new SearchModel(this.util);
+    this.clearSearchClicked = true;
+    this.searchLengthConstraintError = false;
+    this.searchResult = null;
+    // this.scheduler.clearEvents();
   }
 
   AddNewAppointment() {
-    this.getDoctors();
-    this.clearNewAppointment();
+    const now = this.util.roundToNearestInterval(new Date());
+    const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
+    this.appointmentDateString = this.util.formatDate(new Date(), 'yyyy-MM-dd');
+    this.newAppointment = new PatientAppointment();
+    this.newAppointment.ID = 0;
+    this.newAppointment.StartDateTime = new Date();
+    this.newAppointment.StartTime = now.toTimeString().substring(0, 5); // "HH:MM"
+    this.newAppointment.EndDateTime = new Date();
+    this.newAppointment.EndTime = thirtyMinutesLater.toTimeString().substring(0, 5); // "HH:MM"
   }
 
-  EditAppointment(arg0: number) {
-    throw new Error('Method not implemented.');
+  EditAppointment(ID: number) {
+    this.newAppointment = Object.assign({}, this.searchResult.PatientAppointments?.find(a => a.ID === ID));
+    this.appointmentDateString = this.util.formatDate(this.newAppointment.StartDateTime, 'yyyy-MM-dd');
   }
-  DeleteAppointment(arg0: number) {
-    throw new Error('Method not implemented.');
-  }
-  SaveAppointment() {
-    // Implement save logic here
-    const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
-    const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
 
-    // Create a temporary appointment object to avoid mutating the form-bound newAppointment
-    const appointmentToSave = { ...this.newAppointment };
-
-    if (appointmentToSave.StartDateTime && appointmentTime) {
-      const [hours, minutes] = appointmentTime.split(':').map(Number);
-      const startDate = new Date(appointmentToSave.StartDateTime);
-      startDate.setHours(hours, minutes, 0, 0);
-      appointmentToSave.StartDateTime = startDate;
-    }
-
-    if (appointmentToSave.EndDateTime && appointmentEndTime) {
-      const [hours, minutes] = appointmentEndTime.split(':').map(Number);
-      // Assuming EndDateTime should be on the same day as StartDateTime
-      const endDate = new Date(appointmentToSave.StartDateTime);
-      endDate.setHours(hours, minutes, 0, 0);
-      appointmentToSave.EndDateTime = endDate;
-    }
-
-    if (appointmentToSave.ID < 1) {
-      appointmentToSave.ID = this.appointments.length > 0 ? Math.min(...this.appointments.map(a => a.ID)) - 1 : 0; // Initialize new appointment ID
-      if (!this.appointments) this.appointments = [];
-      this.appointments.push(appointmentToSave);
-
-    } else {
-      const index = this.appointments.findIndex(a => a.ID === appointmentToSave.ID);
-      if (index > -1) {
-        this.appointments[index] = appointmentToSave;
-      }
-    }
-    // Defer the scheduler update to avoid blocking the UI thread
-    setTimeout(() => this.AddEventsToScheduler(this.appointments));
-
-    // Call API with the populated appointment BEFORE clearing the form
-    this.patientAppointmentService.createPatientAppointment(appointmentToSave).subscribe({
+  DeleteAppointment(ID: number) {
+    this.patientAppointmentService.deletePatientAppointment(ID).subscribe({
       next: (result: any) => {
-        // Replace the temp (possibly negative ID) with server result if needed
-        if (appointmentToSave.ID < 0) {
-          const idx = this.appointments.findIndex(a => a.ID === appointmentToSave.ID);
-          if (idx > -1) {
-            this.appointments[idx] = result;
-          } else {
-            this.appointments.push(result);
-          }
-        } else {
-          this.appointments.push(result);
-        }
-        this.clearNewAppointment(); // Reset only after successful save
+        this.messageService.success('Appointment deleted successfully.');
+        this.searchResult.PatientAppointments = this.searchResult.PatientAppointments?.filter(a => a.ID !== ID) || null;
+        this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
       },
       error: (err: any) => {
         console.error(err);
-        // Keep the form values so user can retry
+        this.messageService.error('Error occurred while deleting appointment.');
       }
     });
   }
-
-  clearNewAppointment() {
-  const today = new Date();
-  const todayString = this.util.formatDate(today);
-    const thirtyMinutesLater = new Date(today.getTime() + 30 * 60000);
-
-    this.newAppointment = <PatientAppointment>{
-      ID: 0,
-      PatientID: 0,
-      DoctorID: 0,
-      StartDateTime: todayString as any, // Format for date input
-      EndDateTime: todayString as any, // Format for date input
-      TreatmentName: '',
-  CreatedDate: this.util.formatDateTime(new Date()),
-  ModifiedDate: this.util.formatDateTime(new Date()),
-      CreatedBy: this.dataService.getLoginUser()?.user?.ID || 1,
-      ModifiedBy: this.dataService.getLoginUser()?.user?.ID || 1
-    };
-
-    // Set default time values for time inputs
-    const startTime = today.toTimeString().slice(0, 5);
-    const endTime = thirtyMinutesLater.toTimeString().slice(0, 5);
-
-    setTimeout(() => {
-      const timeInput = document.getElementById('txtAppointmentTime') as HTMLInputElement;
-      if (timeInput) timeInput.value = startTime;
-      const endTimeInput = document.getElementById('txtAppointmentEndTime') as HTMLInputElement;
-      if (endTimeInput) endTimeInput.value = endTime;
-    });
-  }
-
-  AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
-    var events: DayPilot.EventData[] = [];
-    appointments.forEach(appointment => {
-      events.push({
-        id: appointment.ID.toString(),
-        text: appointment.PatientName || 'Unknown Patient',
-        start: new DayPilot.Date(appointment.StartDateTime),
-        end: new DayPilot.Date(appointment.EndDateTime),
-        resource: appointment.DoctorName || 'General',
-        backColor: '#3c8dbc',
+  
+  SaveAppointment() {
+    // Implement save logic here
+    const appointmentToSave = { ...this.newAppointment };
+    appointmentToSave.StartDateTime = new Date(this.appointmentDateString + 'T' + appointmentToSave.StartTime);
+    appointmentToSave.EndDateTime = new Date(this.appointmentDateString + 'T' + appointmentToSave.EndTime);
+    if (appointmentToSave.ID === 0) {
+      this.patientAppointmentService.createPatientAppointment(appointmentToSave).subscribe({
+        next: (result: PatientAppointment) => {
+          this.messageService.success('Appointment created successfully.');
+          // Call API with the populated appointment BEFORE clearing the form
+          if (this.searchResult.PatientAppointments == null || this.searchResult.PatientAppointments == undefined)
+            this.searchResult.PatientAppointments = [];
+          this.searchResult.PatientAppointments?.push(result);
+        },
+        error: (err: any) => {
+          this.messageService.error('Error occurred while creating appointment.');
+          console.error(err);
+        }
       });
-    });
-    this.scheduler.addEvents(events);
+    }
+    else {
+      this.patientAppointmentService.updatePatientAppointment(appointmentToSave.ID,appointmentToSave).subscribe({
+        next: (result: PatientAppointment) => {
+          this.messageService.success('Appointment updated successfully.');
+          // Call API with the populated appointment BEFORE clearing the form
+          const index = this.searchResult.PatientAppointments?.findIndex(a => a.ID === result.ID);
+          if (index !== undefined && index >= 0 && this.searchResult.PatientAppointments) {
+            this.searchResult.PatientAppointments[index] = result;
+          }
+        },
+        error: (err: any) => {
+          this.messageService.error('Error occurred while updating appointment.');
+          console.error(err);
+          // Keep the form values so user can retry
+        }
+      });
+      setTimeout(() => this.AddEventsToScheduler(this.searchResult.PatientAppointments || []), 500);
+    }
   }
 
-  ngOnInit() {
-    this.clearSearch();
-  }
 
-  displayPatientName(d: any): string {
-  if (!d) return 'Unknown Patient';
-  const first = d.FirstName || '';
-  const last = d.LastName || '';
-  const name = (first + ' ' + last).trim();
-  return name.length ? name : 'Unknown Patient';
-}
-}
+    AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
+      var events: DayPilot.EventData[] = [];
+      if (appointments == null || appointments.length == 0) {
+        this.scheduler.clearEvents();
+        return;
+      }
+      appointments.forEach(appointment => {
+        events.push({
+          id: appointment.ID.toString(),
+          text: appointment.PatientName || 'Unknown Patient',
+          start: new DayPilot.Date(appointment.StartDateTime),
+          end: new DayPilot.Date(appointment.EndDateTime),
+          resource: appointment.DoctorName || 'General',
+          backColor: '#3c8dbc',
+        });
+      });
+      this.scheduler.addEvents(events);
+    }
+
+    ngOnInit() {
+      this.clearSearch();
+    }
+
+    displayPatientName(d: any): string {
+      if (!d) return 'Unknown Patient';
+      const first = d.FirstName || '';
+      const last = d.LastName || '';
+      const name = (first + ' ' + last).trim();
+      return name.length ? name : 'Unknown Patient';
+    }
+
+       onPageChanged($event: number) {
+        this.currentPage = $event;
+        this.searchPatient.pageNumber = this.currentPage;
+        this.SearchAppointments();
+     }
+  }

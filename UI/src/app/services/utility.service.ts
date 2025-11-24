@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class UtilityService {
 
+
   format(dateInput: Date | string | number, pattern: string = 'yyyy-MM-dd'): string {
     const date = this.coerce(dateInput);
     if (!date) return '';
@@ -217,5 +218,9 @@ export class UtilityService {
     roundedDate.setSeconds(0);
     roundedDate.setMilliseconds(0);
     return roundedDate;
+  }
+
+    getFileNameFromPath(filePath: string): string {
+    return filePath.split('/').pop() || '';
   }
 }

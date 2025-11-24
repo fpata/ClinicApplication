@@ -25,8 +25,8 @@ import { PagingComponent } from "../../../common/paging/paging.component";
 export class PatientSearchComponent {
 
   currentPage: number = 1;
-   pageSize: number = 10;
-   totalItems: number = 0;
+  pageSize: number = 10;
+  totalItems: number = 0;
   searchPatient: SearchModel;
   searchResult: SearchResultModel;
   searchLengthConstraintError: boolean = false;
@@ -34,7 +34,7 @@ export class PatientSearchComponent {
 
   constructor(private searchService: SearchService, private patientService: PatientService,
     private dataService: DataService, private userService: UserService, private router: Router, private util: UtilityService
-    ,private messageService: MessageService
+    , private messageService: MessageService
   ) {
     this.searchPatient = new SearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
@@ -44,7 +44,7 @@ export class PatientSearchComponent {
 
   ngInit() {
     this.clearSearchClicked = false;
-     this.pageSize = this.dataService.getConfig()?.pageSize || 10;
+    this.pageSize = this.dataService.getConfig()?.pageSize || 10;
   }
 
   validateSearchInput() {
@@ -124,11 +124,11 @@ export class PatientSearchComponent {
 
 
   DeletePatient(result: SearchModel) {
-      if (confirm(`Are you sure you want to delete patient: ${result.FirstName} ${result.LastName}?`)) {
+    if (confirm(`Are you sure you want to delete patient: ${result.FirstName} ${result.LastName}?`)) {
       this.patientService.deletePatient(result.PatientID).subscribe({
         next: () => {
           this.messageService.success('Patient deleted successfully');
-         // Clear the patient from data service
+          // Clear the patient from data service
         },
         error: (error) => {
           console.error('Error deleting patient:', error);
@@ -143,12 +143,12 @@ export class PatientSearchComponent {
   UpdatePatient(result: SearchModel) {
     if (result.PatientID && result.PatientID > 0) {
       this.patientService.getCompletePatient(result.PatientID).subscribe({
-        next: (newUser:User) => {
+        next: (newUser: User) => {
           // Handle the patient data as needed
           // console.log('User data:', user);
           this.dataService.setUser(newUser);
           this.dataService.setUserId(newUser.ID);
-          let index =  newUser?.Patients?.length ===0 ? 0: newUser?.Patients.length -1;
+          let index = newUser?.Patients?.length === 0 ? 0 : newUser?.Patients.length - 1;
           this.dataService.setPatient(newUser?.Patients[index] || null);
         },
         error: (err) => {
@@ -156,11 +156,11 @@ export class PatientSearchComponent {
         }
       });
     } else {
-      this.AddNewPatient(result,false);
+      this.AddNewPatient(result, false);
     }
   }
 
-  AddNewPatient(result: SearchModel, isQuickCreateMode:boolean) {
+  AddNewPatient(result: SearchModel, isQuickCreateMode: boolean) {
     this.userService.getUser(result.UserID).subscribe({
       next: (user: User) => {
         this.dataService.setUser(user);
@@ -175,10 +175,10 @@ export class PatientSearchComponent {
 
   }
 
-     onPageChanged($event: number) {
-        this.currentPage = $event;
-        this.searchPatient.pageNumber = this.currentPage;
-        this.SearchPatient();
-     }
+  onPageChanged($event: number) {
+    this.currentPage = $event;
+    this.searchPatient.pageNumber = this.currentPage;
+    this.SearchPatient();
+  }
 }
 

@@ -97,5 +97,17 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Deleted patient report with ID: {id}");
             return NoContent();
         }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadReport(string filePath)
+        {
+            if(string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
+            {
+                _logger.LogWarning($"File not found: {filePath}");
+                return NotFound();
+            }
+            return File(System.IO.File.ReadAllBytes(filePath), "application/octet-stream", Path.GetFileName(filePath));
+
+        }
     }
 }

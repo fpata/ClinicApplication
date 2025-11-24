@@ -223,7 +223,7 @@ namespace ClinicManager.Controllers
 
 
         [HttpPost("doctor/search")]
-        public async Task<IActionResult> SearchAppointments([FromBody] SearchModel model, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> SearchAppointments([FromBody] SearchModel model)
         {
             _logger.LogInformation($"Searching appointments with criteria");
             try
@@ -265,10 +265,10 @@ namespace ClinicManager.Controllers
                     .Select(x => x.appointment)
                     .AsNoTracking()
                     .OrderByDescending(a => a.StartDateTime)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
+                    .Skip((model.pageNumber - 1) * model.pageSize)
+                    .Take(model.pageSize)
                     .ToListAsync();
-                var hasMoreRecords = (pageNumber * pageSize) < totalCount;
+                var hasMoreRecords = (model.pageNumber * model.pageSize) < totalCount;
                 var message = results.Count > 0 ? "Appointments found." : "No appointments found.";
                 var response = new AppointmentSearchResponse
                 {

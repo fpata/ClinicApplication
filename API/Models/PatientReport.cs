@@ -10,6 +10,8 @@ namespace ClinicManager.Models
         public string? ReportName { get; set; }
         public string? ReportDetails { get; set; }
         public string? ReportFilePath { get; set; }
+
+        public int? DoctorID { get; set; }
         public string? DoctorName { get; set; }
         public DateTime? ReportDate { get; set; } = DateTime.Now;    
 

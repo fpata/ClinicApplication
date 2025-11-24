@@ -6,6 +6,7 @@ export class PatientReport {
   ReportName?: string;
   ReportDetails?: string;
   ReportFilePath?: string;
+  DoctorID?: number;
   DoctorName?: string;
   ReportDate?: string;
   PatientID?: number;

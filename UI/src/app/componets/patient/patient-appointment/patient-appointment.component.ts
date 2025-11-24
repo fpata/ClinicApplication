@@ -102,19 +102,19 @@ export class PatientAppointmentComponent {
 
   SaveAppointment() {
     // Implement save logic here
-    const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
-    const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
+    //const appointmentTime = (document.getElementById('txtAppointmentTime') as HTMLInputElement)?.value;
+    //const appointmentEndTime = (document.getElementById('txtAppointmentEndTime') as HTMLInputElement)?.value;
 
     // Normalize StartDateTime / EndDateTime as Date first
     let baseStart = new Date(this.newAppointment.StartDateTime as any);
-    if (appointmentTime) {
-      const [hours, minutes] = appointmentTime.split(':').map(Number);
+    if (this.newAppointment.StartTime) {
+      const [hours, minutes] = this.newAppointment.StartTime.split(':').map(Number);
       baseStart.setHours(hours, minutes, 0, 0);
     }
 
     let baseEnd = new Date(this.newAppointment.EndDateTime as any || baseStart);
-    if (appointmentEndTime) {
-      const [hours, minutes] = appointmentEndTime.split(':').map(Number);
+    if (this.newAppointment.EndTime) {
+      const [hours, minutes] = this.newAppointment.EndTime.split(':').map(Number);
       baseEnd.setHours(hours, minutes, 0, 0);
     }
 

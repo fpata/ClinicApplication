@@ -1,106 +1,149 @@
 <div class="container-fluid">
-    <br />
-    <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-    <table class="table table-striped">
-        <thead>
-            <tr>
+  <br />
+  <div class="rounded" style="border:0.5px solid lightblue;">
+    <div class="row d-none d-md-block">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><button type="button" id="btnAddReport" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal" (click)="AddReport()">Add Report</button></td>
-            </tr>
-            <tr>
-            <th>Date</th>
-            <th>Report Name</th>
-            <th>Doctor Name</th>
-            <th>Report Finding</th>
-            <th>Download Report</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-            @for(report of reports; track report.ID) {
-            <tr>
+                <td><button type="button" id="btnAddReport" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#addReportModal" (click)="AddReport()">Add Report</button></td>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <th>Report Name</th>
+                <th>Doctor Name</th>
+                <th>Report Finding</th>
+                <th>Operations</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(report of reports; track report.ID) {
+              <tr>
                 <td>{{report.ReportDate}}</td>
                 <td>{{report.ReportName}}</td>
                 <td>{{report.DoctorName}}</td>
                 <td>{{report.ReportDetails}}</td>
-                <td>Download</td>
-                <td> 
-                  <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addReportModal" (click)="EditReport(report.ID)">&nbsp;Edit</button>
-                  &nbsp;&nbsp;<button class="btn btn-secondary" type="button" (click)="DeleteReport(report.ID)">&nbsp;Delete</button>
-                 </td>  
-            </tr>
-        }
-        </tbody>
-    </table>
+                <td>
+                  <button class="btn btn-primary" (click)="DownloadReport(report.ReportFilePath)" title="Download Report" type="button">
+                    <i class="bi bi-cloud-download-fill"></i></button>&nbsp;&nbsp;
+                  <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addReportModal"
+                    (click)="EditReport(report.ID)" title="Edit Report"><i class="bi bi-person-fill-gear"></i></button>
+                  &nbsp;&nbsp;<button class="btn btn-secondary" type="button"
+                    (click)="DeleteReport(report.ID)" title="Delete Report"><i class="bi bi-person-fill-x"></i></button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="row d-block d-md-none">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          @for(report of reports; track report.ID) {
+          <tr>
+            <td>
+              <div class="d-flex justify-content-between align-items-center mb-3 border rounded p-2">
+                <div style="display: block;">
+                  Report Date : {{report.ReportDate}} <br>
+                  Report Name : {{report.ReportName}} <br>
+                  Doctor Name : {{report.DoctorName}} <br>
+                  Report Finding : {{report.ReportDetails}} <br>
+                </div>
+                <div>
+                  <button  type="button" class="btn btn-primary" (click)="DownloadReport(report.ReportFilePath)" title="Download Report">
+                    <i class="bi bi-cloud-download-fill" ></i></button>&nbsp;&nbsp;
+                  <button class="btn btn-primary mb-2" type="button" data-bs-toggle="modal"
+                    data-bs-target="#addReportModal" (click)="EditReport(report.ID)"><i class="bi bi-person-fill-gear"></i></button>
+                  &nbsp;&nbsp;<button class="btn btn-secondary" type="button"
+                    (click)="DeleteReport(report.ID)"><i class="bi bi-person-fill-x"></i></button>
+                </div>
+              </div>
+            </td>
+          </tr>
+          }
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- Modal -->
-<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static"  id="addReportModal" tabindex="-1" aria-labelledby="addReportModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="apptModalLabel">Add Reports</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
-            </div>
-            <div class="modal-body">
-                <br />
-                <div class="row">
-                    <div class="col">
-                      <label for="txtReportDate" class="form-label" >Report Date</label>
-                    </div>
-                    <div class="col">
-                      <input type="date" id="txtReportDate" class="form-control" min="2024-01-01" max="2025-12-31" [ngModel]="this.newReport?.ReportDate" (ngModelChange)="newReport.ReportDate = $event">
-                    </div>
-                </div>
-                <br />
-                <div class="row">
-                    <div class="col">
-                      <label for="txtReportName" class="form-label">Report Name</label>
-                    </div>
-                    <div class="col">
-                      <input type="text" id="txtReportName" class="form-control" [ngModel]="this.newReport?.ReportName" (ngModelChange)="newReport.ReportName = $event">
-                    </div>
-                  </div>
-                  <br />
-                  <div class="row">
-                    <div class="col">
-                      <label for="txtDoctorName" class="form-label">Doctor Name</label>
-                    </div>
-                    <div class="col">
-                      <input type="text" id="txtDoctorName" class="form-control" [ngModel]="this.newReport?.DoctorName" (ngModelChange)="newReport.DoctorName = $event">
-                    </div>
-                  </div>
-                  <br />
-                  <div class="row">
-                    <div class="col">
-                      <label for="txtReportFinding" class="form-label">Findings</label>
-                    </div>
-                    <div class="col">
-                      <textarea type="text" id="txtReportFinding" class="form-control" rows="2" [ngModel]="this.newReport?.ReportDetails" (ngModelChange)="newReport.ReportDetails = $event"></textarea>
-                    </div>
-                  </div>
-                  <br />
-                  <div class="row">
-                    <div class="col">
-                      <label for="txtUploadReportFile" class="form-label">Upload Report</label>
-                    </div>
-                    <div class="col">
-                      <input type="file" id="txtUploadReportFile" class="form-control">
-                    </div>
-                  </div>
-                  <br />
-                  <div>
-                    <input type="hidden" id="hdReportId" value="" />
-                  </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveReport()">Save changes</button>
-            </div>
+<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addReportModal" tabindex="-1"
+  aria-labelledby="addReportModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="apptModalLabel">Add Reports</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtReportDate" class="form-label">Report Date</label>
+          </div>
+          <div class="col">
+            <input type="date" id="txtReportDate" class="form-control" min="2024-01-01" max="2025-12-31"
+              [ngModel]="this.newReport?.ReportDate" (ngModelChange)="newReport.ReportDate = $event">
+          </div>
         </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtReportName" class="form-label">Report Name</label>
+          </div>
+          <div class="col">
+            <input type="text" id="txtReportName" class="form-control" [ngModel]="this.newReport?.ReportName"
+              (ngModelChange)="newReport.ReportName = $event">
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtDoctorName" class="form-label">Doctor Name</label>
+          </div>
+          <div class="col">
+            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors" [displayWith]="displayName"
+              (selectItem)="newReport.DoctorID = $event.UserID; newReport.DoctorName = $event.FirstName + ' ' + $event.LastName">
+            </app-typeahead>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col">
+            <label for="txtReportFinding" class="form-label">Findings</label>
+          </div>
+          <div class="col">
+            <textarea type="text" id="txtReportFinding" class="form-control" rows="2"
+              [ngModel]="this.newReport?.ReportDetails" (ngModelChange)="newReport.ReportDetails = $event"></textarea>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-12">
+         <app-file-upload (uploadComplete)="onFileUploaded($event)"></app-file-upload>
+          </div>
+        </div>
+        <br />
+        <div>
+          <input type="hidden" id="hdReportId" value="" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveReport()">Save
+          changes</button>
+      </div>
     </div>
+  </div>
 </div>
