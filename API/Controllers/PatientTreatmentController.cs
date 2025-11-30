@@ -49,9 +49,56 @@ namespace ClinicManager.Controllers
         public async Task<ActionResult<PatientTreatment>> Post(PatientTreatment treatment)
         {
             _context.PatientTreatments.Add(treatment);
-            await _context.SaveChangesAsync();
+            int ID = await _context.SaveChangesAsync();
+            SaveBillingRecord(ID, treatment, true);         
             _logger.LogInformation($"Created new patient treatment with ID: {treatment.ID}");
             return CreatedAtAction(nameof(Get), new { id = treatment.ID }, treatment);
+        }
+
+        private void SaveBillingRecord(int ID, PatientTreatment treatment, bool IsCreate)
+        {
+            var billingRecord = new BillingRecord
+            {
+                TreatmentID = ID,
+                PatientID = treatment.PatientID,
+                DoctorID = treatment.DoctorID,
+                PatientName = "", // You might want to fetch and set the actual patient name
+                DoctorName = "",  // You might want to fetch and set the actual doctor name
+                TreatmentName = treatment.TreatmentPlan,
+                ServiceDate = DateTime.Now,
+                PostedDate = DateTime.Now,
+                BalanceDue = treatment.EstimatedCost ?? 0,
+                CreatedBy = treatment.CreatedBy,
+                CreatedDate = DateTime.Now,
+                DiscountTotal = 0,
+                Subtotal = treatment.EstimatedCost ?? 0,
+                TaxTotal = 0,
+                Total = treatment.EstimatedCost ?? 0,
+                IsActive = 1,
+                ModifiedBy = treatment.CreatedBy,
+                ModifiedDate = DateTime.Now,
+                Status = Models.Enums.BillingStatus.Submitted,
+                AmountPaid = 0
+            };
+            if (IsCreate)
+            {
+                _context.Entry(billingRecord).State = EntityState.Added;
+                _context.BillingRecords.Add(billingRecord);
+            }
+            else
+            {
+                BillingRecord? bilrec = _context.BillingRecords
+                .Where(br => br.TreatmentID == ID && br.PatientID == treatment.PatientID)
+                .FirstOrDefault();
+                if (bilrec != null)
+                {
+                    if (treatment.EstimatedCost != 0 && treatment.EstimatedCost != bilrec.Total)
+                    {
+                        _context.Entry(billingRecord).State = EntityState.Modified;
+                        _context.BillingRecords.Update(billingRecord);
+                    }
+                }
+            }
         }
 
         [HttpPut("{id}")]

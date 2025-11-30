@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 
 namespace ClinicManager.Controllers
@@ -98,5 +99,63 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Deleted billing record with ID: {id}");
             return NoContent();
         }
+
+
+        [HttpPost("search")]
+        public async Task<ActionResult<IEnumerable<BillingRecord>>> Search([FromBody] BillingRecord searchCriteria)
+        {
+            _logger.LogInformation("Searching billing records with provided criteria");
+            IQueryable<BillingRecord> query = _context.BillingRecords;
+
+            if (searchCriteria.PatientID != 0 & searchCriteria.PatientID != null)
+            {
+                query = query.Where(br => br.PatientID == searchCriteria.PatientID);
+            }
+            if (searchCriteria.DoctorID != 0  && searchCriteria.DoctorID != null)
+            {
+                query = query.Where(br => br.DoctorID == searchCriteria.DoctorID);
+            }
+            if(searchCriteria.TreatmentID != 0 && searchCriteria.TreatmentID != null)
+            {
+                query = query.Where(br => br.TreatmentID == searchCriteria.TreatmentID);
+            }
+            if(searchCriteria.Total != 0 && searchCriteria.Total != null)
+            {
+                query = query.Where(br => br.Total == searchCriteria.Total );
+            }
+            if (searchCriteria.BalanceDue != 0 && searchCriteria.BalanceDue != null)
+            {
+                query = query.Where(br => br.BalanceDue == searchCriteria.BalanceDue );
+            }
+            if (searchCriteria.Status != null && searchCriteria.Status != null)
+            {
+                query = query.Where(br => br.Status == searchCriteria.Status);
+            }
+            if(!String.IsNullOrWhiteSpace(searchCriteria.PatientName))
+            {
+                query = query.Where(br => br.PatientName!.Contains(searchCriteria.PatientName!));
+            }
+            // Add more criteria as needed
+            // Get total count before pagination
+            var totalCount = await query.CountAsync();
+            var results = await query
+                .Select(model => model)
+                .AsNoTracking()
+                .OrderByDescending(a => a.TreatmentID)
+                .Skip((searchCriteria.PageNumber - 1) * searchCriteria.PageSize)
+                .Take(searchCriteria.PageSize)
+                .ToListAsync();
+            var hasMoreRecords = (searchCriteria.PageNumber * searchCriteria.PageSize) < totalCount;
+            var message = results.Count > 0 ? "Records found." : "No Billing Information found.";
+            var response = new SearchResultsBillingRecord
+            {
+                billingRecords = results,
+                TotalCount = totalCount,
+                HasMoreRecords = hasMoreRecords,
+                Message = message
+            };
+            return Ok(response);
+        }
+         
     }
 }

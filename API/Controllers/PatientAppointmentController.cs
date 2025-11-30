@@ -132,7 +132,7 @@ namespace ClinicManager.Controllers
            
             
             _logger.LogInformation($"Updated patient appointment with ID: {id}");
-            return NoContent();
+            return CreatedAtAction(nameof(Get), new { id = appointment.ID }, appointment); ;
         }
 
         [HttpPatch("{id}")]

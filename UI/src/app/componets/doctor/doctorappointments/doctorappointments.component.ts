@@ -131,6 +131,12 @@ export class DoctorAppointmentsComponent {
   EditAppointment(ID: number) {
     this.newAppointment = Object.assign({}, this.searchResult.PatientAppointments?.find(a => a.ID === ID));
     this.appointmentDateString = this.util.formatDate(this.newAppointment.StartDateTime, 'yyyy-MM-dd');
+    this.newAppointment.StartTime = this.util.formatDate(this.newAppointment.StartDateTime, 'HH:mm');
+    this.newAppointment.EndTime = this.util.formatDate(this.newAppointment.EndDateTime, 'HH:mm'); 
+    this.newAppointment.PatientName = this.newAppointment.PatientName || 'Unknown Patient';
+    this.newAppointment.PatientID = this.newAppointment.PatientID || 0;
+    this.newAppointment.DoctorName = this.newAppointment.DoctorName || 'General';
+    this.newAppointment.DoctorID = this.newAppointment.DoctorID || 0;
   }
 
   DeleteAppointment(ID: number) {
@@ -150,8 +156,8 @@ export class DoctorAppointmentsComponent {
   SaveAppointment() {
     // Implement save logic here
     const appointmentToSave = { ...this.newAppointment };
-    appointmentToSave.StartDateTime = new Date(this.appointmentDateString + 'T' + appointmentToSave.StartTime);
-    appointmentToSave.EndDateTime = new Date(this.appointmentDateString + 'T' + appointmentToSave.EndTime);
+    appointmentToSave.StartDateTime = this.util.createAppointmentDateTimeFromString(this.appointmentDateString , appointmentToSave.StartTime + ':00');
+    appointmentToSave.EndDateTime = this.util.createAppointmentDateTimeFromString(this.appointmentDateString , appointmentToSave.EndTime + ':00');
     if (appointmentToSave.ID === 0) {
       this.patientAppointmentService.createPatientAppointment(appointmentToSave).subscribe({
         next: (result: PatientAppointment) => {
@@ -160,6 +166,7 @@ export class DoctorAppointmentsComponent {
           if (this.searchResult.PatientAppointments == null || this.searchResult.PatientAppointments == undefined)
             this.searchResult.PatientAppointments = [];
           this.searchResult.PatientAppointments?.push(result);
+          setTimeout(() => this.AddEventsToScheduler(this.searchResult.PatientAppointments || []), 500);
         },
         error: (err: any) => {
           this.messageService.error('Error occurred while creating appointment.');
@@ -172,9 +179,10 @@ export class DoctorAppointmentsComponent {
         next: (result: PatientAppointment) => {
           this.messageService.success('Appointment updated successfully.');
           // Call API with the populated appointment BEFORE clearing the form
-          const index = this.searchResult.PatientAppointments?.findIndex(a => a.ID === result.ID);
+          const index = this.searchResult.PatientAppointments?.findIndex(a => a.ID === appointmentToSave.ID);
           if (index !== undefined && index >= 0 && this.searchResult.PatientAppointments) {
-            this.searchResult.PatientAppointments[index] = result;
+            this.searchResult.PatientAppointments[index] = appointmentToSave;
+              setTimeout(() => this.AddEventsToScheduler(this.searchResult.PatientAppointments || []), 500);
           }
         },
         error: (err: any) => {
@@ -183,7 +191,6 @@ export class DoctorAppointmentsComponent {
           // Keep the form values so user can retry
         }
       });
-      setTimeout(() => this.AddEventsToScheduler(this.searchResult.PatientAppointments || []), 500);
     }
   }
 

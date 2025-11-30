@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using ClinicManager.DAL;
 using Castle.Core.Smtp;
+using ClinicManager.Models.Enums;
 
 namespace ClinicManager.Controllers
 {
@@ -64,7 +65,7 @@ namespace ClinicManager.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName!), // userName validated above
                 new Claim("userid", user.ID.ToString()),
-                new Claim("usertype", user.UserType?.ToString()),
+                new Claim("usertype", user?.UserType?.ToString() ?? UserType.Patient.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

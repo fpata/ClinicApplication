@@ -251,7 +251,7 @@ namespace ClinicManager.Controllers
                 return StatusCode(500, "Internal server error");
             }
 
-            return CreatedAtAction(nameof(Get), new { id = patient.ID }, patient);
+            return CreatedAtAction (nameof(Get), new { id = patient.ID }, patient);
         }
 
         [HttpPut("{id}")]
@@ -298,18 +298,18 @@ namespace ClinicManager.Controllers
                 if (patient.PatientAppointments?.Any() == true)
                 {
                     var incomingIds = patient.PatientAppointments.Select(pa => pa.ID).ToHashSet();
-                    var appointmentsToRemove = existingPatient.PatientAppointments
+                    var appointmentsToRemove = existingPatient?.PatientAppointments?
                         .Where(pa => !incomingIds.Contains(pa.ID))
                         .ToList();
 
-                    foreach (var toRemove in appointmentsToRemove)
+                    foreach (var toRemove in appointmentsToRemove ?? Enumerable.Empty<PatientAppointment>())
                     {
                         _context.PatientAppointments.Remove(toRemove);
                     }
 
                     foreach (var incomingAppointment in patient.PatientAppointments)
                     {
-                        var existingAppointment = existingPatient.PatientAppointments
+                        var existingAppointment = existingPatient?.PatientAppointments?
                             .FirstOrDefault(pa => pa.ID == incomingAppointment.ID);
 
                         if (existingAppointment != null)
@@ -332,13 +332,13 @@ namespace ClinicManager.Controllers
                             incomingAppointment.CreatedBy = incomingAppointment.CreatedBy ?? 1;
                             incomingAppointment.ModifiedBy = incomingAppointment.ModifiedBy ?? 1;
                             incomingAppointment.IsActive = 1;
-                            existingPatient.PatientAppointments?.Add(incomingAppointment);
+                            existingPatient?.PatientAppointments?.Add(incomingAppointment);
                         }
                     }
                 }
                 else if (existingPatient.PatientAppointments?.Any() == true)
                 {
-                    foreach (var appointment in existingPatient.PatientAppointments.ToList())
+                    foreach (var appointment in existingPatient?.PatientAppointments?.ToList() ?? Enumerable.Empty<PatientAppointment>())
                     {
                         _context.PatientAppointments.Remove(appointment);
                     }
@@ -348,18 +348,18 @@ namespace ClinicManager.Controllers
                 if (patient.PatientReports?.Any() == true)
                 {
                     var incomingIds = patient.PatientReports.Select(pr => pr.ID).ToHashSet();
-                    var reportsToRemove = existingPatient.PatientReports
+                    var reportsToRemove = existingPatient?.PatientReports?
                         .Where(pr => !incomingIds.Contains(pr.ID))
                         .ToList();
 
-                    foreach (var toRemove in reportsToRemove)
+                    foreach (var toRemove in reportsToRemove ?? Enumerable.Empty<PatientReport>())
                     {
                         _context.PatientReports.Remove(toRemove);
                     }
 
                     foreach (var incomingReport in patient.PatientReports)
                     {
-                        var existingReport = existingPatient.PatientReports
+                        var existingReport = existingPatient?.PatientReports?
                             .FirstOrDefault(pr => pr.ID == incomingReport.ID);
 
                         if (existingReport != null)
@@ -380,13 +380,13 @@ namespace ClinicManager.Controllers
                             incomingReport.CreatedBy = incomingReport.CreatedBy ?? 1;
                             incomingReport.ModifiedBy = incomingReport.ModifiedBy ?? 1;
                             incomingReport.IsActive = 1;
-                            existingPatient.PatientReports?.Add(incomingReport);
+                            existingPatient?.PatientReports?.Add(incomingReport);
                         }
                     }
                 }
-                else if (existingPatient.PatientReports?.Any() == true)
+                else if (existingPatient?.PatientReports?.Any() == true)
                 {
-                    foreach (var report in existingPatient.PatientReports.ToList())
+                    foreach (var report in existingPatient?.PatientReports?.ToList() ?? Enumerable.Empty<PatientReport>())
                     {
                         _context.PatientReports.Remove(report);
                     }
@@ -396,18 +396,18 @@ namespace ClinicManager.Controllers
                 if (patient.PatientVitals?.Any() == true)
                 {
                     var incomingIds = patient.PatientVitals.Select(pv => pv.ID).ToHashSet();
-                    var vitalsToRemove = existingPatient.PatientVitals
+                    var vitalsToRemove = existingPatient?.PatientVitals?
                         .Where(pv => !incomingIds.Contains(pv.ID))
                         .ToList();
 
-                    foreach (var toRemove in vitalsToRemove)
+                    foreach (var toRemove in vitalsToRemove ?? Enumerable.Empty<PatientVitals>())
                     {
                         _context.PatientVitals.Remove(toRemove);
                     }
 
                     foreach (var incomingVital in patient.PatientVitals)
                     {
-                        var existingVital = existingPatient.PatientVitals
+                        var existingVital = existingPatient?.PatientVitals?
                             .FirstOrDefault(pv => pv.ID == incomingVital.ID);
 
                         if (existingVital != null)
@@ -428,11 +428,11 @@ namespace ClinicManager.Controllers
                             incomingVital.CreatedBy = incomingVital.CreatedBy ?? 1;
                             incomingVital.ModifiedBy = incomingVital.ModifiedBy ?? 1;
                             incomingVital.IsActive = 1;
-                            existingPatient.PatientVitals?.Add(incomingVital);
+                            existingPatient?.PatientVitals?.Add(incomingVital);
                         }
                     }
                 }
-                else if (existingPatient.PatientVitals?.Any() == true)
+                else if (existingPatient?.PatientVitals?.Any() == true)
                 {
                     foreach (var vital in existingPatient.PatientVitals.ToList())
                     {
@@ -445,7 +445,7 @@ namespace ClinicManager.Controllers
                 {
                     var incomingTreatment = patient.PatientTreatment;
 
-                    if (existingPatient.PatientTreatment != null && existingPatient.PatientTreatment.ID == incomingTreatment.ID)
+                    if (existingPatient?.PatientTreatment != null && existingPatient?.PatientTreatment.ID == incomingTreatment.ID)
                     {
                         // Update existing treatment
                         _context.Entry(existingPatient.PatientTreatment).CurrentValues.SetValues(incomingTreatment);
@@ -459,24 +459,25 @@ namespace ClinicManager.Controllers
                         if (incomingTreatment.PatientTreatmentDetails?.Any() == true)
                         {
                             var incomingDetailIds = incomingTreatment.PatientTreatmentDetails.Select(ptd => ptd.ID).ToHashSet();
-                            var detailsToRemove = existingPatient.PatientTreatment.PatientTreatmentDetails
+                            var detailsToRemove = existingPatient?.PatientTreatment?.PatientTreatmentDetails?
                                 .Where(ptd => !incomingDetailIds.Contains(ptd.ID))
                                 .ToList();
+                           
 
-                            foreach (var toRemove in detailsToRemove)
-                            {
-                                _context.PatientTreatmentDetails.Remove(toRemove);
-                            }
-
+                                foreach (var toRemove in detailsToRemove ?? Enumerable.Empty<PatientTreatmentDetail>())
+                                {
+                                    _context.PatientTreatmentDetails.Remove(toRemove);
+                                }
+                           
                             foreach (var incomingDetail in incomingTreatment.PatientTreatmentDetails)
                             {
-                                var existingDetail = existingPatient.PatientTreatment.PatientTreatmentDetails
+                                var existingDetail = existingPatient?.PatientTreatment.PatientTreatmentDetails?
                                     .FirstOrDefault(ptd => ptd.ID == incomingDetail.ID);
 
                                 if (existingDetail != null)
                                 {
                                     _context.Entry(existingDetail).CurrentValues.SetValues(incomingDetail);
-                                    existingDetail.PatientTreatmentID = existingPatient.PatientTreatment.ID;
+                                    existingDetail.PatientTreatmentID = existingPatient?.PatientTreatment.ID;
                                     existingDetail.PatientID = id;
                                     existingDetail.UserID = patient.UserID;
                                     existingDetail.ModifiedDate = DateTime.Now;
@@ -485,7 +486,7 @@ namespace ClinicManager.Controllers
                                 else
                                 {
                                     incomingDetail.ID = 0;
-                                    incomingDetail.PatientTreatmentID = existingPatient.PatientTreatment.ID;
+                                    incomingDetail.PatientTreatmentID = existingPatient?.PatientTreatment.ID;
                                     incomingDetail.PatientID = id;
                                     incomingDetail.UserID = patient.UserID;
                                     incomingDetail.CreatedDate = DateTime.Now;
@@ -493,7 +494,10 @@ namespace ClinicManager.Controllers
                                     incomingDetail.CreatedBy = incomingDetail.CreatedBy ?? 1;
                                     incomingDetail.ModifiedBy = incomingDetail.ModifiedBy ?? 1;
                                     incomingDetail.IsActive = 1;
-                                    existingPatient.PatientTreatment.PatientTreatmentDetails?.Add(incomingDetail);
+                                    if (existingPatient?.PatientTreatment?.PatientTreatmentDetails != null)
+                                    {
+                                        existingPatient.PatientTreatment.PatientTreatmentDetails.Add(incomingDetail);
+                                    }
                                 }
                             }
                         }
@@ -505,7 +509,7 @@ namespace ClinicManager.Controllers
                             }
                         }
                     }
-                    else if (existingPatient.PatientTreatment == null)
+                    else if (existingPatient?.PatientTreatment == null)
                     {
                         // Create new treatment
                         var newTreatment = new PatientTreatment
@@ -524,7 +528,7 @@ namespace ClinicManager.Controllers
                         newTreatment.PatientID = id;
                         newTreatment.UserID = patient.UserID;
 
-                        existingPatient.PatientTreatment = newTreatment;
+                        existingPatient?.PatientTreatment = newTreatment;
 
                         if (incomingTreatment.PatientTreatmentDetails?.Any() == true)
                         {
@@ -547,7 +551,7 @@ namespace ClinicManager.Controllers
                         }
                     }
                 }
-                else if (existingPatient.PatientTreatment != null)
+                else if (existingPatient?.PatientTreatment != null)
                 {
                     // Remove existing treatment and details
                     if (existingPatient.PatientTreatment.PatientTreatmentDetails?.Any() == true)

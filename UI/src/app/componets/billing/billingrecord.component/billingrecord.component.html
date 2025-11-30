@@ -1,108 +1,124 @@
 <div class="container-fluid">
-<br />
-<div class=""></div>
-    <div class="row">
-    <div class="col-2">
-        <label for="txtPatientName" class="form-label">Patient Name</label>
+    <div class="accordion" id="patientBillingAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                    aria-expanded="true" aria-controls="collapseOne">
+                    Search Patients and Billing
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                data-bs-parent="#patientBillingAccordion">
+                <div class="accordion-body">
+                    <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="txtPatientName" class="form-label">Patient Name</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="text" id="txtPatientName" class="form-control" name="txtPatientName"
+                                    [ngModel]="billingRecord?.PatientName"
+                                    (ngModelChange)="billingRecord.PatientName = $event" required>
+                            </div>
+                            <div class="col-1">&nbsp;</div>
+                            <div class="col-2">
+                                <label for="txtDoctorName" class="form-label">Doctor Name</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="text" id="txtDoctorName" class="form-control" name="txtDoctorName"
+                                    [ngModel]="billingRecord?.DoctorName"
+                                    (ngModelChange)="billingRecord.DoctorName = $event" required>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="txtTreatmentName" class="form-label">Treatment Name</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="text" id="txtTreatmentName" class="form-control" name="txtTreatmentName"
+                                    [ngModel]="billingRecord?.TreatmentName"
+                                    (ngModelChange)="billingRecord.TreatmentName = $event" required>
+                            </div>
+                            <div class="col-1">&nbsp;</div>
+                            <div class="col-2">
+                                <label for="txtServiceDate" class="form-label">Service Date</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="Date" id="txtServiceDate" class="form-control" name="txtServiceDate"
+                                    [ngModel]="billingRecord?.ServiceDate"
+                                    (ngModelChange)="billingRecord.ServiceDate = $event" required>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="txtPatientId" class="form-label">Patient Id</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="number" id="txtPatientId" class="form-control" name="txtPatientId"
+                                    [ngModel]="billingRecord?.PatientID"
+                                    (ngModelChange)="billingRecord.PatientID = $event" required>
+                            </div>
+                            <div class="col-1">&nbsp;</div>
+                            <div class="col-2">
+                                <label for="txtDoctorId" class="form-label">Doctor ID</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="number" id="txtDoctorId" class="form-control" name="txtDoctorId"
+                                    [ngModel]="billingRecord?.DoctorID"
+                                    (ngModelChange)="billingRecord.DoctorID = $event" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-3">
-        <input type="text" id="txtPatientName" class="form-control"  name="txtPatientName" [ngModel]="billingRecord?.PatientName" (ngModelChange)="billingRecord.PatientName = $event" required>
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <button class="btn btn-primary me-2" (click)="Search()">Search</button>
+            <button class="btn btn-secondary" (click)="Clear()">Clear</button>
+        </div>
     </div>
-    <div class="col-1">&nbsp;</div>
-    <div class="col-2">
-        <label for="txtDoctorName" class="form-label">Doctor Name</label>
-    </div>
-    <div class="col-3">
-        <input type="text" id="txtDoctorName" class="form-control"  name="txtDoctorName" [ngModel]="billingRecord?.DoctorName" (ngModelChange)="billingRecord.DoctorName = $event" required>
+    <div class="row mt-4">
+        <div class="col-12">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Doctor Name</th>
+                        <th>Treatment Name</th>
+                        <th>Service Date</th>
+                        <th>Status</th>
+                        <th>Subtotal</th>
+                        <th>Tax Total</th>
+                        <th>Discount Total</th>
+                        <th>Total</th>
+                        <th>Amount Paid</th>
+                        <th>Balance Due</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(record of searchResult.billingRecords; track $index) {
+                    <tr>
+                        <td>{{ record.PatientName }}</td>
+                        <td>{{ record.DoctorName }}</td>
+                        <td>{{ record.TreatmentName }}</td>
+                        <td>{{ record.ServiceDate | date:'shortDate' }}</td>
+                        <td>{{ record.Status }}</td>
+                        <td>{{ record.Subtotal | currency }}</td>
+                        <td>{{ record.TaxTotal | currency }}</td>
+                        <td>{{ record.DiscountTotal | currency }}</td>
+                        <td>{{ record.Total | currency }}</td>
+                        <td>{{ record.AmountPaid | currency }}</td>
+                        <td>{{ record.BalanceDue | currency }}</td>
+                        <td>{{ record.Notes }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-<br />
-<div class="row">
-    <div class="col-2">
-        <label for="txtTreatmentName" class="form-label">Treatment Name</label>
-    </div>
-    <div class="col-3">
-        <input type="text" id="txtTreatmentName" class="form-control"  name="txtTreatmentName" [ngModel]="billingRecord?.TreatmentName" (ngModelChange)="billingRecord.TreatmentName = $event" required>
-    </div>
-    <div class="col-1">&nbsp;</div>
-    <div class="col-2">
-        <label for="txtServiceDate" class="form-label">Service Date</label>
-    </div>
-    <div class="col-3">
-        <input type="Date" id="txtServiceDate" class="form-control"  name="txtServiceDate" [ngModel]="billingRecord?.ServiceDate" (ngModelChange)="billingRecord.ServiceDate = $event" required>
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-2">
-        <label for="txtTreatmentName" class="form-label">Treatment Name</label>
-    </div>
-    <div class="col-3">
-        <input type="text" id="txtTreatmentName" class="form-control"  name="txtTreatmentName" [ngModel]="billingRecord?.TreatmentName" (ngModelChange)="billingRecord.TreatmentName = $event" required>
-    </div>
-    <div class="col-1">&nbsp;</div>
-    <div class="col-2">
-        <label for="txtStatus" class="form-label">Status</label>
-    </div>
-    <div class="col-3">
-        <input type="text" id="txtStatus" class="form-control"  name="txtStatus" [ngModel]="billingRecord?.Status" (ngModelChange)="billingRecord.Status = $event" required>
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-2">
-        <label for="txtSubtotal" class="form-label">Subtotal</label>
-    </div>
-    <div class="col-3">
-        <input type="number" id="txtSubtotal" class="form-control"  name="txtSubtotal" [ngModel]="billingRecord?.Subtotal" (ngModelChange)="billingRecord.Subtotal = $event" required>
-    </div>
-    <div class="col-1">&nbsp;</div>
-    <div class="col-2">
-        <label for="txtTaxTotal" class="form-label">Tax Total</label>
-    </div>
-    <div class="col-3">
-        <input type="number" id="txtTaxTotal" class="form-control"  name="txtTaxTotal" [ngModel]="billingRecord?.TaxTotal" (ngModelChange)="billingRecord.TaxTotal = $event" required>
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-2">
-        <label for="txtDiscounts" class="form-label">Discount Total</label>
-    </div>
-    <div class="col-3">
-        <input type="number" id="txtDiscounts" class="form-control"  name="txtDiscounts" [ngModel]="billingRecord?.DiscountTotal" (ngModelChange)="billingRecord.DiscountTotal = $event" required>
-    </div>
-    <div class="col-1">&nbsp;</div>
-    <div class="col-2">
-        <label for="txtTotal" class="form-label">Total</label>
-    </div>
-    <div class="col-3">
-        <input type="number" id="txtTotal" class="form-control"  name="txtTotal" [ngModel]="billingRecord?.Total" (ngModelChange)="billingRecord.Total = $event" required>
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-2">
-        <label for="txtAmountPaid" class="form-label">Amount Paid</label>
-    </div>
-    <div class="col-3">
-        <input type="number" id="txtAmountPaid" class="form-control"  name="txtAmountPaid" [ngModel]="billingRecord?.AmountPaid" (ngModelChange)="billingRecord.AmountPaid = $event" required>
-    </div>
-    <div class="col-1">&nbsp;</div>
-    <div class="col-2">
-        <label for="txtBalanceDue" class="form-label">Balance Due</label>
-    </div>
-    <div class="col-3">
-        <input type="number" id="txtBalanceDue" class="form-control"  name="txtBalanceDue" [ngModel]="billingRecord?.BalanceDue" (ngModelChange)="billingRecord.BalanceDue = $event" required>
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-2">
-        <label for="txtNotes" class="form-label">Notes</label>
-    </div>
-    <div class="col-9">
-        <textarea id="txtNotes" class="form-control"  name="txtNotes" rows=2 [ngModel]="billingRecord?.Notes" (ngModelChange)="billingRecord.Notes = $event" required></textarea>
-    </div>
-</div>
-<br />

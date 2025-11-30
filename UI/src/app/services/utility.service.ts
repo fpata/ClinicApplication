@@ -153,6 +153,33 @@ export class UtilityService {
     return new Date(localDate.getTime() - (tzOffset * 60000));
   }
 
+/**
+   * Handles appointment date/time conversion with timezone consideration
+   * @param date Base date
+   * @param timeString Time in HH:mm format
+   * @returns Date object with correct local time
+   */
+  createAppointmentDateTimeFromString(stringDate: string, timeString: string): Date {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const appointmentDate = new Date(stringDate);
+    
+    // Create date using local timezone components
+    const localDate = new Date(
+        appointmentDate.getFullYear(),
+        appointmentDate.getMonth(),
+        appointmentDate.getDate(),
+        hours,
+        minutes,
+        0,
+        0
+    );
+
+    // Adjust for timezone offset
+    const tzOffset = localDate.getTimezoneOffset();
+    return new Date(localDate.getTime() - (tzOffset * 60000));
+  }
+
+
   /**
    * Creates a default appointment time range
    * @returns Object containing start and end times

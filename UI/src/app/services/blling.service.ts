@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BillingRecord } from '../models/billing.model';
+import { BillingRecord, SearchResultBillingRecord } from '../models/billing.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -34,5 +34,9 @@ private apiUrl = `${environment.API_BASE_URL}/Billing`; // Adjust as needed
 
   deleteBilling(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
+  }
+
+  searchBillings(searchCriteria: BillingRecord): Observable<SearchResultBillingRecord> {
+    return this.http.post<SearchResultBillingRecord>(`${this.apiUrl}/search`, searchCriteria, { headers: this.getAuthHeaders() });
   }
 }

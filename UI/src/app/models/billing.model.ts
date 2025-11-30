@@ -60,3 +60,10 @@ export enum InsuranceStatus {
   Paid = 'Paid',
   Partial = 'Partial'
 }
+
+export class SearchResultBillingRecord extends BillingRecord{
+   TotalCount:number;
+  HasMoreRecords:boolean
+  Message:string;
+  billingRecords:BillingRecord[] ;  
+}
