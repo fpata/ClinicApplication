@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule,Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,8 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   imports: [FormsModule, CommonModule, RouterModule],
-  standalone: true
+  standalone: true,
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
   username = '';

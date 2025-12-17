@@ -1,4 +1,4 @@
-import { Component, ViewChild, viewChild } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { map, Observable, Subscription } from 'rxjs';
 import { DataService } from '../../../services/data.service';
@@ -17,7 +17,9 @@ import { PatientAppointmentService } from '../../../services/patient-appointment
   selector: 'app-patient-appointment',
   imports: [SchedulerComponent, DayPilotModule, FormsModule,TypeaheadComponent],
   templateUrl: './patient-appointment.component.html',
-  styleUrls: ['./patient-appointment.component.css']
+  styleUrls: ['./patient-appointment.component.css'],
+  standalone: true,
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class PatientAppointmentComponent {
 

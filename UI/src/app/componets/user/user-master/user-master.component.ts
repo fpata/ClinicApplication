@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { UserSearch } from "../user-search/user-search.component";
 import { UserInfoComponent } from "../user-info/user-info.component";
 import { UserQuickCreateComponent } from "../user-quick-create/user-quick-create.component";
@@ -16,7 +16,8 @@ import { MessageService } from '../../../services/message.service';
   imports: [UserSearch, UserInfoComponent, UserQuickCreateComponent],
   templateUrl: './user-master.component.html',
   styleUrls: ['./user-master.component.css'],
-  providers: [HttpClient]
+  providers: [HttpClient],
+  changeDetection:ChangeDetectionStrategy.OnPush  
 })
 export class UserMasterComponent {
 

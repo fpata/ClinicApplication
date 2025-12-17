@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component , ChangeDetectionStrategy} from '@angular/core';
 import { UtilityService } from '../../../services/utility.service';
 import { SearchModel, SearchResultModel} from '../../../models/search.model';
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding 
@@ -18,7 +18,8 @@ import { PagingComponent } from '../../../common/paging/paging.component';
   imports: [FormsModule, PagingComponent],
   templateUrl: './user-search.component.html',
   styleUrls: ['./user-search.component.css'],
-  providers: [SearchService, UserService]
+  providers: [SearchService, UserService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserSearch {
 

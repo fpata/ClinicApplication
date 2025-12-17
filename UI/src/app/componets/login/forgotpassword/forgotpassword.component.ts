@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectionStrategy } from '@angular/core';
 import { MessageService } from '../../../services/message.service';
 import { FormsModule } from '@angular/forms';
 import { UtilityService } from '../../../services/utility.service';
@@ -7,7 +7,9 @@ import { UtilityService } from '../../../services/utility.service';
   selector: 'app-forgotpassword.component',
   imports: [FormsModule],
   templateUrl: './forgotpassword.component.html',
-  styleUrl: './forgotpassword.component.css'
+  styleUrl: './forgotpassword.component.css',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordComponent {
   constructor(private messageService: MessageService, private utilityService: UtilityService) { }

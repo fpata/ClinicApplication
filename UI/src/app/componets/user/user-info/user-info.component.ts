@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
@@ -14,7 +14,9 @@ import { MessageService } from '../../../services/message.service';
   selector: 'app-user-info',
   imports: [FormsModule, CommonModule],
   templateUrl: './user-info.component.html',
-  styleUrls: ['./user-info.component.css']
+  styleUrls: ['./user-info.component.css'],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserInfoComponent {
 

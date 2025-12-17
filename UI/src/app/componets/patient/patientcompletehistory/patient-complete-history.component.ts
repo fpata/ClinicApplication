@@ -11,7 +11,8 @@ import { User } from '../../../models/user.model';
   imports: [FormsModule],
   templateUrl: './patient-complete-history.component.html',
   styleUrls: ['./patient-complete-history.component.css'],
-  standalone: true
+  standalone: true,
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class PatientCompleteHistoryComponent {

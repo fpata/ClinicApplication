@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
@@ -12,7 +12,8 @@ import { DataService } from '../../../services/data.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './user-quick-create.component.html',
-  styleUrls: ['./user-quick-create.component.css']
+  styleUrls: ['./user-quick-create.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserQuickCreateComponent {
 

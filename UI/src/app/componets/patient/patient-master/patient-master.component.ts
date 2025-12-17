@@ -1,4 +1,4 @@
-import { Component, viewChild, ViewChild } from '@angular/core';
+import { Component, viewChild, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { PatientAppointmentComponent } from '../patient-appointment/patient-appointment.component';
 import { PatientHistoryComponent } from '../patient-history/patient-history.component';
 import { PatientReportComponent } from '../patient-report/patient-report.component';
@@ -27,7 +27,8 @@ import { User } from '../../../models/user.model';
   imports: [PatientAppointmentComponent, PatientHistoryComponent, PatientReportComponent,
     PatientSearchComponent, PatientTreatmentComponent,
     PatientCompleteHistoryComponent, PatientQuickCreateComponent, PatientVitalsComponent],
-  providers: [HttpClient]
+  providers: [HttpClient],
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class PatientMasterComponent {
   selectedTab: string = 'Search';

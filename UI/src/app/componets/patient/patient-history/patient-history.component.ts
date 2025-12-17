@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Patient } from '../../../models/patient.model';
 import { User } from '../../../models/user.model';
@@ -9,7 +9,9 @@ import { DataService } from '../../../services/data.service';
   selector: 'app-patient-history',
   imports: [FormsModule],
   templateUrl: './patient-history.component.html',
-  styleUrls: ['./patient-history.component.css']
+  styleUrls: ['./patient-history.component.css'],
+  standalone: true,
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class PatientHistoryComponent {
 patient: Patient; // Assuming patient is defined and has the necessary properties

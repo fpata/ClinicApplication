@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectionStrategy } from '@angular/core';
 import { PatientReport } from '../../../models/patient-report.model';
 import { User, UserType } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
@@ -16,7 +16,9 @@ import { PatientReportService } from '../../../services/patient-report.service';
   selector: 'app-patient-report',
   imports: [FormsModule, FileUploadComponent, TypeaheadComponent],
   templateUrl: './patient-report.component.html',
-  styleUrls: ['./patient-report.component.css']
+  styleUrls: ['./patient-report.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true
 })
 export class PatientReportComponent {
 

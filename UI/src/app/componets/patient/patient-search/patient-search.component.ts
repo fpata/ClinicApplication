@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SearchModel, SearchResultModel } from '../../../models/search.model';
@@ -20,7 +20,8 @@ import { PagingComponent } from "../../../common/paging/paging.component";
   imports: [CommonModule, FormsModule, PagingComponent],
   templateUrl: './patient-search.component.html',
   styleUrls: ['./patient-search.component.css'],
-  providers: [HttpClient]
+  providers: [HttpClient],
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class PatientSearchComponent {
 

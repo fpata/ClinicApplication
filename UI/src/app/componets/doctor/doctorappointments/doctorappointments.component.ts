@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { AppointmentSearchResponse, PatientAppointment } from '../../../models/patient-appointment.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
@@ -20,7 +20,9 @@ import { PagingComponent } from '../../../common/paging/paging.component';
   imports: [SchedulerComponent, FormsModule, TypeaheadComponent, PagingComponent],
   templateUrl: './doctorappointments.component.html',
   styleUrls: ['./doctorappointments.component.css'],
-  providers: [HttpClient]
+  providers: [HttpClient],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DoctorAppointmentsComponent {
 

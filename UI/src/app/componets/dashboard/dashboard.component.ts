@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild , ChangeDetectionStrategy} from '@angular/core';
 import { SchedulerComponent } from "../../common/scheduler/scheduler";
 import { AppointmentSearchResponse, PatientAppointment } from '../../models/patient-appointment.model';
 import { PatientAppointmentService } from '../../services/patient-appointment.service';
@@ -20,7 +20,9 @@ import { LoginResponse } from '../../services/login.service';
    imports: [SchedulerComponent, PagingComponent, FormsModule, TypeaheadComponent],
    templateUrl: './dashboard.component.html',
    styleUrls: ['./dashboard.component.css'],
-   providers: []
+   providers: [],
+   standalone: true,
+   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
 

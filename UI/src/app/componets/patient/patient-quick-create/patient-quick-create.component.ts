@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../../models/user.model';
@@ -16,7 +16,8 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
   templateUrl: './patient-quick-create.component.html',
   styleUrls: ['./patient-quick-create.component.css'],
-  providers: []
+  providers: [],
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class PatientQuickCreateComponent implements OnInit {
   patient: Patient = new Patient();

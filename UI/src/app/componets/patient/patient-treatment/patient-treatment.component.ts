@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectionStrategy } from '@angular/core';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { DataService } from '../../../services/data.service';
 import { UtilityService } from '../../../services/utility.service';
@@ -12,7 +12,9 @@ import { Patient } from '../../../models/patient.model';
   selector: 'app-patient-treatment',
   imports: [FormsModule],
   templateUrl: './patient-treatment.component.html',
-  styleUrls: ['./patient-treatment.component.css']
+  styleUrls: ['./patient-treatment.component.css'],
+  standalone: true,
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class PatientTreatmentComponent {
 

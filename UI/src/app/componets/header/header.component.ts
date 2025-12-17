@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { LoginResponse } from '../../services/login.service';
@@ -8,7 +8,9 @@ import { Router } from '@angular/router';
   selector: 'app-header',
   standalone: true,
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrl: './header.component.css',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Header implements OnInit, OnDestroy {
   loginUser: LoginResponse | null = null;
