@@ -1,4 +1,4 @@
-import { Component,ChangeDetectionStrategy } from '@angular/core';
+import { Component,ChangeDetectionStrategy,ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +23,7 @@ export class PatientVitalsComponent {
   private patientSubscription: Subscription = new Subscription();
 
   constructor(private dataService: DataService, private messageService: MessageService,
-    private util: UtilityService, private authService :AuthService
+    private util: UtilityService, private authService :AuthService, private cdRef:ChangeDetectorRef
   ) {
       this.vitals = new PatientVitals();
   }
@@ -37,9 +37,11 @@ export class PatientVitalsComponent {
             
             Object.assign(this.vitals, this.patient.PatientVitals[this.patient.PatientVitals.length - 1] as PatientVitals); // get the last vitals entry
         } 
+        this.cdRef.detectChanges();
       },
       error: (error: any) => {
         this.messageService.error('Error subscribing to patient changes:', error?.message || error?.toString());
+        this.cdRef.detectChanges();
       }
     });
   }
@@ -58,6 +60,7 @@ export class PatientVitalsComponent {
         this.vitals = selectedVital;
       }
     }
+    this.cdRef.detectChanges();
   }
 
   AddPatientVitals() {
@@ -71,5 +74,6 @@ export class PatientVitalsComponent {
       }
       this.patient.PatientVitals.push(this.vitals);
     }
+    this.cdRef.detectChanges();
   }
 }

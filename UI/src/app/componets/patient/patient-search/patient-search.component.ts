@@ -1,4 +1,4 @@
-import { Component,ChangeDetectionStrategy } from '@angular/core';
+import { Component,ChangeDetectionStrategy , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SearchModel, SearchResultModel } from '../../../models/search.model';
@@ -35,7 +35,7 @@ export class PatientSearchComponent {
 
   constructor(private searchService: SearchService, private patientService: PatientService,
     private dataService: DataService, private userService: UserService, private router: Router, private util: UtilityService
-    , private messageService: MessageService
+    , private messageService: MessageService, private cdRef:ChangeDetectorRef
   ) {
     this.searchPatient = new SearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
@@ -43,7 +43,7 @@ export class PatientSearchComponent {
     this.searchResult = new SearchResultModel();
   }
 
-  ngInit() {
+  ngOnInit() {
     this.clearSearchClicked = false;
     this.pageSize = this.dataService.getConfig()?.pageSize || 10;
   }
@@ -60,6 +60,7 @@ export class PatientSearchComponent {
       this.searchLengthConstraintError = false;
       this.clearSearchClicked = true;
     }
+    this.cdRef.detectChanges();
   }
 
   SearchPatient() {
@@ -75,6 +76,7 @@ export class PatientSearchComponent {
         this.searchResult = result;
         this.totalItems = result.TotalCount || 0;
         this.clearSearchClicked = false;
+        this.cdRef.detectChanges();
       },
       error: (err) => {
         // Optionally handle error
@@ -82,6 +84,7 @@ export class PatientSearchComponent {
         console.error(err);
         this.searchResult = new SearchResultModel();
         this.clearSearchClicked = false;
+        this.cdRef.detectChanges();
       }
     });
   }
@@ -101,6 +104,7 @@ export class PatientSearchComponent {
     this.clearSearchClicked = true;
     this.dataService.setQuickCreateMode(false);
     this.dataService.setUserId(0);
+    this.cdRef.detectChanges();
   }
 
   OnPatientIdClick(patientId: number, userId: number) {
@@ -109,14 +113,19 @@ export class PatientSearchComponent {
         next: (user: User) => {
           this.dataService.setUser(user);
           this.dataService.setUserId(user.ID);
+          this.cdRef.detectChanges();
         },
         error: (err: Error) => {
           console.error('Error fetching user data:', err);
+          this.cdRef.detectChanges();
         }
       });
       this.patientService.AddNewPatient();
-      document.getElementById('tbPersonalInfo-tab')?.click();
+      setTimeout(() => {
+            document.getElementById('tbPersonalInfo-tab')?.click();
+          }, 100);
     }
+    
   }
 
   AddNewUser() {
@@ -130,10 +139,12 @@ export class PatientSearchComponent {
         next: () => {
           this.messageService.success('Patient deleted successfully');
           // Clear the patient from data service
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           console.error('Error deleting patient:', error);
           this.messageService.error('Error occurred while deleting patient. Please try again.');
+          this.cdRef.detectChanges();
         }
       });
     }
@@ -151,6 +162,10 @@ export class PatientSearchComponent {
           this.dataService.setUserId(newUser.ID);
           let index = newUser?.Patients?.length === 0 ? 0 : newUser?.Patients.length - 1;
           this.dataService.setPatient(newUser?.Patients[index] || null);
+          this.cdRef.detectChanges();
+          setTimeout(() => {
+            document.getElementById('tbPersonalInfo-tab')?.click();
+          }, 100);
         },
         error: (err) => {
           console.error('Error fetching patient data:', err);
@@ -167,19 +182,20 @@ export class PatientSearchComponent {
         this.dataService.setUser(user);
         this.dataService.setUserId(user.ID);
         this.dataService.setQuickCreateMode(isQuickCreateMode);
+        this.cdRef.detectChanges();
       },
       error: (err: Error) => {
         console.error('Error fetching user data:', err);
       }
     });
     this.patientService.AddNewPatient();
-
   }
 
   onPageChanged($event: number) {
     this.currentPage = $event;
     this.searchPatient.pageNumber = this.currentPage;
     this.SearchPatient();
+    this.cdRef.detectChanges();
   }
 }
 

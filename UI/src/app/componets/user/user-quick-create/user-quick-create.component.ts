@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component ,ChangeDetectorRef, NgZone} from '@angular/core';
 import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
@@ -22,7 +22,9 @@ user: User | null = null;
   // Subscription to handle user changes
 
 
-  constructor(private dataService: DataService, private messageService: MessageService, private userService: UserService) {
+  constructor(private dataService: DataService, private messageService: MessageService, private userService: UserService,
+    private cdRef: ChangeDetectorRef, private ngZone: NgZone
+  ) {
    this.InitializeNewUser();
   }
 
@@ -33,6 +35,7 @@ user: User | null = null;
 ClearUserInformation() {
     this.dataService.setUser(null);
     this.InitializeNewUser();
+    this.cdRef.detectChanges();
   }
 
   DeleteUserInformation() {
@@ -48,9 +51,11 @@ ClearUserInformation() {
         next: () => {
           this.messageService.success('User deleted successfully');
           this.ClearUserInformation(); // Clear the user from data service
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           this.messageService.error('Error deleting user: ' + error.message);
+          this.cdRef.detectChanges();
         }
       });
     }
@@ -62,22 +67,34 @@ ClearUserInformation() {
       // Create new user (POST)
       this.userService.createUser(this.user).subscribe({
         next: (newUser) => {
-          this.messageService.success('User created successfully');
-          this.dataService.setUser(newUser); // Update with the new user data including ID
+          this.ngZone.run(() => {
+            this.messageService.success('User created successfully');
+            this.dataService.setUser(newUser); // Update with the new user data including ID
+            this.cdRef.detectChanges();
+          });
         },
         error: (error) => {
-          this.messageService.error('Error creating user: ' + error.message);
+          this.ngZone.run(() => {
+            this.messageService.error('Error creating user: ' + error.message);
+            this.cdRef.detectChanges();
+          });
         }
       });
     } else {
       // Update existing user (PUT)
       this.userService.updateUser(this.user.ID, this.user).subscribe({
         next: (updatedUser) => {
-          this.messageService.success('User updated successfully');
-          this.dataService.setUser(updatedUser); // Update with the latest user data
+          this.ngZone.run(() => {
+            this.messageService.success('User updated successfully');
+            this.dataService.setUser(updatedUser); // Update with the latest user data
+            this.cdRef.detectChanges();
+          });
         },
         error: (error) => {
-          this.messageService.error('Error updating user: ' + error.message);
+          this.ngZone.run(() => {
+            this.messageService.error('Error updating user: ' + error.message);
+            this.cdRef.detectChanges();
+          });
         }
       });
     }

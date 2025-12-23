@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
@@ -28,7 +28,9 @@ export class UserInfoComponent {
   private userSubscription: Subscription;
 
 
-  constructor(private dataService: DataService, private messageService: MessageService, private userService: UserService) {
+  constructor(private dataService: DataService, private messageService: MessageService, private userService: UserService,
+    private cdRef: ChangeDetectorRef
+  ) {
     // Don't initialize with new objects - wait for actual data
     this.user = null;
   }
@@ -44,9 +46,11 @@ export class UserInfoComponent {
           this.address = this.user.Address;
           this.contact = this.user.Contact;
         }
+        this.cdRef.detectChanges();
       },
       error: (err: Error) => {
         console.error('Error occurred while updating user data:', err);
+        this.cdRef.detectChanges();
       },
       complete: () => {
         console.log('User subscription completed');
@@ -69,6 +73,7 @@ export class UserInfoComponent {
       this.user.Address.CorrState = this.user.Address.PermState;
       this.user.Address.CorrCountry = this.user.Address.PermCountry;
       this.user.Address.CorrZipCode = this.user.Address.PermZipCode;
+      this.cdRef.detectChanges();
     }
   }
 
@@ -96,6 +101,7 @@ export class UserInfoComponent {
         next: () => {
           this.messageService.success('User deleted successfully');
           this.ClearUserInformation(); // Clear the user from data service
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           this.messageService.error('Error deleting user: ' + error.message);
@@ -112,9 +118,11 @@ export class UserInfoComponent {
         next: (newUser) => {
           this.messageService.success('User created successfully');
           this.dataService.setUser(newUser); // Update with the new user data including ID
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           this.messageService.error('Error creating user: ' + error.message);
+          this.cdRef.detectChanges();
         }
       });
     } else {
@@ -123,9 +131,11 @@ export class UserInfoComponent {
         next: (updatedUser) => {
           this.messageService.success('User updated successfully');
           this.dataService.setUser(updatedUser); // Update with the latest user data
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           this.messageService.error('Error updating user: ' + error.message);
+          this.cdRef.detectChanges();
         }
       });
     }
@@ -140,5 +150,6 @@ export class UserInfoComponent {
     this.address.ID = 0;
     this.contact = this.user.Contact;
     this.contact.ID = 0;
+    this.cdRef.detectChanges();
   }
 }

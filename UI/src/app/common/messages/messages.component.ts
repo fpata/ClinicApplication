@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -11,7 +11,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: 'messages.component.html', 
   styleUrls: ['messages.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MessagesComponent implements OnInit, OnDestroy {
     @Input() id = 1;
@@ -20,23 +21,27 @@ export class MessagesComponent implements OnInit, OnDestroy {
     messageSubscription: Subscription;
     routeSubscription: Subscription;
 
-    constructor(private router: Router, private messageService: MessageService) { }
+    constructor(private router: Router, private messageService: MessageService, private cdRef: ChangeDetectorRef, private ngZone: NgZone) { }
 
     ngOnInit() {
         this.messageSubscription = this.messageService.onMessage(this.id)
             .subscribe(message => {
-                if (!message.message) {
-                    this.messages = this.messages.filter(x => x.keepAfterRouteChange);
-                    this.messages.forEach(x => delete x.keepAfterRouteChange);
-                    return;
-                }
+                this.ngZone.run(() => {
+                    if (!message.message) {
+                        this.messages = this.messages.filter(x => x.keepAfterRouteChange);
+                        this.messages.forEach(x => delete x.keepAfterRouteChange);
+                        this.cdRef.markForCheck();
+                        return;
+                    }
 
-                this.messages.push(message);
+                    this.messages.push(message);
+                    this.cdRef.markForCheck();
 
-                if (message.autoClose) {
-                    const timeout = message.autoCloseTimeout || 3000;
-                    setTimeout(() => this.removeMessage(message), timeout);
-                }
+                    if (message.autoClose) {
+                        const timeout = message.autoCloseTimeout || 3000;
+                        setTimeout(() => this.removeMessage(message), timeout);
+                    }
+                });
            });
 
         this.routeSubscription = this.router.events.subscribe(event => {
@@ -56,6 +61,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
         
         setTimeout(() => {
             this.messages = this.messages.filter(x => x !== message);
+            this.cdRef.markForCheck();
         }, 250);
     }
 

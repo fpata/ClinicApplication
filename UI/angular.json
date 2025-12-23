@@ -62,7 +62,11 @@
               "buildTarget": "clinicmanager_UI:build:production"
             },
             "development": {
-              "buildTarget": "clinicmanager_UI:build:development"
+              "buildTarget": "clinicmanager_UI:build:development",
+              "ssl": true,
+              "sslKey": "ssl/key.pem",
+              "sslCert": "ssl/cert.pem",
+              "hmr": false
             }
           },
           "defaultConfiguration": "development"

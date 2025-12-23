@@ -1,4 +1,4 @@
-import { Component , ChangeDetectionStrategy} from '@angular/core';
+import { Component , ChangeDetectionStrategy,ChangeDetectorRef} from '@angular/core';
 import { UtilityService } from '../../../services/utility.service';
 import { SearchModel, SearchResultModel} from '../../../models/search.model';
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding 
@@ -32,7 +32,7 @@ export class UserSearch {
   clearSearchClicked: boolean = false;
 
   constructor(private searchService: SearchService, private dataService: DataService, private userService: UserService,
-    private util: UtilityService, private messageService: MessageService, private router: Router) {
+    private util: UtilityService, private messageService: MessageService, private router: Router, private cdRef: ChangeDetectorRef ) {
     this.searchPatient = new SearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date((Date.now() + 180 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // Default to 180 days from now
     this.searchPatient.StartDate = this.util.formatDate(new Date((Date.now() - 365 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'); // 365 days ago
@@ -50,6 +50,7 @@ validateSearchInput() {
       this.searchLengthConstraintError = false;
       this.clearSearchClicked = true;
     }
+    this.cdRef.detectChanges();
   }
 
   SearchUser() {
@@ -65,6 +66,7 @@ validateSearchInput() {
           this.OnUserIdClick(this.searchResult.Results[0].UserID);
         }
         this.totalItems = this.searchResult.TotalCount || 0;
+        this.cdRef.detectChanges();
       },
       error: (err:any) => {
         // Optionally handle error
@@ -72,6 +74,7 @@ validateSearchInput() {
         console.error(err);
         this.searchResult.Results = [];
         this.clearSearchClicked = false;
+        this.cdRef.detectChanges();
       }
     });
   }
@@ -81,6 +84,7 @@ validateSearchInput() {
     this.searchPatient = new SearchModel(this.util);
     this.searchResult = new SearchResultModel();
     this.clearSearchClicked = true;
+    this.cdRef.detectChanges();
   }
 
   
@@ -90,9 +94,11 @@ validateSearchInput() {
       next: (user: User) => {
         this.dataService.setUser(user);
         this.router.navigate(['/user-info']);
+
       },
       error: (err: any) => {
        this.messageService.error('Error fetching user data:', err);
+       this.cdRef.detectChanges();
       }
     });
   }
@@ -119,6 +125,7 @@ validateSearchInput() {
 
     ClearUserInformation() {
     this.dataService.setUser(null);
+    this.cdRef.detectChanges();
   }
 
   onPageChange($event: number) {

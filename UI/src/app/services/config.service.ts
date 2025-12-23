@@ -7,7 +7,7 @@ import { AppConfig } from '../models/appconfig.model';
   providedIn: 'root'
 })
 export class AppConfigService {
-  private apiUrl = '/api/configs'; // Adjust API endpoint as needed
+  private apiUrl = '/api/config'; // Adjust API endpoint as needed
 
   constructor(private http: HttpClient) {}
 
