@@ -1,4 +1,4 @@
-import { Component,ChangeDetectionStrategy , ChangeDetectorRef} from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SearchModel, SearchResultModel } from '../../../models/search.model';
@@ -21,7 +21,7 @@ import { PagingComponent } from "../../../common/paging/paging.component";
   templateUrl: './patient-search.component.html',
   styleUrls: ['./patient-search.component.css'],
   providers: [HttpClient],
-  changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientSearchComponent {
 
@@ -35,7 +35,7 @@ export class PatientSearchComponent {
 
   constructor(private searchService: SearchService, private patientService: PatientService,
     private dataService: DataService, private userService: UserService, private router: Router, private util: UtilityService
-    , private messageService: MessageService, private cdRef:ChangeDetectorRef
+    , private messageService: MessageService, private cdRef: ChangeDetectorRef
   ) {
     this.searchPatient = new SearchModel(this.util);
     this.searchPatient.EndDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
@@ -113,19 +113,22 @@ export class PatientSearchComponent {
         next: (user: User) => {
           this.dataService.setUser(user);
           this.dataService.setUserId(user.ID);
+          this.messageService.info('Please add patient information for the selected user.');
           this.cdRef.detectChanges();
+
         },
         error: (err: Error) => {
           console.error('Error fetching user data:', err);
+          this.messageService.error('Error fetching user data. Please try again.');
           this.cdRef.detectChanges();
         }
       });
-      this.patientService.AddNewPatient();
-      setTimeout(() => {
+      // this.patientService.AddNewPatient();
+      /*setTimeout(() => {
             document.getElementById('tbPersonalInfo-tab')?.click();
-          }, 100);
+          }, 100);*/
     }
-    
+
   }
 
   AddNewUser() {
@@ -160,6 +163,10 @@ export class PatientSearchComponent {
           // console.log('User data:', user);
           this.dataService.setUser(newUser);
           this.dataService.setUserId(newUser.ID);
+          if (newUser.Patients === undefined || newUser.Patients === null || newUser.Patients.length === 0) {
+            this.messageService.error('No patient data found for the selected user.');
+            return;
+          }
           let index = newUser?.Patients?.length === 0 ? 0 : newUser?.Patients.length - 1;
           this.dataService.setPatient(newUser?.Patients[index] || null);
           this.cdRef.detectChanges();
@@ -172,7 +179,7 @@ export class PatientSearchComponent {
         }
       });
     } else {
-      this.AddNewPatient(result, false);
+      this.messageService.error('Patient ID not available. Please click on add patient info link to add patient information.');
     }
   }
 
@@ -189,6 +196,9 @@ export class PatientSearchComponent {
       }
     });
     this.patientService.AddNewPatient();
+    setTimeout(() => {
+      document.getElementById('tbPersonalInfo-tab')?.click();
+    }, 100);
   }
 
   onPageChanged($event: number) {

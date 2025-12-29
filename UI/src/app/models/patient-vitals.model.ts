@@ -14,12 +14,15 @@ import { BaseEntity } from "./base.model";
     BloodPressureSystolic?: number;
     BloodPressureDiastolic?: number;
     HeartRate?: number;
-    Temperature?: number; // in Celsius
-    Weight?: number; // in kg
-    Height?: number; // in cm
+    Temperature?: string; // in Celsius
+    Weight?: string; // in kg
+    Height?: string; // in cm
     OxygenSaturation?: number;
     RespiratoryRate?: number;
     Notes?: string;
     RecordedBy?: number;
     BloodType?: string;
+    SugarFasting?: number;
+    SugarPostPrandial?: number;
+    SugarRandom?: number;
   }

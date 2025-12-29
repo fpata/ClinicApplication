@@ -17,9 +17,9 @@ namespace ClinicManager.Models
         public int? BloodPressureSystolic { get; set; }
         public int? BloodPressureDiastolic { get; set; }
         public int? HeartRate { get; set; }
-        public int? Temperature { get; set; } // in Celsius
-        public int? Weight { get; set; } // in kg
-        public int? Height { get; set; } // in cm
+        public string? Temperature { get; set; } // in Celsius
+        public string? Weight { get; set; } // in kg
+        public string? Height { get; set; } // in cm
         public int? OxygenSaturation { get; set; }
         public int? RespiratoryRate { get; set; }
         
@@ -29,6 +29,11 @@ namespace ClinicManager.Models
 
         [StringLength(100)]
         public string? BloodType { get; set; }
+
+        public int? SugarFasting { get; set; }
+        public int? SugarRandom { get; set; }
+
+        public int? SugarPostPrandial { get; set; }
 
 
         public int? RecordedBy { get; set; } = 1;

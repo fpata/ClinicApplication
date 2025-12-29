@@ -15,7 +15,7 @@
             <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="number" id="txtBloodPressureSystolic" class="form-control"
                     [ngModel]="vitals?.BloodPressureSystolic"
-                    (ngModelChange)="this.vitals.BloodPressureSystolic = $event" />
+                    (ngModelChange)="vitals.BloodPressureSystolic = $event" />
             </div>
             <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
             <div class="col-xs-12 col-sm-5 col-md-2">
@@ -51,7 +51,7 @@
                 <label for="txtWeight" class="form-label">Weight:</label>
             </div>
             <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="number" id="txtWeight" class="form-control" [ngModel]="vitals?.Weight"
+                <input type="text" id="txtWeight" class="form-control" [ngModel]="vitals?.Weight"
                     (ngModelChange)="vitals.Weight = $event" />
             </div>
             <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
@@ -102,6 +102,34 @@
         <br />
         <div class="row">
             <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSugarFasting" class="form-label">Sugar Fasting</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="number" id="txtSugarFasting" class="form-control" [ngModel]="vitals?.SugarFasting"
+                    (ngModelChange)="vitals.SugarFasting = $event" />
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSugarPostPrandial" class="form-label">Sugar Post Prandial:</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="number" id="txtSugarPostPrandial" class="form-control" [ngModel]="vitals?.SugarPostPrandial"
+                    (ngModelChange)="vitals.SugarPostPrandial = $event" />
+            </div>
+        </div>
+        <br />
+         <div class="row">
+            <div class="col-xs-12 col-sm-5 col-md-2">
+                <label for="txtSugarRandom" class="form-label">Sugar Random:</label>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-3">
+                <input type="number" id="txtSugarRandom" class="form-control" [ngModel]="vitals?.SugarRandom"
+                    (ngModelChange)="vitals.SugarRandom = $event" />
+            </div>
+        </div>
+        <br />
+         <div class="row">
+            <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtRecordedDate" class="form-label">Recorded Date:</label>
             </div>
             <div class="col-xs-12 col-sm-5 col-md-3">
@@ -137,6 +165,9 @@
                             <th>Oxygen Saturation</th>
                             <th>Respiratory Rate</th>
                             <th>Blood Type</th>
+                            <th>Sugar Fasting</th>
+                            <th>Sugar Post Prandial</th>
+                            <th>Sugar Random</th>
                             <th>Notes</th>
                             <th>Recorded Date</th>
                             <th>Recorded By</th>
@@ -158,6 +189,9 @@
                             <td>{{vital?.OxygenSaturation}}</td>
                             <td>{{vital?.RespiratoryRate}}</td>
                             <td>{{vital?.BloodType}}</td>
+                            <td>{{vital?.SugarFasting}}</td>
+                            <td>{{vital?.SugarPostPrandial}}</td>
+                            <td>{{vital?.SugarRandom}}</td>
                             <td>{{vital?.Notes}}</td>
                             <td>{{vital?.RecordedDate}}</td>
                             <td>{{vital?.RecordedBy}}</td>
@@ -179,12 +213,16 @@
                                     <div style="display: block;">
                                         <div style="display: block;">
                                             <small class="text-muted">Blood Pressure : {{vital.BloodPressureSystolic}}/
-                                                {{vital.BloodPressureDiastolic}} <br> Heart Rate: {{vital.HeartRate}} <br>
-                                                Temperature: {{vital.Temperature}} <br> Respiration Rate :
-                                                {{vital.RespiratoryRate}} <br> Oxygen Saturation :
-                                                {{vital.OxygenSaturation}}
-                                                <br> Blood Type: {{vital.BloodType}} <br> Recorded Date:
-                                                {{vital.RecordedDate}}
+                                                {{vital.BloodPressureDiastolic}} 
+                                                <br> Heart Rate: {{vital.HeartRate}} 
+                                                <br> Temperature: {{vital.Temperature}} 
+                                                <br> Respiration Rate : {{vital.RespiratoryRate}} 
+                                                <br> Oxygen Saturation : {{vital.OxygenSaturation}}
+                                                <br> Blood Type: {{vital.BloodType}} 
+                                                <br> Recorded Date: {{vital.RecordedDate}} 
+                                                <br> Sugar Fasting: {{vital.SugarFasting}} 
+                                                <br> Sugar Post Prandial: {{vital.SugarPostPrandial}} 
+                                                <br> Sugar Random: {{vital.SugarRandom}}
                                             </small>
                                         </div>
                                     </div>

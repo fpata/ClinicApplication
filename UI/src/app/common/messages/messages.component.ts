@@ -38,7 +38,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
                     this.cdRef.markForCheck();
 
                     if (message.autoClose) {
-                        const timeout = message.autoCloseTimeout || 3000;
+                        const timeout = message.autoCloseTimeout || 500;
                         setTimeout(() => this.removeMessage(message), timeout);
                     }
                 });
@@ -59,10 +59,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
     removeMessage(message: Message) {
         if (!this.messages.includes(message)) return;
         
-        setTimeout(() => {
+        this.ngZone.run(() => {
             this.messages = this.messages.filter(x => x !== message);
             this.cdRef.markForCheck();
-        }, 250);
+        });
     }
 
     cssClass(message: Message) {

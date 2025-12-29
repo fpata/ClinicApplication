@@ -1,4 +1,4 @@
-import { Component, viewChild, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, viewChild, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { PatientAppointmentComponent } from '../patient-appointment/patient-appointment.component';
 import { PatientHistoryComponent } from '../patient-history/patient-history.component';
 import { PatientReportComponent } from '../patient-report/patient-report.component';
@@ -40,7 +40,7 @@ export class PatientMasterComponent {
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
   @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
   constructor(private dataService: DataService, private patientService: PatientService, private util: UtilityService,
-    private messageService: MessageService
+    private messageService: MessageService, private cdRef: ChangeDetectorRef
   ) { }
 
   tabSelectedEvent(event: MouseEvent) {
@@ -54,11 +54,13 @@ export class PatientMasterComponent {
     }
     this.selectedTab = targetElement.innerText;
      console.log("Selected Tab = " + this.selectedTab)
+     this.cdRef.detectChanges();
   }
 
   ClearPatientInformation() {
     this.dataService.setPatient(null);
     this.dataService.setUser(null);
+    this.cdRef.detectChanges();
    // this.patientCompleteHistoryComponent?.patientTreatments = []|null;
   }
 
@@ -87,6 +89,7 @@ export class PatientMasterComponent {
         }
       });
     }
+    this.cdRef.detectChanges();
   }
 
   AddNewPatient() {
@@ -96,6 +99,7 @@ export class PatientMasterComponent {
       return;
     }
     this.patientService.AddNewPatient();
+    this.cdRef.detectChanges();
   }
 
   SavePatientInformation() {
@@ -126,10 +130,12 @@ export class PatientMasterComponent {
         next: (savedPatient) => {
           this.messageService.success('Patient information saved successfully');
           this.dataService.setPatient(savedPatient);
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           console.error('Error creating patient:', error?.message || error?.toString());
           this.messageService.error('Error occurred while saving patient information. Please try again.');
+          this.cdRef.detectChanges();
         }
       });
     } else {
@@ -139,10 +145,12 @@ export class PatientMasterComponent {
           this.messageService.success('Patient information updated successfully');
           // Update the patient in data service with the returned updated patient
           this.dataService.setPatient(updatedPatient);
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           this.messageService.error('Error occurred while updating patient information. Please try again.');
           console.log('Error updating patient:', error);
+          this.cdRef.detectChanges();
         }
       });
     }
@@ -185,6 +193,7 @@ export class PatientMasterComponent {
       this.showQuickCreate = false;
       this.selectedTab = 'Search';
     }
+    this.cdRef.detectChanges();
   }
 
   QuickCreatePatient() {
@@ -201,6 +210,7 @@ export class PatientMasterComponent {
    
     // Clear any existing patient data
     this.ClearPatientInformation();
+    this.cdRef.detectChanges();
   }
 
   ngOnDestroy() {

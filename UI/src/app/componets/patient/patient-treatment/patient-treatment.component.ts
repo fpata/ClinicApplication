@@ -38,6 +38,10 @@ export class PatientTreatmentComponent {
           this.treatment = newPatient.PatientTreatment;
           this.newTreatmentDetail = null;
         }
+        else {
+          this.treatment = new PatientTreatment();
+          this.patient.PatientTreatment = this.treatment;
+        }
 
         //console.log('Patient updated:', this.patient);
       },
@@ -71,6 +75,7 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail.Tooth = '';
     this.newTreatmentDetail.Procedure = '';
     this.newTreatmentDetail.Prescription = '';
+    this.newTreatmentDetail.FollowUpInstructions = '';
     this.newTreatmentDetail.TreatmentDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
     this.newTreatmentDetail.CreatedBy = this.patient.UserID;
     this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
