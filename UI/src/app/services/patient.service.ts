@@ -50,11 +50,11 @@ export class PatientService {
    AddNewPatient() {
    
     var patient: Patient = new Patient();
-    patient.UserID = this.authService.getUser()?.ID || 0;
+    patient.UserID = this.dataService.getUser()?.ID || 0;
     
     patient.ID = 0; // New patient, so ID is 0
     patient.CreatedBy = this.authService.getUser()?.ID || 0;
-    patient.ModifiedBy = this.dataService.getUser()?.ID || 0;
+    patient.ModifiedBy = this.authService.getUser()?.ID || 0;
     patient.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     patient.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     patient.IsActive = 1;

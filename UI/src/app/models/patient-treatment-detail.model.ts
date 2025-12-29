@@ -18,4 +18,5 @@ export class PatientTreatmentDetail {
   patientTreatment?: PatientTreatment;
   FollowUpInstructions?: string;
   FollowUpDate?: string;
+  ProcedureTreatmentCost?: number;
 }

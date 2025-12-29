@@ -1,4 +1,4 @@
-import { Component,ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { DataService } from '../../../services/data.service';
 import { UtilityService } from '../../../services/utility.service';
@@ -14,7 +14,7 @@ import { Patient } from '../../../models/patient.model';
   templateUrl: './patient-treatment.component.html',
   styleUrls: ['./patient-treatment.component.css'],
   standalone: true,
-  changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientTreatmentComponent {
 
@@ -27,7 +27,7 @@ export class PatientTreatmentComponent {
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService, private util: UtilityService) { }
+  constructor(private dataService: DataService, private util: UtilityService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     // Subscribe to patient changes from the data service
@@ -37,10 +37,12 @@ export class PatientTreatmentComponent {
         if (newPatient && newPatient.PatientTreatment) {
           this.treatment = newPatient.PatientTreatment;
           this.newTreatmentDetail = null;
+          this.cdr.markForCheck();
         }
         else {
           this.treatment = new PatientTreatment();
           this.patient.PatientTreatment = this.treatment;
+          this.cdr.markForCheck();
         }
 
         //console.log('Patient updated:', this.patient);
@@ -62,7 +64,7 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail = new PatientTreatmentDetail();
     const ids = this.treatment?.PatientTreatmentDetails?.map(x => x.ID) || [];
     if (ids.length > 0) {
-      let minVal = Math.min(...ids) - 1 > 0 ? 0 :Math.min(...ids) - 1
+      let minVal = Math.min(...ids) - 1 > 0 ? 0 : Math.min(...ids) - 1
       this.newTreatmentDetail.ID = minVal;
     }
     else {
@@ -82,6 +84,8 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail.ModifiedBy = this.patient.UserID;
     this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.isEditOperation = false;
+    this.newTreatmentDetail.ProcedureTreatmentCost = 0;
+    this.cdr.markForCheck();
   }
 
 
@@ -95,6 +99,7 @@ export class PatientTreatmentComponent {
       }
     }
     this.isEditOperation = true
+    this.cdr.markForCheck();
   }
 
   DeleteTreatmentDetails(treatmentdetailID: number) {
@@ -103,6 +108,10 @@ export class PatientTreatmentComponent {
       if (index > -1) {
         this.treatment.PatientTreatmentDetails.splice(index, 1);
         alert('Treatment detail deleted successfully.');
+        this.treatment.ActualCost = this.calculateTotalCost();
+        this.patient.PatientTreatment = this.treatment;
+        this.dataService.setPatient(this.patient);
+        this.cdr.markForCheck();
       } else {
         alert('Treatment detail not found.');
       }
@@ -123,21 +132,38 @@ export class PatientTreatmentComponent {
         if (index > -1) {
           this.treatment.PatientTreatmentDetails[index] = { ...this.newTreatmentDetail };
         }
+        ;
       }
+
+      this.treatment.ActualCost = this.calculateTotalCost();
       this.patient.PatientTreatment = this.treatment;
       this.newTreatmentDetail = null;
       this.dataService.setPatient(this.patient);
       this.isEditOperation = false;
+      this.cdr.markForCheck()
     } else {
       alert('Please fill in all required fields.');
     }
   }
 
-
-  SetTreatmentValue<K extends keyof PatientTreatment>(key: K, value: PatientTreatment[K]) {
-    if (!this.treatment) {
-      this.treatment = new PatientTreatment();
+  private calculateTotalCost(): number {
+    let totalCost = 0;
+    if (this.treatment.PatientTreatmentDetails && this.treatment.PatientTreatmentDetails.length > 0) {
+      for (let detail of this.treatment.PatientTreatmentDetails) {
+        totalCost += detail.ProcedureTreatmentCost || 0;
+      }
     }
-    this.treatment[key] = value;
+    return totalCost;
+  }
+
+  // Method to sync treatment details with server-generated IDs after patient save
+  syncTreatmentDetailsWithServer(updatedPatient: Patient): void {
+    if (updatedPatient && updatedPatient.PatientTreatment && updatedPatient.PatientTreatment.PatientTreatmentDetails) {
+      // Update the treatment details with server-generated IDs
+      this.treatment = updatedPatient.PatientTreatment;
+      this.patient = updatedPatient;
+      this.cdr.markForCheck();
+    }
   }
 }
+

@@ -39,6 +39,7 @@ export class PatientMasterComponent {
 
   @ViewChild(PatientCompleteHistoryComponent) patientCompleteHistoryComponent: PatientCompleteHistoryComponent;
   @ViewChild(PatientQuickCreateComponent) quickCreateComponent!: PatientQuickCreateComponent;
+  @ViewChild(PatientTreatmentComponent) patientTreatmentComponent!: PatientTreatmentComponent;
   constructor(private dataService: DataService, private patientService: PatientService, private util: UtilityService,
     private messageService: MessageService, private cdRef: ChangeDetectorRef
   ) { }
@@ -130,6 +131,8 @@ export class PatientMasterComponent {
         next: (savedPatient) => {
           this.messageService.success('Patient information saved successfully');
           this.dataService.setPatient(savedPatient);
+          // Sync treatment details in child component with server-generated IDs
+          this.patientTreatmentComponent?.syncTreatmentDetailsWithServer(savedPatient);
           this.cdRef.detectChanges();
         },
         error: (error) => {
@@ -145,6 +148,8 @@ export class PatientMasterComponent {
           this.messageService.success('Patient information updated successfully');
           // Update the patient in data service with the returned updated patient
           this.dataService.setPatient(updatedPatient);
+          // Sync treatment details in child component with server-generated IDs
+          this.patientTreatmentComponent?.syncTreatmentDetailsWithServer(updatedPatient);
           this.cdRef.detectChanges();
         },
         error: (error) => {

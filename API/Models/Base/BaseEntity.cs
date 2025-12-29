@@ -23,5 +23,6 @@ namespace ClinicManager.Models
 
         public byte? IsActive { get; set; } = 1;
 
+      
     }
 }

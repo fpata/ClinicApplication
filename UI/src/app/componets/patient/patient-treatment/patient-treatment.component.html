@@ -6,7 +6,7 @@
       </div>
       <div class="col-10">
         <textarea id="txtChiefComplaint" class="form-control" row="2" [ngModel]="treatment?.ChiefComplaint"
-          (ngModelChange)="SetTreatmentValue('ChiefComplaint', $event)"></textarea>
+          (ngModelChange)="treatment.ChiefComplaint = $event"></textarea>
       </div>
     </div>
     <br />
@@ -16,7 +16,7 @@
       </div>
       <div class="col-10">
         <textarea id="txtClinicalFindings" class="form-control" row="2" [ngModel]="treatment?.ClinicalFindings"
-          (ngModelChange)="SetTreatmentValue('ClinicalFindings', $event)"></textarea>
+          (ngModelChange)="treatment.ClinicalFindings = $event"></textarea>
       </div>
     </div>
     <br />
@@ -26,7 +26,7 @@
       </div>
       <div class="col-10">
         <textarea id="txtDiagnosis" class="form-control" row="2" [ngModel]="treatment?.Diagnosis"
-          (ngModelChange)="SetTreatmentValue('Diagnosis', $event)"></textarea>
+          (ngModelChange)="treatment.Diagnosis = $event"></textarea>
       </div>
     </div>
     <br />
@@ -36,7 +36,7 @@
       </div>
       <div class="col-10">
         <textarea id="txtPrescription" class="form-control" row="2" [ngModel]="treatment?.Prescription"
-          (ngModelChange)="SetTreatmentValue('Prescription', $event)"></textarea>
+          (ngModelChange)="treatment.Prescription = $event"></textarea>
       </div>
     </div>
     <br />
@@ -59,16 +59,14 @@
         <label for="txtEstimatedCost" class="form-label">Estimated Cost</label>
       </div>
       <div class="col-3">
-        <input type="number" id="txtEstimatedCost" class="form-control" [ngModel]="treatment?.EstimatedCost"
-          (ngModelChange)="SetTreatmentValue('EstimatedCost', $event)">
+        <input type="number" id="txtEstimatedCost" class="form-control" [ngModel]="treatment?.EstimatedCost" (ngModelChange)= $event>
       </div>
       <div class="col-2">&nbsp;</div>
       <div class="col-2">
         <label for="txtActualCost" class="form-label">Actual Cost</label>
       </div>
       <div class="col-3">
-        <input type="number" id="txtActualCost" class="form-control" [ngModel]="treatment?.ActualCost"
-          (ngModelChange)="SetTreatmentValue('ActualCost', $event)">
+        <input type="number" id="txtActualCost" class="form-control" [ngModel]="treatment?.ActualCost" (ngModelChange)= $event>
       </div>
     </div>
     <br />
@@ -92,8 +90,9 @@
                 <th>Date</th>
                 <th>Tooth</th>
                 <th>Procedure</th>
-                <th>Advice/Medications</th>
+                <th>Prescription</th>
                 <th>Follow Up Instructions</th>
+                <th>Procedure Treatment Cost</th>
                 <th>Treatment ID</th>
                 <th>ID</th>
               </tr>
@@ -113,6 +112,7 @@
                 <td>{{treatmentdetail.Procedure}}</td>
                 <td>{{treatmentdetail.Prescription}}</td>
                 <td>{{treatmentdetail.FollowUpInstructions}}</td>
+                <td>{{treatmentdetail.ProcedureTreatmentCost}}</td>
                 <td>{{treatmentdetail.PatientTreatmentID}}</td>
                 <td>{{treatmentdetail.ID}}</td>
               </tr>
@@ -137,6 +137,7 @@
                       Tooth : {{treatmentdetail.Tooth}} <br>
                       Procedure: {{treatmentdetail.Tooth}} <br>
                       Prescription :{{treatmentdetail.Tooth}} <br>
+                      Procedure Cost : {{treatmentdetail.ProcedureTreatmentCost}} <br>
                       Treament Id: {{treatmentdetail.PatientTreatmentID}}<br>
                       ID : {{treatmentdetail.ID}}
                   </div>
@@ -219,6 +220,17 @@
             <textarea id="txtFollowUpInstructions" class="form-control" rows="2"
               [ngModel]="newTreatmentDetail?.FollowUpInstructions"
               (ngModelChange)="newTreatmentDetail.FollowUpInstructions = $event"></textarea>
+          </div>
+        </div>
+        <br />
+         <div class="row">
+          <div class="col">
+            <label for="txtTreatmentCost" class="form-label">Treatment Cost</label>
+          </div>
+          <div class="col">
+            <input type="number" id="txtTreatmentCost" class="form-control" rows="2"
+              [ngModel]="newTreatmentDetail?.ProcedureTreatmentCost"
+              (ngModelChange)="newTreatmentDetail.ProcedureTreatmentCost = $event">
           </div>
         </div>
         <br />
