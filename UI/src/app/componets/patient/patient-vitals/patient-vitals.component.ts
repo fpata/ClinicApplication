@@ -32,7 +32,7 @@ export class PatientVitalsComponent {
     this.patientSubscription = this.dataService.patient$.subscribe({
       next: (_newpatient: Patient) => {
         this.patient = _newpatient;
-        this.patient.UserID = this.dataService.getUser().ID ;
+        this.patient.UserID = this.dataService.getUser().ID || 0;
         if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {
             this.vitals = this.patient.PatientVitals[this.patient.PatientVitals.length - 1]  as PatientVitals; // get the last vitals entry
             this.vitals.RecordedDate = this.util.formatDate(this.vitals.RecordedDate.toString(), 'yyyy-MM-dd');

@@ -41,7 +41,7 @@ export class PatientTreatmentComponent {
         }
         else {
           this.treatment = new PatientTreatment();
-          this.patient.PatientTreatment = this.treatment;
+          if(this.patient) this.patient.PatientTreatment = this.treatment;
           this.cdr.markForCheck();
         }
 

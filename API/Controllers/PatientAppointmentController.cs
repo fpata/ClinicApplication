@@ -260,9 +260,13 @@ namespace ClinicManager.Controllers
                     query = query.Where(x => x.appointment.StartDateTime >= model.StartDate.Value);
 
                 // Get total count before pagination
-                var totalCount = await query.CountAsync();
+                var totalCount = await query
+                    .Select(x => x.appointment)
+                    .Distinct()
+                    .CountAsync();
                 var results = await query
                     .Select(x => x.appointment)
+                    .Distinct()
                     .AsNoTracking()
                     .OrderByDescending(a => a.StartDateTime)
                     .Skip((model.pageNumber - 1) * model.pageSize)

@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AppointmentSearchResponse, PatientAppointment } from '../../../models/patient-appointment.model';
 import { SchedulerComponent } from "../../../common/scheduler/scheduler";
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
@@ -14,6 +14,7 @@ import { MessageService } from '../../../services/message.service';
 import { UtilityService } from '../../../services/utility.service';
 import { UserType } from '../../../models/user.model';
 import { PagingComponent } from '../../../common/paging/paging.component';
+import { AppConfigService } from '../../../services/config.service';
 
 @Component({
   selector: 'app-doctor-appointments',
@@ -42,8 +43,19 @@ export class DoctorAppointmentsComponent {
     private dataService: DataService,
     private searchService: SearchService,
     private messageService: MessageService,
-    private util: UtilityService
+    private util: UtilityService,
+    private configService: AppConfigService,
+    private cdrRef: ChangeDetectorRef
   ) {
+    if(this.dataService.getConfig() == null) {
+     this.configService.getConfigs().subscribe(config => {
+        this.dataService.setConfig(config);
+        this.pageSize = config.pageSize || 10;
+      });
+    }
+    else {
+      this.pageSize = this.dataService.getConfig()?.pageSize || 10;
+    }
   }
 
   // Placeholder methods for the unimplemented methods
@@ -57,6 +69,7 @@ export class DoctorAppointmentsComponent {
       this.searchLengthConstraintError = false;
       this.clearSearchClicked = true;
     }
+    this.cdrRef.detectChanges();
   }
   SearchAppointments() {
     if (this.searchLengthConstraintError) {
@@ -75,6 +88,7 @@ export class DoctorAppointmentsComponent {
           this.totalItems = this.searchResult.TotalCount || 0;  
           this.AddEventsToScheduler(this.searchResult.PatientAppointments);
         }
+        this.cdrRef.detectChanges();
       },
       error: (err: any) => {
         // Optionally handle error
@@ -82,6 +96,7 @@ export class DoctorAppointmentsComponent {
         console.error(err);
         this.searchResult = null;
         this.clearSearchClicked = false;
+        this.cdrRef.detectChanges();
       }
     });
   }
@@ -90,7 +105,9 @@ export class DoctorAppointmentsComponent {
         var searchModel: SearchModel = new  SearchModel(this.util);
         searchModel.UserType = UserType.Doctor;
         searchModel.FirstName = name;
+        this.cdrRef.detectChanges();
         return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+
      }
 
   getPatients = (name: string): Observable<SearchModel[]> => {
@@ -100,6 +117,7 @@ export class DoctorAppointmentsComponent {
     return this.searchService.Search(searchModel).pipe(
       map(result => result.Results as SearchModel[])
     );
+    this.cdrRef.detectChanges();
   }
 
    displayName(d: any): string {

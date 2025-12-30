@@ -18,7 +18,8 @@ import { User } from '../../../models/user.model';
 export class PatientCompleteHistoryComponent {
 
   constructor(private dataService: DataService,
-    private patientTreatmentService: PatientTreatmentService, private patientService: PatientService
+    private patientTreatmentService: PatientTreatmentService, private patientService: PatientService,
+    private cdr: ChangeDetectorRef
 ) { }
 
   patientTreatments: PatientTreatment[] = [];
@@ -30,6 +31,7 @@ export class PatientCompleteHistoryComponent {
         user.Patients[0] = _newPatient;
         this.dataService.setUser(user);
         this.dataService.setPatient(_newPatient);
+        this.cdr.markForCheck();
       },
       error: (error: any) => {
         console.error('Error fetching patient:', error);
@@ -42,6 +44,7 @@ export class PatientCompleteHistoryComponent {
     this.patientTreatmentService.getAllTreatmentsForUser(userId).subscribe({
       next: (result: any) => {
         this.patientTreatments = result;
+        this.cdr.markForCheck();
         console.log('Treatments fetched successfully:', this.patientTreatments);
       },
       error: (error: any) => {
