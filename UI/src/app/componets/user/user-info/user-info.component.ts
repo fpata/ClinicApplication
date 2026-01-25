@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
 import { DataService } from '../../../services/data.service';
 import { Subscription } from 'rxjs';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
 import { MessageService } from '../../../services/message.service';
 
@@ -20,10 +20,12 @@ import { MessageService } from '../../../services/message.service';
 })
 export class UserInfoComponent {
 
+  @ViewChild('userForm') userForm!: NgForm;
 
   user: User | null = null;
   address: Address | null = null;
   contact: Contact | null = null;
+  formSubmitted = false;
 
   private userSubscription: Subscription;
 
@@ -46,6 +48,7 @@ export class UserInfoComponent {
           this.address = this.user.Address;
           this.contact = this.user.Contact;
         }
+        this.formSubmitted = false;
         this.cdRef.detectChanges();
       },
       error: (err: Error) => {
@@ -86,6 +89,10 @@ export class UserInfoComponent {
   ClearUserInformation() {
     this.dataService.setUser(null);
     this.InitializeNewUser();
+    this.formSubmitted = false;
+    if (this.userForm) {
+      this.userForm.resetForm();
+    }
   }
 
   DeleteUserInformation() {
@@ -108,16 +115,24 @@ export class UserInfoComponent {
         }
       });
     }
-    this.InitializeNewUser();
   }
 
   SaveUserInformation() {
+    this.formSubmitted = true;
+    
+    if (!this.userForm || !this.userForm.valid) {
+      this.messageService.warn('Please fill out all required fields correctly');
+      this.cdRef.detectChanges();
+      return;
+    }
+
     if (!this.user.ID || this.user.ID === 0) {
       // Create new user (POST)
       this.userService.createUser(this.user).subscribe({
         next: (newUser) => {
           this.messageService.success('User created successfully');
           this.dataService.setUser(newUser); // Update with the new user data including ID
+          this.formSubmitted = false;
           this.cdRef.detectChanges();
         },
         error: (error) => {
@@ -131,6 +146,7 @@ export class UserInfoComponent {
         next: (updatedUser) => {
           this.messageService.success('User updated successfully');
           this.dataService.setUser(updatedUser); // Update with the latest user data
+          this.formSubmitted = false;
           this.cdRef.detectChanges();
         },
         error: (error) => {

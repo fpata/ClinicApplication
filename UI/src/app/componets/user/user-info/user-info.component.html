@@ -1,4 +1,6 @@
-<div class="accordion" id="accPatientBaseInfo">
+<form #userForm="ngForm" [ngClass]="{'was-validated': formSubmitted}" novalidate>
+  <div class="accordion" id="accPatientBaseInfo">
+    <!-- Personal Information Section -->
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accPatientPersonalInfo"
@@ -6,7 +8,7 @@
           Personal Information
         </button>
       </h2>
-      <div id="accPatientPersonalInfo" class="accordion-collapse collapse show" data-bs-parent="#accPatientBaseInfo">
+      <div id="accPatientPersonalInfo" class="accordion-collapse collapse show">
         <div class="accordion-body">
           <div class="container">
             <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
@@ -15,15 +17,20 @@
                 <label for="txtFirstName" class="form-label">First Name</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtFirstName" class="form-control"  placeholder="FirstName" [ngModel]="user?.FirstName" (ngModelChange)="user && (user.FirstName = $event)" minlength="3" maxlength="50" required=""> 
-                <div class="invalid-feedback">Please fill out this field.</div>
+                <input type="text" id="txtFirstName" name="FirstName" class="form-control" placeholder="FirstName" 
+                  [ngModel]="user?.FirstName" (ngModelChange)="user && (user.FirstName = $event)" 
+                  minlength="3" maxlength="50" required> 
+                <div class="invalid-feedback">Please enter a first name (3-50 characters).</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtLastName" class="form-label">Last Name</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtLastName" name="txtLastName" class="form-control" required [ngModel]="user?.LastName" (ngModelChange)="user && (user.LastName = $event)"  minlength="3" maxlength="50">
+                <input type="text" id="txtLastName" name="LastName" class="form-control" placeholder="LastName"
+                  [ngModel]="user?.LastName" (ngModelChange)="user && (user.LastName = $event)" 
+                  minlength="3" maxlength="50" required>
+                <div class="invalid-feedback">Please enter a last name (3-50 characters).</div>
               </div>
             </div>
             
@@ -33,21 +40,36 @@
                 <label for="txtAge" class="form-label">Age</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="number" id="txtAge" min="1" max="105" class="form-control" required [ngModel]="user?.Age" (ngModelChange)="user && (user.Age = $event)"  min="0" max="150">
+                <input type="number" id="txtAge" name="Age" class="form-control" 
+                  [ngModel]="user?.Age" (ngModelChange)="user && (user.Age = $event)" 
+                  min="1" max="150" required>
+                <div class="invalid-feedback">Please enter a valid age (1-150).</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="rdGender" class="form-label">Gender</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1" [checked]="user?.Gender === 1" (change)="user && (user.Gender = 1)">
-                <label class="form-check-label" for="rdGenderMale">Male</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2" [checked]="user?.Gender === 2" (change)="user && (user.Gender = 2)">
-                <label class="form-check-label" for="rdGenderFemale">Female</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3" [checked]="user?.Gender === 3" (change)="user && (user.Gender = 3)">
-                <label class="form-check-label" for="rdGenderOther">Other</label>&nbsp;&nbsp;
-                <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4" [checked]="user?.Gender === 4" (change)="user && (user.Gender = 4)">
-                <label class="form-check-label" for="rdGenderPreferNotToSay">Prefer Not to Say</label>
+                <div class="form-check">
+                  <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1" 
+                    [checked]="user?.Gender === 1" (change)="user && (user.Gender = 1)" required>
+                  <label class="form-check-label" for="rdGenderMale">Male</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2" 
+                    [checked]="user?.Gender === 2" (change)="user && (user.Gender = 2)" required>
+                  <label class="form-check-label" for="rdGenderFemale">Female</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3" 
+                    [checked]="user?.Gender === 3" (change)="user && (user.Gender = 3)" required>
+                  <label class="form-check-label" for="rdGenderOther">Other</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4" 
+                    [checked]="user?.Gender === 4" (change)="user && (user.Gender = 4)" required>
+                  <label class="form-check-label" for="rdGenderPreferNotToSay">Prefer Not to Say</label>
+                </div>
               </div>
             </div>
             <br />
@@ -56,15 +78,20 @@
                 <label for="txtUserName" class="form-label">User Name</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtUserName" class="form-control"  placeholder="UserName" [ngModel]="user?.UserName" (ngModelChange)="user && (user.UserName = $event)" minlength="3" maxlength="50" required=""> 
-                <div class="invalid-feedback">Please fill out this field.</div>
+                <input type="text" id="txtUserName" name="UserName" class="form-control" placeholder="UserName" 
+                  [ngModel]="user?.UserName" (ngModelChange)="user && (user.UserName = $event)" 
+                  minlength="3" maxlength="50" required> 
+                <div class="invalid-feedback">Please enter a valid user name (3-50 characters).</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtPassword" class="form-label">Password</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="password" id="txtPassword" name="txtPassword" class="form-control" required [ngModel]="user?.Password" (ngModelChange)="user && (user.Password = $event)"  minlength="3" maxlength="50">
+                <input type="password" id="txtPassword" name="Password" class="form-control" 
+                  [ngModel]="user?.Password" (ngModelChange)="user && (user.Password = $event)" 
+                  minlength="3" maxlength="50" required>
+                <div class="invalid-feedback">Please enter a valid password (3-50 characters).</div>
               </div>
             </div>
             
@@ -74,11 +101,14 @@
                 <label for="cbUserType" class="form-label">User Type</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <select id="cbUserType" class="form-select" [ngModel]="user?.UserType" (ngModelChange)="onUserTypeChange($event)" required>
-                  <option value=1>Patient</option>
-                  <option value=2>Doctor</option>
-                  <option value=5>Administrator</option>
-                </select> 
+                <select id="cbUserType" name="UserType" class="form-select" 
+                  [ngModel]="user?.UserType" (ngModelChange)="onUserTypeChange($event)" required>
+                  <option value="">Select User Type</option>
+                  <option value="1">Patient</option>
+                  <option value="2">Doctor</option>
+                  <option value="5">Administrator</option>
+                </select>
+                <div class="invalid-feedback">Please select a user type.</div>
               </div>
             </div>
             <br />
@@ -88,7 +118,8 @@
                 <label for="txtDesignation" class="form-label">Designation</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtDesignation" class="form-control"  placeholder="Designation" [ngModel]="user?.Designation" (ngModelChange)="user && (user.Designation = $event)"> 
+                <input type="text" id="txtDesignation" name="Designation" class="form-control" placeholder="Designation" 
+                  [ngModel]="user?.Designation" (ngModelChange)="user && (user.Designation = $event)"> 
                 <div class="invalid-feedback">Please fill out this field.</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
@@ -96,7 +127,8 @@
                 <label for="txtSpecialization" class="form-label">Specialization</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtSpecialization" class="form-control"  placeholder="Specialization" [ngModel]="user?.Specialization" (ngModelChange)="user && (user.Specialization = $event)" > 
+                <input type="text" id="txtSpecialization" name="Specialization" class="form-control" placeholder="Specialization" 
+                  [ngModel]="user?.Specialization" (ngModelChange)="user && (user.Specialization = $event)"> 
                 <div class="invalid-feedback">Please fill out this field.</div>
               </div>
             </div>
@@ -106,7 +138,8 @@
                 <label for="txtLicenseNumber" class="form-label">License Number</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtLicenseNumber" class="form-control"  placeholder="License Number" [ngModel]="user?.LicenseNumber" (ngModelChange)="user && (user.LicenseNumber = $event)" > 
+                <input type="text" id="txtLicenseNumber" name="LicenseNumber" class="form-control" placeholder="License Number" 
+                  [ngModel]="user?.LicenseNumber" (ngModelChange)="user && (user.LicenseNumber = $event)"> 
                 <div class="invalid-feedback">Please fill out this field.</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
@@ -114,24 +147,27 @@
                 <label for="txtLicenseExpiryDate" class="form-label">License Expiry Date</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="date" id="txtLicenseExpiryDate" class="form-control"  placeholder="License Expiry Date" [ngModel]="user?.LicenseExpiryDate" (ngModelChange)="user && (user.LicenseExpiryDate = $event)"> 
+                <input type="date" id="txtLicenseExpiryDate" name="LicenseExpiryDate" class="form-control"  
+                  [ngModel]="user?.LicenseExpiryDate" (ngModelChange)="user && (user.LicenseExpiryDate = $event)"> 
                 <div class="invalid-feedback">Please fill out this field.</div>
               </div>
             </div>
-          }
+            }
             </fieldset>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Address Section (simplified - apply same pattern) -->
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-          data-bs-target="#accPatientAddress" aria-expanded="false" aria-controls="accPatientAddress">
+          data-bs-target="#accPatientAddress" aria-expanded="true" aria-controls="accPatientAddress">
           Patient Address
         </button>
       </h2>
-      <div id="accPatientAddress" class="accordion-collapse collapse show" data-bs-parent="#accPatientBaseInfo">
+      <div id="accPatientAddress" class="accordion-collapse collapse show">
         <div class="accordion-body">
           <div class="container">
             <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
@@ -139,12 +175,12 @@
               <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="tbPermanantAddress-tab" data-bs-toggle="tab"
                   data-bs-target="#tbPermanantAddress" type="button" role="tab" aria-controls="tbPermanantAddress"
-                  aria-selected="true">Permanant Address</button>
+                  aria-selected="true">Permanent Address</button>
               </li>
               <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tbCorespondenceAddress-tab" data-bs-toggle="tab"
                   data-bs-target="#tbCorespondenceAddress" type="button" role="tab" aria-controls="tbCorespondenceAddress"
-                  aria-selected="false">Corespondence Address</button>
+                  aria-selected="false">Correspondence Address</button>
               </li>
             </ul>
             <div class="tab-content" id="nav-tabContent">
@@ -156,7 +192,8 @@
                     <label for="txtPermAddress1" class="form-label">Address Line 1</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtPermAddress1" class="form-control" [ngModel]="address?.PermAddress1" (ngModelChange)="address && (address.PermAddress1 = $event)">
+                    <input type="text" id="txtPermAddress1" name="PermAddress1" class="form-control" 
+                      [ngModel]="address?.PermAddress1" (ngModelChange)="address && (address.PermAddress1 = $event)">
                   </div>
                 </div>
                <br />
@@ -165,7 +202,8 @@
                     <label for="txtPermAddress2" class="form-label">Address Line 2</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtPermAddress2" class="form-control" [ngModel]="address?.PermAddress2" (ngModelChange)="address && (address.PermAddress2 = $event)">
+                    <input type="text" id="txtPermAddress2" name="PermAddress2" class="form-control" 
+                      [ngModel]="address?.PermAddress2" (ngModelChange)="address && (address.PermAddress2 = $event)">
                   </div>
                 </div>
                 <br/>
@@ -174,14 +212,16 @@
                     <label for="txtPermCity" class="form-label">City</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermCity" class="form-control" [ngModel]="address?.PermCity" (ngModelChange)="address && (address.PermCity = $event)">
+                    <input type="text" id="txtPermCity" name="PermCity" class="form-control" 
+                      [ngModel]="address?.PermCity" (ngModelChange)="address && (address.PermCity = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
                     <label for="txtPermState" class="form-label">State</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermState" class="form-control" [ngModel]="address?.PermState" (ngModelChange)="address && (address.PermState = $event)">
+                    <input type="text" id="txtPermState" name="PermState" class="form-control" 
+                      [ngModel]="address?.PermState" (ngModelChange)="address && (address.PermState = $event)">
                   </div>
                 </div>
                 <br />
@@ -190,14 +230,16 @@
                     <label for="txtPermCountry" class="form-label">Country</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermCountry" class="form-control" [ngModel]="address?.PermCountry" (ngModelChange)="address && (address.PermCountry = $event)">
+                    <input type="text" id="txtPermCountry" name="PermCountry" class="form-control" 
+                      [ngModel]="address?.PermCountry" (ngModelChange)="address && (address.PermCountry = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
                     <label for="txtPermZipCode" class="form-label">Zip Code</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermZipCode" class="form-control" [ngModel]="address?.PermZipCode" (ngModelChange)="address && (address.PermZipCode = $event)">
+                    <input type="text" id="txtPermZipCode" name="PermZipCode" class="form-control" 
+                      [ngModel]="address?.PermZipCode" (ngModelChange)="address && (address.PermZipCode = $event)">
                   </div>
                 </div>
               </div>
@@ -207,7 +249,7 @@
                 <br />
                 <div class="row">
                   <div class="col-12" style="align-content:end;align-items: end;text-align: end;">
-                    <label type="button" style="color: cornflowerblue;cursor: pointer;" (click)="CopyAddress()">Same as correspondence address</label>
+                    <label type="button" style="color: cornflowerblue;cursor: pointer;" (click)="CopyAddress()">Same as permanent address</label>
                   </div>
                 </div>
                 <div class="row">
@@ -215,7 +257,8 @@
                     <label for="txtCorsAddress1" class="form-label">Address Line 1</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtCorsAddress1" class="form-control" [ngModel]="address?.CorrAddress1" (ngModelChange)="address && (address.CorrAddress1 = $event)">
+                    <input type="text" id="txtCorsAddress1" name="CorrAddress1" class="form-control" 
+                      [ngModel]="address?.CorrAddress1" (ngModelChange)="address && (address.CorrAddress1 = $event)">
                   </div>
                 </div>
                 <br />
@@ -224,7 +267,8 @@
                     <label for="txtCorsAddress2" class="form-label">Address Line 2</label>
                   </div>
                   <div class="col-9">
-                    <input type="text" id="txtCorsAddress2" class="form-control" [ngModel]="address?.CorrAddress2" (ngModelChange)="address && (address.CorrAddress2 = $event)">
+                    <input type="text" id="txtCorsAddress2" name="CorrAddress2" class="form-control" 
+                      [ngModel]="address?.CorrAddress2" (ngModelChange)="address && (address.CorrAddress2 = $event)">
                   </div>
                 </div>
                 <br />
@@ -233,14 +277,16 @@
                     <label for="txtCorsCity" class="form-label">City</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsCity" class="form-control" [ngModel]="address?.CorrCity" (ngModelChange)="address && (address.CorrCity = $event)">
+                    <input type="text" id="txtCorsCity" name="CorrCity" class="form-control" 
+                      [ngModel]="address?.CorrCity" (ngModelChange)="address && (address.CorrCity = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtCorsState" class="form-label" >State</label>
+                    <label for="txtCorsState" class="form-label">State</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsState" class="form-control" [ngModel]="address?.CorrState" (ngModelChange)="address && (address.CorrState = $event)">
+                    <input type="text" id="txtCorsState" name="CorrState" class="form-control" 
+                      [ngModel]="address?.CorrState" (ngModelChange)="address && (address.CorrState = $event)">
                   </div>
                 </div>
                 <br />
@@ -249,14 +295,16 @@
                     <label for="txtCorsCountry" class="form-label">Country</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsCountry" class="form-control" [ngModel]="user?.Address?.CorrCountry" (ngModelChange)="user?.Address && (user.Address.CorrCountry = $event)">
+                    <input type="text" id="txtCorsCountry" name="CorrCountry" class="form-control" 
+                      [ngModel]="address?.CorrCountry" (ngModelChange)="address && (address.CorrCountry = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
                     <label for="txtCorsZipCode" class="form-label">Zip Code</label>
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsZipCode" class="form-control" [ngModel]="user?.Address?.CorrZipCode" (ngModelChange)="address && (address.CorrZipCode = $event)">
+                    <input type="text" id="txtCorsZipCode" name="CorrZipCode" class="form-control" 
+                      [ngModel]="address?.CorrZipCode" (ngModelChange)="address && (address.CorrZipCode = $event)">
                   </div>
                 </div>
               </div>
@@ -266,10 +314,12 @@
         </div>
       </div>
     </div>
+
+    <!-- Contact Section -->
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-          data-bs-target="#accPatientContact" aria-expanded="false" aria-controls="accPatientContact">
+          data-bs-target="#accPatientContact" aria-expanded="true" aria-controls="accPatientContact">
           Patient Contact
         </button>
       </h2>
@@ -282,14 +332,17 @@
                 <label for="txtPrimaryPhone" class="form-label">Primary Phone</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtPrimaryPhone" class="form-control" [ngModel]="contact?.PrimaryPhone" (ngModelChange)="contact && (contact.PrimaryPhone = $event)" required>
+                <input type="text" id="txtPrimaryPhone" name="PrimaryPhone" class="form-control" 
+                  [ngModel]="contact?.PrimaryPhone" (ngModelChange)="contact && (contact.PrimaryPhone = $event)" required>
+                <div class="invalid-feedback">Please provide a primary phone.</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtSecondaryPhone" class="form-label">Secondary Phone</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtSecondaryPhone" class="form-control" [ngModel]="contact?.SecondaryPhone" (ngModelChange)="contact && (contact.SecondaryPhone = $event)">
+                <input type="text" id="txtSecondaryPhone" name="SecondaryPhone" class="form-control" 
+                  [ngModel]="contact?.SecondaryPhone" (ngModelChange)="contact && (contact.SecondaryPhone = $event)">
               </div>
             </div>
             <br />
@@ -298,14 +351,18 @@
                 <label for="txtPrimaryEmail" class="form-label">Primary Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtPrimaryEmail" class="form-control" [ngModel]="contact?.PrimaryEmail" (ngModelChange)="contact && (contact.PrimaryEmail = $event)">
+                <input type="email" id="txtPrimaryEmail" name="PrimaryEmail" class="form-control" 
+                  [ngModel]="contact?.PrimaryEmail" (ngModelChange)="contact && (contact.PrimaryEmail = $event)" required>
+                <div class="invalid-feedback">Please provide a valid primary email.</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
                 <label for="txtSecondaryEmail" class="form-label">Secondary Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtSecondaryEmail" class="form-control" [ngModel]="contact?.SecondaryEmail" (ngModelChange)="contact && (contact.SecondaryEmail = $event)">
+                <input type="email" id="txtSecondaryEmail" name="SecondaryEmail" class="form-control" 
+                  [ngModel]="contact?.SecondaryEmail" (ngModelChange)="contact && (contact.SecondaryEmail = $event)">
+                <div class="invalid-feedback">Please provide a valid secondary email.</div>
               </div>
             </div>
             </fieldset>
@@ -313,10 +370,12 @@
         </div>
       </div>
     </div>
+
+    <!-- Emergency Contact Section -->
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-          data-bs-target="#accPatientEmergency" aria-expanded="false" aria-controls="accPatientEmergency">
+          data-bs-target="#accPatientEmergency" aria-expanded="true" aria-controls="accPatientEmergency">
           Patient Emergency Contact
         </button>
       </h2>
@@ -326,33 +385,38 @@
             <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
             <div class="row">
               <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactName" class="form-label">Emmergency Contact Name</label>
+                <label for="txtEmemergencyContactName" class="form-label">Emergency Contact Name</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactName" class="form-control" [ngModel]="contact?.RelativeName" (ngModelChange)="contact && (contact.RelativeName = $event)">
+                <input type="text" id="txtEmemergencyContactName" name="RelativeName" class="form-control" 
+                  [ngModel]="contact?.RelativeName" (ngModelChange)="contact && (contact.RelativeName = $event)">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactRelation" class="form-label">Ememergency Contact Relation</label>
+                <label for="txtEmemergencyContactRelation" class="form-label">Emergency Contact Relation</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactRelation" class="form-control" [ngModel]="contact?.RelativeRealtion" (ngModelChange)="contact && (contact.RelativeRealtion = $event)">
+                <input type="text" id="txtEmemergencyContactRelation" name="RelativeRealtion" class="form-control" 
+                  [ngModel]="contact?.RelativeRealtion" (ngModelChange)="contact && (contact.RelativeRealtion = $event)">
               </div>
             </div>
             <br />
             <div class="row">
               <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactEmail" class="form-label">Emmergency Contact Email</label>
+                <label for="txtEmemergencyContactPhone" class="form-label">Emergency Contact Phone</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactEmail" class="form-control" [ngModel]="user?.Contact?.RelativeEmail" (ngModelChange)="user?.Contact && (contact.RelativeEmail = $event)">
+                <input type="text" id="txtEmemergencyContactPhone" name="RelativePhone" class="form-control" 
+                  [ngModel]="contact?.RelativePhone" (ngModelChange)="contact && (contact.RelativePhone = $event)">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactPhone" class="form-label">Ememergency Contact Phone</label>
+                <label for="txtEmemergencyContactEmail" class="form-label">Emergency Contact Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactPhone" class="form-control" [ngModel]="contact?.RelativePhone" (ngModelChange)="contact && (contact.RelativePhone = $event)">
+                <input type="email" id="txtEmemergencyContactEmail" name="RelativeEmail" class="form-control" 
+                  [ngModel]="contact?.RelativeEmail" (ngModelChange)="contact && (contact.RelativeEmail = $event)">
+                <div class="invalid-feedback">Please provide a valid email address.</div>
               </div>
             </div>
           </div>
@@ -361,9 +425,10 @@
       </div>
     </div>
   </div>
+
   <br />
   <div class="container">
-     <div class="row">
+    <div class="row">
       <div class="col">
         <button type="button" id="btnPatientSave" class="btn btn-primary" style="width: 25%;"
           (click)="SaveUserInformation()">Save</button>
@@ -378,6 +443,7 @@
       </div>
     </div>
   </div>
-  <br />
-  <br />
-  <br />
+</form>
+<br />
+<br />
+<br />
