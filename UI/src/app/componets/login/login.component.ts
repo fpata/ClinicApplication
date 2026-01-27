@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ChangeDetectorRef } from '@angular/core';
 import { RouterModule,Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -25,16 +25,19 @@ export class LoginComponent {
     private router: Router,
     private dataService: DataService,
     private authService:AuthService,
-    private configService: AppConfigService
+    private configService: AppConfigService,
+    private cdRef: ChangeDetectorRef
   ) {}
 
   login(): void {
     if(!this.username || !this.password) {
       this.error = 'Username and password are required';
+      this.cdRef.detectChanges();
       return;
     }
     if(this.username.length < 3 || this.password.length < 3) {
       this.error = 'Username and password must be at least 3 characters long';
+      this.cdRef.detectChanges();
       return;
     }
     this.loginService.login(this.username, this.password).subscribe({
@@ -45,6 +48,7 @@ export class LoginComponent {
           this.authService.setToken(res.token);
         });
         this.error = '';
+        this.cdRef.detectChanges();
       },
       error: (err) => {
         this.handleLoginError(err);
@@ -70,5 +74,6 @@ export class LoginComponent {
         this.error = 'An unexpected error occurred. Please try again.';
     }
     console.error('Login error:', err);
+    this.cdRef.detectChanges();
   }
 }

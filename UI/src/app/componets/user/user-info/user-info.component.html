@@ -351,7 +351,7 @@
                 <label for="txtPrimaryEmail" class="form-label">Primary Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtPrimaryEmail" name="PrimaryEmail" class="form-control" 
+                <input type="email" id="txtPrimaryEmail" name="PrimaryEmail" class="form-control" email
                   [ngModel]="contact?.PrimaryEmail" (ngModelChange)="contact && (contact.PrimaryEmail = $event)" required>
                 <div class="invalid-feedback">Please provide a valid primary email.</div>
               </div>
@@ -360,7 +360,7 @@
                 <label for="txtSecondaryEmail" class="form-label">Secondary Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtSecondaryEmail" name="SecondaryEmail" class="form-control" 
+                <input type="email" id="txtSecondaryEmail" name="SecondaryEmail" class="form-control" email
                   [ngModel]="contact?.SecondaryEmail" (ngModelChange)="contact && (contact.SecondaryEmail = $event)">
                 <div class="invalid-feedback">Please provide a valid secondary email.</div>
               </div>
@@ -414,8 +414,8 @@
                 <label for="txtEmemergencyContactEmail" class="form-label">Emergency Contact Email</label>
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtEmemergencyContactEmail" name="RelativeEmail" class="form-control" 
-                  [ngModel]="contact?.RelativeEmail" (ngModelChange)="contact && (contact.RelativeEmail = $event)">
+                <input type="email" id="txtEmemergencyContactEmail" name="RelativeEmail" class="form-control" email
+                  [ngModel]="contact?.RelativeEmail" (ngModelChange)="contact && (contact.RelativeEmail = $event)" >
                 <div class="invalid-feedback">Please provide a valid email address.</div>
               </div>
             </div>

@@ -86,6 +86,11 @@ export class UserMasterComponent {
       currentUser = this.quickCreateComponent.user
     }
     else {
+      // Validate form before saving
+      if (!this.userInfoComponent.userForm || !this.userInfoComponent.userForm.valid) {
+        this.messageService.warn('Please fill out all required fields correctly');
+        return;
+      }
 
       currentUser = this.dataService.getUser();
       currentUser.Address = this.userInfoComponent.address;
