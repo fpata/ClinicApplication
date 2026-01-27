@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component ,ChangeDetectorRef, NgZone} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ChangeDetectorRef, NgZone, ViewChild } from '@angular/core';
 import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
 import { Contact } from '../../../models/contact.model';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
 import { MessageService } from '../../../services/message.service';
 import { DataService } from '../../../services/data.service';
+
 @Component({
   selector: 'app-user-quick-create',
   standalone: true,
@@ -17,24 +18,29 @@ import { DataService } from '../../../services/data.service';
 })
 export class UserQuickCreateComponent {
 
-user: User | null = null;
- 
-  // Subscription to handle user changes
-
+  @ViewChild('quickForm') quickForm!: NgForm;
+  user: User | null = null;
+  formSubmitted = false;
 
   constructor(private dataService: DataService, private messageService: MessageService, private userService: UserService,
     private cdRef: ChangeDetectorRef, private ngZone: NgZone
   ) {
-   this.InitializeNewUser();
+    this.InitializeNewUser();
   }
 
-   onUserTypeChange($event: any) {
+  onUserTypeChange($event: any) {
+    if (this.user) {
       this.user.UserType = Number($event);
+    }
   }
 
-ClearUserInformation() {
+  ClearUserInformation() {
     this.dataService.setUser(null);
     this.InitializeNewUser();
+    this.formSubmitted = false;
+    if (this.quickForm) {
+      this.quickForm.resetForm();
+    }
     this.cdRef.detectChanges();
   }
 
@@ -50,7 +56,7 @@ ClearUserInformation() {
       this.userService.deleteUser(currentUser.ID).subscribe({
         next: () => {
           this.messageService.success('User deleted successfully');
-          this.ClearUserInformation(); // Clear the user from data service
+          this.ClearUserInformation();
           this.cdRef.detectChanges();
         },
         error: (error) => {
@@ -63,36 +69,49 @@ ClearUserInformation() {
   }
 
   SaveUserInformation() {
-    if (!this.user.ID || this.user.ID === 0) {
+    this.formSubmitted = true;
+
+    // Validate form before saving
+    if (!this.quickForm || !this.quickForm.valid) {
+      this.messageService.warn('Please fill out all required fields correctly');
+      this.cdRef.detectChanges();
+      return;
+    }
+
+    if (!this.user?.ID || this.user.ID === 0) {
       // Create new user (POST)
-      this.userService.createUser(this.user).subscribe({
+      this.userService.createUser(this.user!).subscribe({
         next: (newUser) => {
           this.ngZone.run(() => {
             this.messageService.success('User created successfully');
-            this.dataService.setUser(newUser); // Update with the new user data including ID
+            this.dataService.setUser(newUser);
+            this.formSubmitted = false;
             this.cdRef.detectChanges();
           });
         },
         error: (error) => {
           this.ngZone.run(() => {
             this.messageService.error('Error creating user: ' + error.message);
+            this.formSubmitted = false;
             this.cdRef.detectChanges();
           });
         }
       });
     } else {
       // Update existing user (PUT)
-      this.userService.updateUser(this.user.ID, this.user).subscribe({
+      this.userService.updateUser(this.user!.ID, this.user!).subscribe({
         next: (updatedUser) => {
           this.ngZone.run(() => {
             this.messageService.success('User updated successfully');
-            this.dataService.setUser(updatedUser); // Update with the latest user data
+            this.dataService.setUser(updatedUser);
+            this.formSubmitted = false;
             this.cdRef.detectChanges();
           });
         },
         error: (error) => {
           this.ngZone.run(() => {
             this.messageService.error('Error updating user: ' + error.message);
+            this.formSubmitted = false;
             this.cdRef.detectChanges();
           });
         }
@@ -104,8 +123,9 @@ ClearUserInformation() {
     this.user = new User();
     this.user.Address = new Address();
     this.user.Contact = new Contact();
-    this.user.ID = 0; // Indicate new user
+    this.user.ID = 0;
     this.user.Address.ID = 0;
     this.user.Contact.ID = 0;
+    this.formSubmitted = false;
   }
 }
