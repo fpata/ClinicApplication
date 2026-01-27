@@ -90,7 +90,7 @@ namespace ClinicManager.Controllers
                 // Process related entities in batch
                 var entitiesToAdd = new List<object>();
 
-                if (user.Address != null)
+                if (user.Address != null && user.Address.ID  <= 0 )
                 {
                     user.Address.ID = 0; // Reset ID to ensure new record is created
                     user.Address.UserID = user.ID;
@@ -102,7 +102,7 @@ namespace ClinicManager.Controllers
                     entitiesToAdd.Add(user.Address);
                 }
 
-                if (user.Contact != null)
+                if (user.Contact != null && user.Contact.ID <= 0)
                 {
                     user.Contact.ID = 0; // Reset ID to ensure new record is created
                     user.Contact.UserID = user.ID;

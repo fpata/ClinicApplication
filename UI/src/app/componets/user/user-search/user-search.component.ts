@@ -92,6 +92,12 @@ validateSearchInput() {
   OnUserIdClick(userId: number) {
     this.userService.getUser(userId).subscribe({
       next: (user: User) => {
+        if(user.Address == null || user.Address == undefined) {
+          user.Address = new Address();
+        }
+        if(user.Contact == null || user.Contact == undefined) {
+          user.Contact = new Contact();
+        }
         this.dataService.setUser(user);
         this.router.navigate(['/user-info']);
 

@@ -28,6 +28,22 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+/* Only show validation messages when form has been submitted */
+.invalid-feedback {
+  display: none;
+}
+
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+  border-color: #dc3545;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback {
+  display: block;
+  color: #dc3545;
+  font-size: 0.875rem;
+}
+
 .is-invalid {
   border-color: #dc3545;
 }

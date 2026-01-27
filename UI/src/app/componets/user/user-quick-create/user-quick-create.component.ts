@@ -28,6 +28,15 @@ export class UserQuickCreateComponent {
     this.InitializeNewUser();
   }
 
+  ngAfterViewInit() {
+    // Reset form after view initialization to clear any validation marks
+    if (this.quickForm) {
+      this.quickForm.resetForm();
+    }
+    this.formSubmitted = false;
+    this.cdRef.detectChanges();
+  }
+
   onUserTypeChange($event: any) {
     if (this.user) {
       this.user.UserType = Number($event);

@@ -93,8 +93,6 @@ export class UserMasterComponent {
       }
 
       currentUser = this.dataService.getUser();
-      currentUser.Address = this.userInfoComponent.address;
-      currentUser.Contact = this.userInfoComponent.contact;
     }
     if (!currentUser) {
       this.messageService.warn('No user data to save');

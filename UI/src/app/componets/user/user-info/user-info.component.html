@@ -193,7 +193,7 @@
                   </div>
                   <div class="col-9">
                     <input type="text" id="txtPermAddress1" name="PermAddress1" class="form-control" 
-                      [ngModel]="address?.PermAddress1" (ngModelChange)="address && (address.PermAddress1 = $event)">
+                      [ngModel]="user.Address?.PermAddress1" (ngModelChange)="user.Address && (user.Address.PermAddress1 = $event)">
                   </div>
                 </div>
                <br />
@@ -203,7 +203,7 @@
                   </div>
                   <div class="col-9">
                     <input type="text" id="txtPermAddress2" name="PermAddress2" class="form-control" 
-                      [ngModel]="address?.PermAddress2" (ngModelChange)="address && (address.PermAddress2 = $event)">
+                      [ngModel]="user.Address?.PermAddress2" (ngModelChange)="user.Address && (user.Address.PermAddress2 = $event)">
                   </div>
                 </div>
                 <br/>
@@ -213,7 +213,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtPermCity" name="PermCity" class="form-control" 
-                      [ngModel]="address?.PermCity" (ngModelChange)="address && (address.PermCity = $event)">
+                      [ngModel]="user.Address?.PermCity" (ngModelChange)="user.Address && (user.Address.PermCity = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
@@ -221,7 +221,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtPermState" name="PermState" class="form-control" 
-                      [ngModel]="address?.PermState" (ngModelChange)="address && (address.PermState = $event)">
+                      [ngModel]="user.Address?.PermState" (ngModelChange)="user.Address && (user.Address.PermState = $event)">
                   </div>
                 </div>
                 <br />
@@ -231,7 +231,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtPermCountry" name="PermCountry" class="form-control" 
-                      [ngModel]="address?.PermCountry" (ngModelChange)="address && (address.PermCountry = $event)">
+                      [ngModel]="user.Address?.PermCountry" (ngModelChange)="user.Address && (user.Address.PermCountry = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
@@ -239,7 +239,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtPermZipCode" name="PermZipCode" class="form-control" 
-                      [ngModel]="address?.PermZipCode" (ngModelChange)="address && (address.PermZipCode = $event)">
+                      [ngModel]="user.Address?.PermZipCode" (ngModelChange)="user.Address && (user.Address.PermZipCode = $event)">
                   </div>
                 </div>
               </div>
@@ -258,7 +258,7 @@
                   </div>
                   <div class="col-9">
                     <input type="text" id="txtCorsAddress1" name="CorrAddress1" class="form-control" 
-                      [ngModel]="address?.CorrAddress1" (ngModelChange)="address && (address.CorrAddress1 = $event)">
+                      [ngModel]="user.Address?.CorrAddress1" (ngModelChange)="user.Address && (user.Address.CorrAddress1 = $event)">
                   </div>
                 </div>
                 <br />
@@ -268,7 +268,7 @@
                   </div>
                   <div class="col-9">
                     <input type="text" id="txtCorsAddress2" name="CorrAddress2" class="form-control" 
-                      [ngModel]="address?.CorrAddress2" (ngModelChange)="address && (address.CorrAddress2 = $event)">
+                      [ngModel]="user.Address?.CorrAddress2" (ngModelChange)="user.Address && (user.Address.CorrAddress2 = $event)">
                   </div>
                 </div>
                 <br />
@@ -278,7 +278,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtCorsCity" name="CorrCity" class="form-control" 
-                      [ngModel]="address?.CorrCity" (ngModelChange)="address && (address.CorrCity = $event)">
+                      [ngModel]="user.Address?.CorrCity" (ngModelChange)="user.Address && (user.Address.CorrCity = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
@@ -286,7 +286,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtCorsState" name="CorrState" class="form-control" 
-                      [ngModel]="address?.CorrState" (ngModelChange)="address && (address.CorrState = $event)">
+                      [ngModel]="user.Address?.CorrState" (ngModelChange)="user.Address && (user.Address.CorrState = $event)">
                   </div>
                 </div>
                 <br />
@@ -296,7 +296,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtCorsCountry" name="CorrCountry" class="form-control" 
-                      [ngModel]="address?.CorrCountry" (ngModelChange)="address && (address.CorrCountry = $event)">
+                      [ngModel]="user.Address?.CorrCountry" (ngModelChange)="user.Address && (user.Address.CorrCountry = $event)">
                   </div>
                   <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
                   <div class="col-xs-12 col-sm-5 col-md-2">
@@ -304,7 +304,7 @@
                   </div>
                   <div class="col-xs-12 col-sm-5 col-md-3">
                     <input type="text" id="txtCorsZipCode" name="CorrZipCode" class="form-control" 
-                      [ngModel]="address?.CorrZipCode" (ngModelChange)="address && (address.CorrZipCode = $event)">
+                      [ngModel]="user.Address?.CorrZipCode" (ngModelChange)="user.Address && (user.Address.CorrZipCode = $event)">
                   </div>
                 </div>
               </div>
@@ -333,7 +333,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="text" id="txtPrimaryPhone" name="PrimaryPhone" class="form-control" 
-                  [ngModel]="contact?.PrimaryPhone" (ngModelChange)="contact && (contact.PrimaryPhone = $event)" required>
+                  [ngModel]="user.Contact?.PrimaryPhone" (ngModelChange)="user.Contact && (user.Contact.PrimaryPhone = $event)" required>
                 <div class="invalid-feedback">Please provide a primary phone.</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
@@ -342,7 +342,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="text" id="txtSecondaryPhone" name="SecondaryPhone" class="form-control" 
-                  [ngModel]="contact?.SecondaryPhone" (ngModelChange)="contact && (contact.SecondaryPhone = $event)">
+                  [ngModel]="user.Contact?.SecondaryPhone" (ngModelChange)="user.Contact && (user.Contact.SecondaryPhone = $event)">
               </div>
             </div>
             <br />
@@ -352,7 +352,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="email" id="txtPrimaryEmail" name="PrimaryEmail" class="form-control" email
-                  [ngModel]="contact?.PrimaryEmail" (ngModelChange)="contact && (contact.PrimaryEmail = $event)" required>
+                  [ngModel]="user.Contact?.PrimaryEmail" (ngModelChange)="user.Contact && (user.Contact.PrimaryEmail = $event)" required>
                 <div class="invalid-feedback">Please provide a valid primary email.</div>
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
@@ -361,7 +361,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="email" id="txtSecondaryEmail" name="SecondaryEmail" class="form-control" email
-                  [ngModel]="contact?.SecondaryEmail" (ngModelChange)="contact && (contact.SecondaryEmail = $event)">
+                  [ngModel]="user.Contact?.SecondaryEmail" (ngModelChange)="user.Contact && (user.Contact.SecondaryEmail = $event)">
                 <div class="invalid-feedback">Please provide a valid secondary email.</div>
               </div>
             </div>
@@ -389,7 +389,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="text" id="txtEmemergencyContactName" name="RelativeName" class="form-control" 
-                  [ngModel]="contact?.RelativeName" (ngModelChange)="contact && (contact.RelativeName = $event)">
+                  [ngModel]="user.Contact?.RelativeName" (ngModelChange)="user.Contact && (user.Contact.RelativeName = $event)">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
@@ -397,7 +397,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="text" id="txtEmemergencyContactRelation" name="RelativeRealtion" class="form-control" 
-                  [ngModel]="contact?.RelativeRealtion" (ngModelChange)="contact && (contact.RelativeRealtion = $event)">
+                  [ngModel]="user.Contact?.RelativeRealtion" (ngModelChange)="user.Contact && (user.Contact.RelativeRealtion = $event)">
               </div>
             </div>
             <br />
@@ -407,7 +407,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="text" id="txtEmemergencyContactPhone" name="RelativePhone" class="form-control" 
-                  [ngModel]="contact?.RelativePhone" (ngModelChange)="contact && (contact.RelativePhone = $event)">
+                  [ngModel]="user.Contact?.RelativePhone" (ngModelChange)="user.Contact && (user.Contact.RelativePhone = $event)">
               </div>
               <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
               <div class="col-xs-12 col-sm-5 col-md-2">
@@ -415,7 +415,7 @@
               </div>
               <div class="col-xs-12 col-sm-5 col-md-3">
                 <input type="email" id="txtEmemergencyContactEmail" name="RelativeEmail" class="form-control" email
-                  [ngModel]="contact?.RelativeEmail" (ngModelChange)="contact && (contact.RelativeEmail = $event)" >
+                  [ngModel]="user.Contact?.RelativeEmail" (ngModelChange)="user.Contact && (user.Contact.RelativeEmail = $event)" >
                 <div class="invalid-feedback">Please provide a valid email address.</div>
               </div>
             </div>

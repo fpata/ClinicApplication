@@ -23,8 +23,6 @@ export class UserInfoComponent {
   @ViewChild('userForm') userForm!: NgForm;
 
   user: User | null = null;
-  address: Address | null = null;
-  contact: Contact | null = null;
   formSubmitted = false;
 
   private userSubscription: Subscription;
@@ -45,8 +43,6 @@ export class UserInfoComponent {
         } else {
           // Simply assign the updated user without overriding nested objects
           this.user = updatedUser;
-          this.address = this.user.Address;
-          this.contact = this.user.Contact;
         }
         this.formSubmitted = false;
         this.cdRef.detectChanges();
@@ -162,10 +158,8 @@ export class UserInfoComponent {
     this.user.Address = new Address();
     this.user.Contact = new Contact();
     this.user.ID = 0; // Indicate new user
-    this.address = this.user.Address;
-    this.address.ID = 0;
-    this.contact = this.user.Contact;
-    this.contact.ID = 0;
+    this.user.Address.ID = 0;
+    this.user.Contact.ID = 0;
     this.cdRef.detectChanges();
   }
 }
