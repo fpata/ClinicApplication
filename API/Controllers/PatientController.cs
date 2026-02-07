@@ -208,9 +208,9 @@ namespace ClinicManager.Controllers
                     patient.PatientTreatment.UserID = patient.UserID;
                     patient.PatientTreatment.CreatedDate = DateTime.Now;
                     patient.PatientTreatment.ModifiedDate = DateTime.Now;
-                    patient.PatientTreatment.CreatedBy = patient.PatientTreatment.CreatedBy ?? 1; // Default to 1 if not set
-                    patient.PatientTreatment.ModifiedBy = patient.PatientTreatment.ModifiedBy ?? 1; // Default to 1 if not set
-                    patient.PatientTreatment.PatientID = null; // Clear foreign key - EF will set it
+                    patient.PatientTreatment.CreatedBy = patient.PatientTreatment.CreatedBy ?? 1;
+                    patient.PatientTreatment.ModifiedBy = patient.PatientTreatment.ModifiedBy ?? 1;
+                    patient.PatientTreatment.PatientID = null; // Will be set by EF through relationship
                     patient.PatientTreatment.IsActive = 1;
 
                     if (patient.PatientTreatment.PatientTreatmentDetails?.Any() == true)
@@ -221,10 +221,12 @@ namespace ClinicManager.Controllers
                             detail.UserID = patient.UserID;
                             detail.CreatedDate = DateTime.Now;
                             detail.ModifiedDate = DateTime.Now;
-                            detail.CreatedBy = detail.CreatedBy ?? 1; // Default to 1 if not set
-                            detail.ModifiedBy = detail.ModifiedBy ?? 1; // Default to 1 if not set
-                            detail.PatientID = null; // Clear direct patient reference
-                            detail.PatientTreatmentID = null; // Clear treatment reference - EF will set it
+                            detail.CreatedBy = detail.CreatedBy ?? 1;
+                            detail.ModifiedBy = detail.ModifiedBy ?? 1;
+                            // CRITICAL: DO NOT null out PatientTreatmentID - EF needs this relationship to be tracked
+                            // When PatientTreatment is added to Patient, EF will automatically set PatientTreatmentID
+                            // ONLY set PatientID explicitly to maintain relationship
+                            detail.PatientID = null; // EF will set through relationship when patient is saved
                             detail.IsActive = 1;
                         }
                     }
@@ -234,12 +236,28 @@ namespace ClinicManager.Controllers
                     patient.PatientTreatment = null;
                 }
 
-                    // Add only the top-level patient object to the context.
-                    // EF Core will automatically detect and add all related child entities.
-                    _context.Patients.Add(patient);
+                // Add only the top-level patient object to the context.
+                // EF Core will traverse the object graph and automatically detect and add all related entities:
+                // 1. Patient -> PatientTreatment (via navigation property)
+                // 2. PatientTreatment -> PatientTreatmentDetails (via navigation property)
+                // All relationships configured in OnModelCreating will cascade the insert
+                _context.Patients.Add(patient);
 
-                // Save all changes in a single transaction.
+                // First save: This inserts Patient, and through cascade relationships, also inserts:
+                // - PatientTreatment (with PatientID set from Patient relationship)
+                // - PatientTreatmentDetails (with PatientTreatmentID set from PatientTreatment relationship)
                 await _context.SaveChangesAsync();
+
+                // Second save: Update FK references if needed (for PatientID on details)
+                // This ensures all children have correct parent references
+                if (patient.PatientTreatment?.PatientTreatmentDetails?.Any() == true)
+                {
+                    foreach (var detail in patient.PatientTreatment.PatientTreatmentDetails)
+                    {
+                        detail.PatientID = patient.ID;
+                    }
+                    await _context.SaveChangesAsync();
+                }
 
                 await dbContextTransaction.CommitAsync();
                 _logger.LogInformation($"Created new patient with ID: {patient.ID}");

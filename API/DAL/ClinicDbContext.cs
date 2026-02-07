@@ -20,5 +20,48 @@ namespace ClinicManager.DAL
         public DbSet<Payment> Payments { get; set; }
 
         public DbSet<AppConfig> AppConfigs { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure PatientTreatment -> PatientTreatmentDetail relationship
+            // This ensures that when you add a PatientTreatment with PatientTreatmentDetails,
+            // EF Core will automatically cascade the insert to child records
+            modelBuilder.Entity<PatientTreatment>()
+                .HasMany(pt => pt.PatientTreatmentDetails)
+                .WithOne(ptd => ptd.PatientTreatment)
+                .HasForeignKey(ptd => ptd.PatientTreatmentID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Patient -> PatientAppointment relationship
+            modelBuilder.Entity<Patient>()
+                .HasMany(p => p.PatientAppointments)
+                .WithOne()
+                .HasForeignKey(pa => pa.PatientID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Patient -> PatientReport relationship
+            modelBuilder.Entity<Patient>()
+                .HasMany(p => p.PatientReports)
+                .WithOne()
+                .HasForeignKey(pr => pr.PatientID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Patient -> PatientVitals relationship
+            modelBuilder.Entity<Patient>()
+                .HasMany(p => p.PatientVitals)
+                .WithOne()
+                .HasForeignKey(pv => pv.PatientID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Patient -> PatientTreatment relationship (one-to-one)
+            modelBuilder.Entity<Patient>()
+                .HasOne(p => p.PatientTreatment)
+                .WithOne()
+                .HasForeignKey<PatientTreatment>(pt => pt.PatientID)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
+

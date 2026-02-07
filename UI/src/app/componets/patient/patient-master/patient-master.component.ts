@@ -122,6 +122,9 @@ export class PatientMasterComponent {
       return;
     }
 
+    console.log('Saving patient:', currentPatient);
+    console.log('Treatment details being saved:', currentPatient.PatientTreatment?.PatientTreatmentDetails?.length || 0);
+
     // Determine if this is a new patient or existing patient
     const isNewPatient = !currentPatient.ID || currentPatient.ID === 0;
 
@@ -129,6 +132,8 @@ export class PatientMasterComponent {
       // Create new patient
       this.patientService.createPatient(currentPatient).subscribe({
         next: (savedPatient) => {
+          console.log('Patient created successfully:', savedPatient);
+          console.log('Treatment details saved on server:', savedPatient.PatientTreatment?.PatientTreatmentDetails?.length || 0);
           this.messageService.success('Patient information saved successfully');
           this.dataService.setPatient(savedPatient);
           // Sync treatment details in child component with server-generated IDs
@@ -145,6 +150,8 @@ export class PatientMasterComponent {
       // Update existing patient
       this.patientService.updatePatient(currentPatient.ID, currentPatient).subscribe({
         next: (updatedPatient) => {
+          console.log('Patient updated successfully:', updatedPatient);
+          console.log('Treatment details updated on server:', updatedPatient.PatientTreatment?.PatientTreatmentDetails?.length || 0);
           this.messageService.success('Patient information updated successfully');
           // Update the patient in data service with the returned updated patient
           this.dataService.setPatient(updatedPatient);

@@ -42,7 +42,7 @@ namespace ClinicManager.Models
         public float? EstimatedCost { get; set; }
         public float? ActualCost { get; set; }
 
-        public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; }
+        public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; } = new List<PatientTreatmentDetail>();
 
    
     }

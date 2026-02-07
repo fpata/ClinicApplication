@@ -163,7 +163,7 @@
 
 <!-- Modal Add Treatment -->
 <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addTreatmentModal" tabindex="-1"
-  aria-labelledby="addTreatmentModal">
+  aria-labelledby="addTreatmentModal" (hidden.bs.modal)="ClearTreatmentForm()">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -174,31 +174,32 @@
         <br />
         <div class="row">
           <div class="col">
-            <label for="txtTreatmentDate" class="form-label">Treatment Date</label>
+            <label for="txtTreatmentDate" class="form-label">Treatment Date <span style="color: red;">*</span></label>
           </div>
           <div class="col">
             <input type="date" id="txtTreatmentDate" class="form-control" min="2024-01-01" max="2030-12-31"
-              [ngModel]="newTreatmentDetail?.TreatmentDate" (ngModelChange)="newTreatmentDetail.TreatmentDate = $event">
+              [ngModel]="newTreatmentDetail?.TreatmentDate" 
+              (ngModelChange)="newTreatmentDetail && (newTreatmentDetail.TreatmentDate = $event)">
           </div>
         </div>
         <br />
         <div class="row">
           <div class="col">
-            <label for="txtTooth" class="form-label">Tooth Number</label>
+            <label for="txtTooth" class="form-label">Tooth Number <span style="color: red;">*</span></label>
           </div>
           <div class="col">
             <input type="text" id="txtTooth" class="form-control" [ngModel]="newTreatmentDetail?.Tooth"
-              (ngModelChange)="newTreatmentDetail.Tooth = $event">
+              (ngModelChange)="newTreatmentDetail && (newTreatmentDetail.Tooth = $event)">
           </div>
         </div>
         <br />
         <div class="row">
           <div class="col">
-            <label for="txtProcedure" class="form-label">Tooth Procedure</label>
+            <label for="txtProcedure" class="form-label">Tooth Procedure <span style="color: red;">*</span></label>
           </div>
           <div class="col">
             <input type="text" id="txtProcedure" class="form-control" [ngModel]="newTreatmentDetail?.Procedure"
-              (ngModelChange)="newTreatmentDetail.Procedure = $event">
+              (ngModelChange)="newTreatmentDetail && (newTreatmentDetail.Procedure = $event)">
           </div>
         </div>
         <br />
@@ -208,7 +209,7 @@
           </div>
           <div class="col">
             <textarea id="txtPrescription" class="form-control" rows="2" [ngModel]="newTreatmentDetail?.Prescription"
-              (ngModelChange)="newTreatmentDetail.Prescription = $event"></textarea>
+              (ngModelChange)="newTreatmentDetail && (newTreatmentDetail.Prescription = $event)"></textarea>
           </div>
         </div>
         <br />
@@ -219,7 +220,7 @@
           <div class="col">
             <textarea id="txtFollowUpInstructions" class="form-control" rows="2"
               [ngModel]="newTreatmentDetail?.FollowUpInstructions"
-              (ngModelChange)="newTreatmentDetail.FollowUpInstructions = $event"></textarea>
+              (ngModelChange)="newTreatmentDetail && (newTreatmentDetail.FollowUpInstructions = $event)"></textarea>
           </div>
         </div>
         <br />
@@ -230,7 +231,7 @@
           <div class="col">
             <input type="number" id="txtTreatmentCost" class="form-control" rows="2"
               [ngModel]="newTreatmentDetail?.ProcedureTreatmentCost"
-              (ngModelChange)="newTreatmentDetail.ProcedureTreatmentCost = $event">
+              (ngModelChange)="newTreatmentDetail && (newTreatmentDetail.ProcedureTreatmentCost = $event)">
           </div>
         </div>
         <br />

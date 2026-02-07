@@ -37,15 +37,16 @@ export class PatientTreatmentComponent {
         if (newPatient && newPatient.PatientTreatment) {
           this.treatment = newPatient.PatientTreatment;
           this.newTreatmentDetail = null;
+          console.log('Patient loaded with treatment:', this.treatment);
+          console.log('Treatment details count:', this.treatment.PatientTreatmentDetails?.length || 0);
           this.cdr.markForCheck();
         }
         else {
           this.treatment = new PatientTreatment();
           if(this.patient) this.patient.PatientTreatment = this.treatment;
+          console.log('New patient treatment initialized');
           this.cdr.markForCheck();
         }
-
-        //console.log('Patient updated:', this.patient);
       },
       error: (error) => {
         console.error('Error subscribing to patient changes:', error);
@@ -60,20 +61,36 @@ export class PatientTreatmentComponent {
     }
   }
 
+  ClearTreatmentForm() {
+    this.newTreatmentDetail = null;
+    this.isEditOperation = false;
+    this.cdr.markForCheck();
+  }
+
   AddNewTreatmentDetails() {
+    if (!this.treatment || !this.patient) {
+      alert('Patient and treatment data must be loaded first.');
+      console.error('Missing patient or treatment data');
+      return;
+    }
+
     this.newTreatmentDetail = new PatientTreatmentDetail();
+    
+    // Calculate ID for new treatment detail (use negative IDs for unsaved records)
     const ids = this.treatment?.PatientTreatmentDetails?.map(x => x.ID) || [];
     if (ids.length > 0) {
-      let minVal = Math.min(...ids) - 1 > 0 ? 0 : Math.min(...ids) - 1
-      this.newTreatmentDetail.ID = minVal;
+      let minVal = Math.min(...ids) - 1;
+      this.newTreatmentDetail.ID = minVal > 0 ? 0 : minVal;
     }
     else {
       this.newTreatmentDetail.ID = 0;
     }
+    
     this.newTreatmentDetail.IsActive = 1;
-    this.newTreatmentDetail.PatientTreatmentID = this.treatment.ID;
+    // Set PatientTreatmentID - will be 0 for new patients, updated after save
+    this.newTreatmentDetail.PatientTreatmentID = this.treatment.ID || 0;
     this.newTreatmentDetail.UserID = this.patient.UserID;
-    this.newTreatmentDetail.PatientID = this.patient.ID;
+    this.newTreatmentDetail.PatientID = this.patient.ID || 0;
     this.newTreatmentDetail.Tooth = '';
     this.newTreatmentDetail.Procedure = '';
     this.newTreatmentDetail.Prescription = '';
@@ -83,8 +100,10 @@ export class PatientTreatmentComponent {
     this.newTreatmentDetail.CreatedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newTreatmentDetail.ModifiedBy = this.patient.UserID;
     this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
-    this.isEditOperation = false;
     this.newTreatmentDetail.ProcedureTreatmentCost = 0;
+    this.isEditOperation = false;
+    
+    console.log('New treatment detail initialized:', this.newTreatmentDetail);
     this.cdr.markForCheck();
   }
 
@@ -94,12 +113,12 @@ export class PatientTreatmentComponent {
       const index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === treatmentdetailID);
       if (index > -1) {
         this.newTreatmentDetail = { ...this.treatment.PatientTreatmentDetails[index] };
+        this.isEditOperation = true;
+        this.cdr.markForCheck();
       } else {
         alert('Treatment detail not found.');
       }
     }
-    this.isEditOperation = true
-    this.cdr.markForCheck();
   }
 
   DeleteTreatmentDetails(treatmentdetailID: number) {
@@ -119,31 +138,73 @@ export class PatientTreatmentComponent {
   }
 
   SaveTreatmentDetails() {
-    if (this.newTreatmentDetail) {
-      if (this.newTreatmentDetail.ID < 1 && this.isEditOperation === false) {
-        // Add new treatment detail
-        if (this.treatment.PatientTreatmentDetails === undefined || this.treatment.PatientTreatmentDetails === null) {
-          this.treatment.PatientTreatmentDetails = new Array<PatientTreatmentDetail>();
-        }
-        this.treatment.PatientTreatmentDetails.push({ ...this.newTreatmentDetail });
-      } else {
-        // Update existing treatment detail
-        const index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === this.newTreatmentDetail.ID);
-        if (index > -1) {
-          this.treatment.PatientTreatmentDetails[index] = { ...this.newTreatmentDetail };
-        }
-        ;
-      }
-
-      this.treatment.ActualCost = this.calculateTotalCost();
-      this.patient.PatientTreatment = this.treatment;
-      this.newTreatmentDetail = null;
-      this.dataService.setPatient(this.patient);
-      this.isEditOperation = false;
-      this.cdr.markForCheck()
-    } else {
+    if (!this.newTreatmentDetail) {
       alert('Please fill in all required fields.');
+      return;
     }
+
+    // Validate required fields
+    if (!this.newTreatmentDetail.Tooth || this.newTreatmentDetail.Tooth.trim() === '') {
+      alert('Please enter tooth number.');
+      return;
+    }
+
+    if (!this.newTreatmentDetail.Procedure || this.newTreatmentDetail.Procedure.trim() === '') {
+      alert('Please enter procedure.');
+      return;
+    }
+
+    if (!this.newTreatmentDetail.TreatmentDate) {
+      alert('Please select treatment date.');
+      return;
+    }
+
+    // Ensure treatment has details array
+    if (!this.treatment.PatientTreatmentDetails) {
+      this.treatment.PatientTreatmentDetails = [];
+    }
+
+    if (this.newTreatmentDetail.ID < 1 && this.isEditOperation === false) {
+      // Add new treatment detail - create a complete copy
+      const newDetail = JSON.parse(JSON.stringify(this.newTreatmentDetail));
+      this.treatment.PatientTreatmentDetails.push(newDetail);
+      console.log('Added new treatment detail:', newDetail);
+      console.log('Total treatment details now:', this.treatment.PatientTreatmentDetails.length);
+    } else {
+      // Update existing treatment detail
+      const index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === this.newTreatmentDetail.ID);
+      if (index > -1) {
+        const updatedDetail = JSON.parse(JSON.stringify(this.newTreatmentDetail));
+        this.treatment.PatientTreatmentDetails[index] = updatedDetail;
+        console.log('Updated treatment detail at index:', index, updatedDetail);
+      }
+    }
+
+    // Update actual cost
+    this.treatment.ActualCost = this.calculateTotalCost();
+    
+    // Ensure patient reference is updated
+    if (!this.patient) {
+      console.error('Patient is null!');
+      alert('Patient data is missing. Please reload and try again.');
+      return;
+    }
+    
+    // Create a new patient object to ensure change detection
+    const updatedPatient = JSON.parse(JSON.stringify(this.patient));
+    updatedPatient.PatientTreatment = this.treatment;
+    
+    console.log('Saving patient with treatment details:', updatedPatient.PatientTreatment);
+    
+    // Update data service
+    this.dataService.setPatient(updatedPatient);
+    
+    this.newTreatmentDetail = null;
+    this.isEditOperation = false;
+    this.cdr.markForCheck();
+    
+    // Show confirmation
+    alert('Treatment detail saved. Click the Save button in the main form to persist changes to the database.');
   }
 
   private calculateTotalCost(): number {
