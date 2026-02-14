@@ -10,7 +10,7 @@ export class PatientAppointmentService {
 
   private readonly apiUrl = `${environment.API_BASE_URL}/PatientAppointment`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -49,13 +49,28 @@ export class PatientAppointmentService {
     return this.http.post<AppointmentSearchResponse>(`${this.apiUrl}/doctor/search`, searchPatient, { headers: this.getAuthHeaders() });
   }
 
-    getAllAppointments(startDate: Date, endDate: Date, currentPage: number, pageSize: number) {
-     const params = {
-       startDate: startDate.toISOString(),
-       endDate: endDate.toISOString(),
-       pageNumber: currentPage,
-       pageSize: pageSize
-     };
-     return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}/all`, { headers: this.getAuthHeaders(), params });
+  getAllAppointments(startDate: Date, endDate: Date, currentPage: number, pageSize: number) {
+    const params = {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      pageNumber: currentPage,
+      pageSize: pageSize
+    };
+    return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}/all`, { headers: this.getAuthHeaders(), params });
+  }
+
+  setPatinetAppointmentTime(appointments: PatientAppointment[]): PatientAppointment[] {
+    for (let appt of appointments) {
+      const startDate = new Date(appt.StartDateTime);
+      const endDate = new Date(appt.EndDateTime);
+      const formatTime = (date: Date) => {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      };
+      appt.StartTime = formatTime(startDate);
+      appt.EndTime = formatTime(endDate);
+    }
+    return appointments;
   }
 }

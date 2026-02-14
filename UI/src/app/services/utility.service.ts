@@ -138,7 +138,9 @@ export class UtilityService {
     const appointmentDate = new Date(date);
     
     // Create date using local timezone components
-    const localDate = new Date(
+    // Note: new Date(year, month, day, hours, minutes) creates a local time Date object.
+    // No timezone adjustment needed.
+    return new Date(
         appointmentDate.getFullYear(),
         appointmentDate.getMonth(),
         appointmentDate.getDate(),
@@ -147,10 +149,6 @@ export class UtilityService {
         0,
         0
     );
-
-    // Adjust for timezone offset
-    const tzOffset = localDate.getTimezoneOffset();
-    return new Date(localDate.getTime() - (tzOffset * 60000));
   }
 
 /**
@@ -164,7 +162,9 @@ export class UtilityService {
     const appointmentDate = new Date(stringDate);
     
     // Create date using local timezone components
-    const localDate = new Date(
+    // Note: new Date(year, month, day, hours, minutes) creates a local time Date object.
+    // No timezone adjustment needed.
+    return new Date(
         appointmentDate.getFullYear(),
         appointmentDate.getMonth(),
         appointmentDate.getDate(),
@@ -173,10 +173,6 @@ export class UtilityService {
         0,
         0
     );
-
-    // Adjust for timezone offset
-    const tzOffset = localDate.getTimezoneOffset();
-    return new Date(localDate.getTime() - (tzOffset * 60000));
   }
 
 

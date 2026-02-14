@@ -1,176 +1,230 @@
-<div class="container-fluid">
-  <br />
-  <div class="rounded p-3 p-md-4" style="border:0.5px solid lightblue;">
-          <div class="row">
-        <div class="col-12" style="background-color: cornflowerblue;color: white">
-          <label class="align-center">Search Results: {{totalItems}} record(s) found</label>
-        </div>
-      </div>
-    <div class="row d-none d-md-block">
-      <div class="col-12">
+<div class="container-fluid py-4 bg-light min-vh-100">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="fw-bold text-primary mb-1">
+        <i class="bi bi-hospital"></i> Appointment Management
+      </h1>
+      <p class="text-muted">Manage patient appointments and schedules</p>
+    </div>
+  </div>
+
+  <!-- Appointments Table Section -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="bi bi-calendar-event"></i> Scheduled Appointments
+      </h5>
+      <button type="button" id="btnAddNewAppointment" class="btn btn-light btn-sm" data-bs-toggle="modal"
+        data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
+        <i class="bi bi-plus-circle"></i> Add New
+      </button>
+    </div>
+    <div class="card-body p-0">
+      <!-- Desktop Version Table -->
+      <div class="d-none d-md-block">
         <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
+          <table class="table table-hover table-striped mb-0">
+            <thead class="table-light">
               <tr>
-                <th colspan="4" class="text-end">
-                  <button type="button" id="btnAddNewAppointment" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
-                    Add New Appointment
-                  </button>
-                </th>
-              </tr>
-              <tr>
-                <th class="text-nowrap">Start Date</th>
-                <th class="text-nowrap">End Date</th>
-                <th class="text-nowrap">Doctor</th>
-                <th class="text-nowrap">Patient</th>
-                <th class="text-nowrap">Treatment</th>
+                <th class="text-nowrap fw-semibold">Start Date</th>
+                <th class="text-nowrap fw-semibold">Start Time</th>
+                <th class="text-nowrap fw-semibold">End Time</th>
+                <th class="text-nowrap fw-semibold">Doctor</th>
+                <th class="text-nowrap fw-semibold">Patient</th>
+                <th class="text-nowrap fw-semibold">Treatment</th>
+                <th class="text-center fw-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
-
               @for( appointment of appointments; track appointment.ID) {
-              <tr>
-                <td class="text-nowrap">{{appointment.StartDateTime}}</td>
-                <td class="text-nowrap">{{appointment.EndDateTime}}</td>
-                <td>{{appointment.DoctorName}}</td>
-                <td>{{appointment.PatientName}}</td>
-                <td>{{appointment.TreatmentName}}</td>
+              <tr class="align-middle">
+                <td class="text-nowrap">
+                  <span class="badge bg-info text-dark fs-7">{{appointment.StartDateTime | date:'mediumDate'}}</span>
+                </td>
+                <td class="text-nowrap"><strong>{{appointment.StartTime}}</strong></td>
+                <td class="text-nowrap">{{appointment.EndTime}}</td>
+                <td>
+                  <span class="badge bg-success">{{appointment.DoctorName}}</span>
+                </td>
+                <td>
+                  <span class="badge bg-warning text-dark">{{appointment.PatientName}}</span>
+                </td>
+                <td>
+                  <small>{{appointment.TreatmentName}}</small>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal"
+                    (click)="EditAppointment(appointment.ID)" title="Edit appointment" type="button">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger ms-2" 
+                    (click)="DeleteAppointment(appointment.ID)" title="Delete appointment" type="button">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </td>
               </tr>
               }
             </tbody>
           </table>
         </div>
       </div>
-    </div>
-    <!--Mobile Version Table-->
-    <div class="row d-block d-md-none">
-      <div class="col-12">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th colspan="2" class="text-end">
-                <button type="button" id="btnAddNewAppointmentMobile" class="btn btn-primary btn-sm"
-                  data-bs-toggle="modal" data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
-                  Add New Appointment
+
+      <!-- Mobile Version Cards -->
+      <div class="d-block d-md-none px-3 py-2">
+        @for( appointment of appointments; track appointment.ID) {
+        <div class="card mb-3 border-start border-primary border-4">
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-6">
+                <small class="text-muted d-block">Date</small>
+                <strong>{{appointment.StartDateTime | date:'mediumDate'}}</strong>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">Time</small>
+                <strong>{{appointment.StartTime}} - {{appointment.EndTime}}</strong>
+              </div>
+              <div class="col-12">
+                <small class="text-muted d-block">Doctor</small>
+                <span class="badge bg-success">{{appointment.DoctorName}}</span>
+              </div>
+              <div class="col-12">
+                <small class="text-muted d-block">Patient</small>
+                <span class="badge bg-warning text-dark">{{appointment.PatientName}}</span>
+              </div>
+              <div class="col-12">
+                <small class="text-muted d-block">Treatment</small>
+                <p class="mb-0">{{appointment.TreatmentName}}</p>
+              </div>
+              <div class="col-12 pt-2 d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary flex-grow-1" data-bs-toggle="modal" 
+                  data-bs-target="#addAppointmentModal"
+                  (click)="EditAppointment(appointment.ID)" type="button">
+                  <i class="bi bi-pencil-square"></i> Edit
                 </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            @for( appointment of appointments; track appointment.ID) {
-            <tr>
-              <td>
-                <strong>Start Date:</strong> {{appointment.StartDateTime}}<br />
-                <strong>End Date:</strong> {{appointment.EndDateTime}}<br />
-                <strong>Doctor:</strong> {{appointment.DoctorName}}<br />
-                <strong>Patient:</strong> {{appointment.PatientName}}<br />
-                <strong>Treatment:</strong> {{appointment.TreatmentName}}<br />
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
+                <button class="btn btn-sm btn-outline-danger flex-grow-1" 
+                  (click)="DeleteAppointment(appointment.ID)" type="button">
+                  <i class="bi bi-trash3"></i> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
       </div>
+
+      <!-- Empty State -->
+      @if (appointments.length === 0) {
+      <div class="text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+        <p class="text-muted mt-3">No appointments found</p>
+      </div>
+      }
     </div>
-    <br />
-    <div class="row">
-      <div class="col-12">
-        <app-paging [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="currentPage"
-          (pageChange)="onPageChange($event)">
-        </app-paging>
+  </div>
+
+  <!-- Search Results Info -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="alert alert-info border-0" role="alert">
+        <i class="bi bi-info-circle"></i>
+        <strong>Search Results:</strong> <span class="badge bg-info">{{totalItems}}</span> record(s) found
       </div>
     </div>
   </div>
-  <br />
-  <div class="rounded p-3 p-md-4" style="border:0.5px solid lightblue;">
-    <div class="row">
-      <div class="col">
-        <app-scheduler (onNavigationChange)="NavigationChange($event)"
-          (onTimeRangeSelectedEvent)="onTimeRangeSelectedEvent($event)">
-        </app-scheduler>
+
+  <!-- Pagination -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <app-paging [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="currentPage"
+        (pageChange)="onPageChange($event)">
+      </app-paging>
+    </div>
+  </div>
+
+  <!-- Scheduler Section -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-success text-white py-3">
+      <h5 class="mb-0">
+        <i class="bi bi-calendar-week"></i> Calendar View
+      </h5>
+    </div>
+    <div class="card-body p-4">
+      <app-scheduler (onNavigationChange)="NavigationChange($event)"
+        (onTimeRangeSelectedEvent)="onTimeRangeSelectedEvent($event)">
+      </app-scheduler>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Appointment Modal -->
+<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addAppointmentModal" tabindex="-1"
+  aria-labelledby="addAppointmentModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white border-0">
+        <h5 class="modal-title" id="apptModalLabel">
+          <i class="bi bi-plus-circle"></i> Add Appointment
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Appointment Date -->
+        <div class="mb-3">
+          <label for="txtAppointmentDate" class="form-label fw-semibold">Appointment Date</label>
+          <input type="date" id="txtAppointmentDate" class="form-control form-control-lg" min="2025-01-01" max="2026-12-31"
+            [ngModel]="this.newStartDateString" (ngModelChange)="onAppointmentDateChanged($event)">
+        </div>
+
+        <!-- Start Time -->
+        <div class="row">
+          <div class="col-6">
+            <label for="txtAppointmentTime" class="form-label fw-semibold">Start Time</label>
+            <input type="time" id="txtAppointmentTime" class="form-control form-control-lg" step="1800" 
+              [ngModel]="this.newAppointment?.StartTime" (ngModelChange)="newAppointment.StartTime = $event">
+          </div>
+          <div class="col-6">
+            <label for="txtAppointmentEndTime" class="form-label fw-semibold">End Time</label>
+            <input type="time" id="txtAppointmentEndTime" class="form-control form-control-lg" step="1800" 
+              [ngModel]="this.newAppointment?.EndTime" (ngModelChange)="newAppointment.EndTime = $event">
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Patient Name -->
+        <div class="mb-3">
+          <label for="txtApptPatientName" class="form-label fw-semibold">Patient Name</label>
+          <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients" [displayWith]="displayName"
+            (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName + ' ' + $event.LastName; newAppointment.UserID = $event.UserID">
+          </app-typeahead>
+        </div>
+
+        <!-- Doctor Name -->
+        <div class="mb-3">
+          <label for="txtApptDoctorName" class="form-label fw-semibold">Doctor Name</label>
+          <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors" [displayWith]="displayName"
+            (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
+          </app-typeahead>
+        </div>
+
+        <!-- Treatment -->
+        <div class="mb-3">
+          <label for="txtApptProcedure" class="form-label fw-semibold">Treatment</label>
+          <input type="text" id="txtApptProcedure" class="form-control form-control-lg" placeholder="Enter treatment name"
+            [ngModel]="newAppointment?.TreatmentName"
+            (ngModelChange)="newAppointment.TreatmentName = $event">
+        </div>
+      </div>
+      <div class="modal-footer border-0 bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Close
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">
+          <i class="bi bi-check-circle"></i> Save Changes
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="addAppointmentModal" tabindex="-1"
-  aria-labelledby="addAppointmentModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
-          </div>
-          <div class="col">
-            <input type="date" id="txtAppointmentDate" class="form-control" min="2024-01-01" max="2025-12-31"
-              [ngModel]="this.newStartDateString" (ngModelChange)="newStartDateString = $event">
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
-          </div>
-          <div class="col">
-            <input type="time" id="txtAppointmentTime" class="form-control" step="1800" [ngModel]="this.newAppointment?.StartTime" (ngModelChange)="newAppointment.StartTime = $event">
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
-          </div>
-          <div class="col">
-            <input type="time" id="txtAppointmentEndTime" class="form-control" step="1800" [ngModel]="this.newAppointment?.EndTime" (ngModelChange)="newAppointment.EndTime = $event">
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtApptPatientName" class="form-label">Patient Name</label>
-          </div>
-          <div class="col">
-            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients" [displayWith]="displayName"
-              (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName + ' ' + $event.LastName; newAppointment.UserID = $event.UserID">
-            </app-typeahead>
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
-          </div>
-          <div class="col">
-            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors" [displayWith]="displayName"
-              (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
-            </app-typeahead>
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col">
-            <label for="txtApptProcedure" class="form-label">Procedure</label>
-          </div>
-          <div class="col">
-            <input type="text" id="txtApptProcedure" class="form-control" [ngModel]="newAppointment?.TreatmentName"
-              (ngModelChange)="newAppointment.TreatmentName = $event">
-          </div>
-        </div>
-        <br />
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save
-          changes</button>
-      </div>
-    </div>
-  </div>
-</div>
