@@ -1,2 +1,407 @@
 /* You can add global styles to this file, and also import other style files */
-    @import "bootstrap-icons/font/bootstrap-icons.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.min.css";
+
+/* ============================================
+   GLOBAL FORM STYLING
+   ============================================ */
+
+/* Form Container & Layout */
+.form-container {
+  background: white;
+  padding: 0;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f3f7;
+}
+
+.form-header h5,
+.form-header h4 {
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* Search & Generic Forms */
+.search-form,
+form.app-form {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  margin: 0;
+}
+
+/* Form Groups & Labels */
+.form-group {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-label i {
+  color: #667eea;
+}
+
+/* Form Controls - Input & Select */
+.form-control,
+.form-select {
+  border: 1.5px solid #e0e0e0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.form-control-lg,
+.form-select-lg {
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+/* Form Validation & Alerts */
+.alert-danger {
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-radius: 0.5rem;
+  color: #742a2a;
+  font-weight: 500;
+}
+
+.alert-danger i {
+  color: #fc8181;
+}
+
+.alert-success {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.5rem;
+  color: #166534;
+  font-weight: 500;
+}
+
+.alert-success i {
+  color: #86efac;
+}
+
+/* Button Groups */
+.button-group {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.button-group .btn {
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button-group .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.button-group .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.button-group .btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+}
+
+.button-group .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.button-group .btn-outline-secondary {
+  border: 1.5px solid #6c757d;
+  color: #6c757d;
+}
+
+.button-group .btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 0.4rem;
+  transition: all 0.2s ease;
+  border: 1.5px solid;
+}
+
+.btn-outline-primary {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.btn-outline-primary:hover {
+  background-color: #667eea;
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+/* ============================================
+   GLOBAL TABLE & RESULTS STYLING
+   ============================================ */
+
+.results-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.results-header {
+  border-bottom: 2px solid #f0f3f7;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.results-title {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+/* Table Styling */
+.app-table {
+  margin-bottom: 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.app-table thead {
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0f3f7 100%);
+}
+
+.app-table thead th {
+  border: none;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #555;
+  padding: 1rem 0.75rem;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.app-table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f0f3f7;
+}
+
+.app-table tbody tr:hover {
+  background-color: #f8f9fa;
+  box-shadow: inset 0 0 0 999px rgba(102, 126, 234, 0.03);
+}
+
+.app-table tbody td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  color: #555;
+}
+
+.app-table .badge {
+  font-weight: 600;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.app-table .badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+/* Links in tables */
+.link-email,
+.link-phone {
+  color: #667eea;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.link-email:hover,
+.link-phone:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Empty State */
+.empty-state {
+  color: #999;
+  padding: 3rem 1rem;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #d0d0d0;
+}
+
+.empty-state p {
+  color: #999;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Cards View (Mobile Alternative) */
+.cards-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.result-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.result-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: #667eea;
+}
+
+.card-header-custom {
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0f3f7 100%);
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.card-header-custom h6 {
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.card-body-custom {
+  padding: 1rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f3f7;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #667eea;
+  font-size: 0.9rem;
+  flex: 0 0 40%;
+}
+
+.info-value {
+  color: #555;
+  flex: 1;
+  text-align: right;
+}
+
+.action-buttons-mobile {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ============================================
+   GLOBAL UTILITY CLASSES
+   ============================================ */
+
+.fw-medium {
+  font-weight: 600;
+}
+
+.text-muted {
+  color: #999 !important;
+}
+
+/* Global Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-card,
+.create-card,
+.app-table tbody tr {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}

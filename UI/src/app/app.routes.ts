@@ -13,6 +13,12 @@ import { ForgotPasswordComponent } from './componets/login/forgotpassword/forgot
 import { UserSearch } from './componets/user/user-search/user-search.component';
 import { UserInfoComponent } from './componets/user/user-info/user-info.component';
 import { UserQuickCreateComponent } from './componets/user/user-quick-create/user-quick-create.component';
+import { PatientSearchComponent } from './componets/patient/patient-search/patient-search.component';
+import { PatientVitalsComponent } from './componets/patient/patient-vitals/patient-vitals.component';
+import { PatientHistoryComponent } from './componets/patient/patient-history/patient-history.component';
+import { PatientTreatmentComponent } from './componets/patient/patient-treatment/patient-treatment.component';
+import { PatientAppointmentComponent } from './componets/patient/patient-appointment/patient-appointment.component';
+import { PatientReportComponent } from './componets/patient/patient-report/patient-report.component';
 
 
 export const routes: Routes = [
@@ -22,7 +28,19 @@ export const routes: Routes = [
       { path: '', component: LoginComponent }
     ]
   },
-  { path: 'patient', component: PatientMasterComponent, canActivate: [authGuard] },
+  { path: 'patient',
+    canActivate: [authGuard],
+    children: [
+      { path: 'search', component: PatientSearchComponent },
+      { path: 'vitals', component: PatientVitalsComponent },
+      { path: 'history', component: PatientHistoryComponent },
+      { path: 'treatment', component: PatientTreatmentComponent },
+      { path: 'appointment', component: PatientAppointmentComponent },
+      { path: 'reports', component: PatientReportComponent },
+      { path: 'previous-treatments', component: PatientCompleteHistoryComponent },
+      { path: '', redirectTo: 'search', pathMatch: 'full' }
+    ]
+  },
   { path: 'scheduler', component: SchedulerComponent, canActivate: [authGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },

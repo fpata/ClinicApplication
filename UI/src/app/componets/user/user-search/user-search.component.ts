@@ -62,9 +62,6 @@ validateSearchInput() {
       next: (result:any) => {
         this.searchResult = result;
         this.clearSearchClicked = false;
-        if (this.searchResult.Results.length === 1) {
-          this.OnUserIdClick(this.searchResult.Results[0].UserID);
-        }
         this.totalItems = this.searchResult.TotalCount || 0;
         this.cdRef.detectChanges();
       },
@@ -105,6 +102,30 @@ validateSearchInput() {
       error: (err: any) => {
        this.messageService.error('Error fetching user data:', err);
        this.cdRef.detectChanges();
+      }
+    });
+  }
+
+  EditUser(userId: number) {
+    this.OnUserIdClick(userId);
+  }
+
+  DeleteUser(userId: number, userName: string) {
+    const confirmDelete = confirm(`Are you sure you want to delete user: ${userName}?`);
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.userService.deleteUser(userId).subscribe({
+      next: () => {
+        this.messageService.success('User deleted successfully');
+        this.SearchUser();
+        this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+        this.messageService.error('Error occurred while deleting user');
+        console.error(err);
+        this.cdRef.detectChanges();
       }
     });
   }

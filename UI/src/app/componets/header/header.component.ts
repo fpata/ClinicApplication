@@ -2,14 +2,14 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/
 import { Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { LoginResponse } from '../../services/login.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
-  imports: [],
+  imports: [RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Header implements OnInit, OnDestroy {

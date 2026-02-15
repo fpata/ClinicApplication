@@ -1,315 +1,404 @@
-<form #userForm="ngForm" [ngClass]="{'was-validated': formSubmitted}" novalidate>
-  <div class="accordion" id="accPatientBaseInfo">
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="header-content">
+      <h1 class="page-title mb-1">
+        <i class="bi bi-person-circle me-2"></i>User Information
+      </h1>
+      <p class="page-subtitle">Manage and update user profile details</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container-fluid">
+    <form #userForm="ngForm" [ngClass]="{'was-validated': formSubmitted}" novalidate class="app-form">
+      <!-- Accordions Container -->
+      <div class="accordion accordion-modern" id="accPatientBaseInfo">
     <!-- Personal Information Section -->
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accPatientPersonalInfo"
           aria-expanded="true" aria-controls="accPatientPersonalInfo">
-          Personal Information
+          <i class="bi bi-person-check-fill me-2"></i>
+          <span class="accordion-title">Personal Information</span>
+          <span class="accordion-badge badge bg-primary ms-auto">5</span>
         </button>
       </h2>
       <div id="accPatientPersonalInfo" class="accordion-collapse collapse show">
         <div class="accordion-body">
-          <div class="container">
-            <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtFirstName" class="form-label">First Name</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtFirstName" name="FirstName" class="form-control" placeholder="FirstName" 
-                  [ngModel]="user?.FirstName" (ngModelChange)="user && (user.FirstName = $event)" 
-                  minlength="3" maxlength="50" required> 
-                <div class="invalid-feedback">Please enter a first name (3-50 characters).</div>
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtLastName" class="form-label">Last Name</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtLastName" name="LastName" class="form-control" placeholder="LastName"
-                  [ngModel]="user?.LastName" (ngModelChange)="user && (user.LastName = $event)" 
-                  minlength="3" maxlength="50" required>
-                <div class="invalid-feedback">Please enter a last name (3-50 characters).</div>
-              </div>
-            </div>
-            
-            <br />
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtAge" class="form-label">Age</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="number" id="txtAge" name="Age" class="form-control" 
-                  [ngModel]="user?.Age" (ngModelChange)="user && (user.Age = $event)" 
-                  min="1" max="150" required>
-                <div class="invalid-feedback">Please enter a valid age (1-150).</div>
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="rdGender" class="form-label">Gender</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <div class="form-check">
-                  <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1" 
-                    [checked]="user?.Gender === 1" (change)="user && (user.Gender = 1)" required>
-                  <label class="form-check-label" for="rdGenderMale">Male</label>
+          <div class="form-section">
+            <!-- Row 1: First Name & Last Name -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtFirstName" class="form-label">
+                    <i class="bi bi-person me-1"></i>First Name
+                  </label>
+                  <input type="text" id="txtFirstName" name="FirstName" class="form-control form-control-lg" 
+                    [ngModel]="user?.FirstName" (ngModelChange)="user && (user.FirstName = $event)" 
+                    minlength="3" maxlength="50" required placeholder="Enter first name"> 
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a first name (3-50 characters).
+                  </div>
                 </div>
-                <div class="form-check">
-                  <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2" 
-                    [checked]="user?.Gender === 2" (change)="user && (user.Gender = 2)" required>
-                  <label class="form-check-label" for="rdGenderFemale">Female</label>
-                </div>
-                <div class="form-check">
-                  <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3" 
-                    [checked]="user?.Gender === 3" (change)="user && (user.Gender = 3)" required>
-                  <label class="form-check-label" for="rdGenderOther">Other</label>
-                </div>
-                <div class="form-check">
-                  <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4" 
-                    [checked]="user?.Gender === 4" (change)="user && (user.Gender = 4)" required>
-                  <label class="form-check-label" for="rdGenderPreferNotToSay">Prefer Not to Say</label>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtLastName" class="form-label">
+                    <i class="bi bi-person me-1"></i>Last Name
+                  </label>
+                  <input type="text" id="txtLastName" name="LastName" class="form-control form-control-lg" 
+                    [ngModel]="user?.LastName" (ngModelChange)="user && (user.LastName = $event)" 
+                    minlength="3" maxlength="50" required placeholder="Enter last name">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a last name (3-50 characters).
+                  </div>
                 </div>
               </div>
             </div>
-            <br />
-             <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtUserName" class="form-label">User Name</label>
+
+            <!-- Row 2: Age & Gender -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtAge" class="form-label">
+                    <i class="bi bi-calendar me-1"></i>Age
+                  </label>
+                  <input type="number" id="txtAge" name="Age" class="form-control form-control-lg" 
+                    [ngModel]="user?.Age" (ngModelChange)="user && (user.Age = $event)" 
+                    min="1" max="150" required placeholder="Enter age">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid age (1-150).
+                  </div>
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtUserName" name="UserName" class="form-control" placeholder="UserName" 
-                  [ngModel]="user?.UserName" (ngModelChange)="user && (user.UserName = $event)" 
-                  minlength="3" maxlength="50" required> 
-                <div class="invalid-feedback">Please enter a valid user name (3-50 characters).</div>
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtPassword" class="form-label">Password</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="password" id="txtPassword" name="Password" class="form-control" 
-                  [ngModel]="user?.Password" (ngModelChange)="user && (user.Password = $event)" 
-                  minlength="3" maxlength="50" required>
-                <div class="invalid-feedback">Please enter a valid password (3-50 characters).</div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="bi bi-people me-1"></i>Gender
+                  </label>
+                  <div class="gender-group">
+                    <div class="form-check form-check-inline">
+                      <input type="radio" id="rdGenderMale" name="gender" class="form-check-input" value="1" 
+                        [checked]="user?.Gender === 1" (change)="user && (user.Gender = 1)" required>
+                      <label class="form-check-label" for="rdGenderMale">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input type="radio" id="rdGenderFemale" name="gender" class="form-check-input" value="2" 
+                        [checked]="user?.Gender === 2" (change)="user && (user.Gender = 2)" required>
+                      <label class="form-check-label" for="rdGenderFemale">Female</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input type="radio" id="rdGenderOther" name="gender" class="form-check-input" value="3" 
+                        [checked]="user?.Gender === 3" (change)="user && (user.Gender = 3)" required>
+                      <label class="form-check-label" for="rdGenderOther">Other</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input type="radio" id="rdGenderPreferNotToSay" name="gender" class="form-check-input" value="4" 
+                        [checked]="user?.Gender === 4" (change)="user && (user.Gender = 4)" required>
+                      <label class="form-check-label" for="rdGenderPreferNotToSay">Prefer Not</label>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            
-            <br />
-             <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="cbUserType" class="form-label">User Type</label>
+
+            <!-- Row 3: User Name & Password -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtUserName" class="form-label">
+                    <i class="bi bi-at me-1"></i>User Name
+                  </label>
+                  <input type="text" id="txtUserName" name="UserName" class="form-control form-control-lg" 
+                    [ngModel]="user?.UserName" (ngModelChange)="user && (user.UserName = $event)" 
+                    minlength="3" maxlength="50" required placeholder="Enter username"> 
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid user name (3-50 characters).
+                  </div>
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <select id="cbUserType" name="UserType" class="form-select" 
-                  [ngModel]="user?.UserType" (ngModelChange)="onUserTypeChange($event)" required>
-                  <option value="">Select User Type</option>
-                  <option value="1">Patient</option>
-                  <option value="2">Doctor</option>
-                  <option value="5">Administrator</option>
-                </select>
-                <div class="invalid-feedback">Please select a user type.</div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtPassword" class="form-label">
+                    <i class="bi bi-lock me-1"></i>Password
+                  </label>
+                  <input type="password" id="txtPassword" name="Password" class="form-control form-control-lg" 
+                    [ngModel]="user?.Password" (ngModelChange)="user && (user.Password = $event)" 
+                    minlength="3" maxlength="50" required placeholder="Enter password">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid password (3-50 characters).
+                  </div>
+                </div>
               </div>
             </div>
-            <br />
+
+            <!-- Row 4: User Type -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="cbUserType" class="form-label">
+                    <i class="bi bi-briefcase me-1"></i>User Type
+                  </label>
+                  <select id="cbUserType" name="UserType" class="form-select form-select-lg" 
+                    [ngModel]="user?.UserType" (ngModelChange)="onUserTypeChange($event)" required>
+                    <option value="">-- Select User Type --</option>
+                    <option value="1">Patient</option>
+                    <option value="2">Doctor</option>
+                    <option value="5">Administrator</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please select a user type.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Doctor Specific Fields -->
             @if(user?.UserType === 2) {
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtDesignation" class="form-label">Designation</label>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtDesignation" class="form-label">
+                    <i class="bi bi-badge-md me-1"></i>Designation
+                  </label>
+                  <input type="text" id="txtDesignation" name="Designation" class="form-control form-control-lg" 
+                    [ngModel]="user?.Designation" (ngModelChange)="user && (user.Designation = $event)" 
+                    placeholder="Enter designation"> 
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please fill out this field.
+                  </div>
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtDesignation" name="Designation" class="form-control" placeholder="Designation" 
-                  [ngModel]="user?.Designation" (ngModelChange)="user && (user.Designation = $event)"> 
-                <div class="invalid-feedback">Please fill out this field.</div>
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtSpecialization" class="form-label">Specialization</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtSpecialization" name="Specialization" class="form-control" placeholder="Specialization" 
-                  [ngModel]="user?.Specialization" (ngModelChange)="user && (user.Specialization = $event)"> 
-                <div class="invalid-feedback">Please fill out this field.</div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtSpecialization" class="form-label">
+                    <i class="bi bi-stethoscope me-1"></i>Specialization
+                  </label>
+                  <input type="text" id="txtSpecialization" name="Specialization" class="form-control form-control-lg" 
+                    [ngModel]="user?.Specialization" (ngModelChange)="user && (user.Specialization = $event)" 
+                    placeholder="Enter specialization"> 
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please fill out this field.
+                  </div>
+                </div>
               </div>
             </div>
-            <br />
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtLicenseNumber" class="form-label">License Number</label>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtLicenseNumber" class="form-label">
+                    <i class="bi bi-card-text me-1"></i>License Number
+                  </label>
+                  <input type="text" id="txtLicenseNumber" name="LicenseNumber" class="form-control form-control-lg" 
+                    [ngModel]="user?.LicenseNumber" (ngModelChange)="user && (user.LicenseNumber = $event)" 
+                    placeholder="Enter license number"> 
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please fill out this field.
+                  </div>
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtLicenseNumber" name="LicenseNumber" class="form-control" placeholder="License Number" 
-                  [ngModel]="user?.LicenseNumber" (ngModelChange)="user && (user.LicenseNumber = $event)"> 
-                <div class="invalid-feedback">Please fill out this field.</div>
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtLicenseExpiryDate" class="form-label">License Expiry Date</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="date" id="txtLicenseExpiryDate" name="LicenseExpiryDate" class="form-control"  
-                  [ngModel]="user?.LicenseExpiryDate" (ngModelChange)="user && (user.LicenseExpiryDate = $event)"> 
-                <div class="invalid-feedback">Please fill out this field.</div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtLicenseExpiryDate" class="form-label">
+                    <i class="bi bi-calendar-event me-1"></i>License Expiry Date
+                  </label>
+                  <input type="date" id="txtLicenseExpiryDate" name="LicenseExpiryDate" class="form-control form-control-lg"
+                    [ngModel]="user?.LicenseExpiryDate" (ngModelChange)="user && (user.LicenseExpiryDate = $event)"> 
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please fill out this field.
+                  </div>
+                </div>
               </div>
             </div>
             }
-            </fieldset>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Address Section (simplified - apply same pattern) -->
+    <!-- Address Section -->
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-          data-bs-target="#accPatientAddress" aria-expanded="true" aria-controls="accPatientAddress">
-          Patient Address
+          data-bs-target="#accPatientAddress" aria-expanded="false" aria-controls="accPatientAddress">
+          <i class="bi bi-house-door me-2"></i>
+          <span class="accordion-title">Address Information</span>
+          <span class="accordion-badge badge bg-info ms-auto">2</span>
         </button>
       </h2>
-      <div id="accPatientAddress" class="accordion-collapse collapse show">
+      <div id="accPatientAddress" class="accordion-collapse collapse">
         <div class="accordion-body">
-          <div class="container">
-            <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-            <ul class="nav nav-tabs nav-justified" id="tbAddress" role="tablist">
+          <div class="form-section">
+            <!-- Address Tabs -->
+            <ul class="nav nav-pills nav-justified address-tabs mb-3" id="tbAddress" role="tablist">
               <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="tbPermanantAddress-tab" data-bs-toggle="tab"
                   data-bs-target="#tbPermanantAddress" type="button" role="tab" aria-controls="tbPermanantAddress"
-                  aria-selected="true">Permanent Address</button>
+                  aria-selected="true">
+                  <i class="bi bi-pin-map me-1"></i>Permanent Address
+                </button>
               </li>
               <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tbCorespondenceAddress-tab" data-bs-toggle="tab"
                   data-bs-target="#tbCorespondenceAddress" type="button" role="tab" aria-controls="tbCorespondenceAddress"
-                  aria-selected="false">Correspondence Address</button>
+                  aria-selected="false">
+                  <i class="bi bi-envelope me-1"></i>Correspondence Address
+                </button>
               </li>
             </ul>
             <div class="tab-content" id="nav-tabContent">
+              <!-- Permanent Address Tab -->
               <div class="tab-pane fade show active" id="tbPermanantAddress" role="tabpanel"
                 aria-labelledby="tbPermanantAddress-tab">
-                <br />
-                <div class="row">
-                  <div class="col-2">
-                    <label for="txtPermAddress1" class="form-label">Address Line 1</label>
-                  </div>
-                  <div class="col-9">
-                    <input type="text" id="txtPermAddress1" name="PermAddress1" class="form-control" 
-                      [ngModel]="user.Address?.PermAddress1" (ngModelChange)="user.Address && (user.Address.PermAddress1 = $event)">
-                  </div>
-                </div>
-               <br />
-                <div class="row">
-                  <div class="col-2">
-                    <label for="txtPermAddress2" class="form-label">Address Line 2</label>
-                  </div>
-                  <div class="col-9">
-                    <input type="text" id="txtPermAddress2" name="PermAddress2" class="form-control" 
-                      [ngModel]="user.Address?.PermAddress2" (ngModelChange)="user.Address && (user.Address.PermAddress2 = $event)">
+                <div class="row g-3 mb-3">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label for="txtPermAddress1" class="form-label">
+                        <i class="bi bi-street-view me-1"></i>Address Line 1
+                      </label>
+                      <input type="text" id="txtPermAddress1" name="PermAddress1" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.PermAddress1" (ngModelChange)="user.Address && (user.Address.PermAddress1 = $event)"
+                        placeholder="Enter address line 1">
+                    </div>
                   </div>
                 </div>
-                <br/>
-                <div class="row">
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtPermCity" class="form-label">City</label>
-                  </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermCity" name="PermCity" class="form-control" 
-                      [ngModel]="user.Address?.PermCity" (ngModelChange)="user.Address && (user.Address.PermCity = $event)">
-                  </div>
-                  <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtPermState" class="form-label">State</label>
-                  </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermState" name="PermState" class="form-control" 
-                      [ngModel]="user.Address?.PermState" (ngModelChange)="user.Address && (user.Address.PermState = $event)">
+                <div class="row g-3 mb-3">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label for="txtPermAddress2" class="form-label">
+                        <i class="bi bi-street-view me-1"></i>Address Line 2
+                      </label>
+                      <input type="text" id="txtPermAddress2" name="PermAddress2" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.PermAddress2" (ngModelChange)="user.Address && (user.Address.PermAddress2 = $event)"
+                        placeholder="Enter address line 2">
+                    </div>
                   </div>
                 </div>
-                <br />
-                <div class="row">
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtPermCountry" class="form-label">Country</label>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtPermCity" class="form-label">
+                        <i class="bi bi-geo-alt me-1"></i>City
+                      </label>
+                      <input type="text" id="txtPermCity" name="PermCity" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.PermCity" (ngModelChange)="user.Address && (user.Address.PermCity = $event)"
+                        placeholder="Enter city">
+                    </div>
                   </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermCountry" name="PermCountry" class="form-control" 
-                      [ngModel]="user.Address?.PermCountry" (ngModelChange)="user.Address && (user.Address.PermCountry = $event)">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtPermState" class="form-label">
+                        <i class="bi bi-map me-1"></i>State
+                      </label>
+                      <input type="text" id="txtPermState" name="PermState" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.PermState" (ngModelChange)="user.Address && (user.Address.PermState = $event)"
+                        placeholder="Enter state">
+                    </div>
                   </div>
-                  <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtPermZipCode" class="form-label">Zip Code</label>
+                </div>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtPermCountry" class="form-label">
+                        <i class="bi bi-globe me-1"></i>Country
+                      </label>
+                      <input type="text" id="txtPermCountry" name="PermCountry" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.PermCountry" (ngModelChange)="user.Address && (user.Address.PermCountry = $event)"
+                        placeholder="Enter country">
+                    </div>
                   </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtPermZipCode" name="PermZipCode" class="form-control" 
-                      [ngModel]="user.Address?.PermZipCode" (ngModelChange)="user.Address && (user.Address.PermZipCode = $event)">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtPermZipCode" class="form-label">
+                        <i class="bi bi-mailbox me-1"></i>Zip Code
+                      </label>
+                      <input type="text" id="txtPermZipCode" name="PermZipCode" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.PermZipCode" (ngModelChange)="user.Address && (user.Address.PermZipCode = $event)"
+                        placeholder="Enter zip code">
+                    </div>
                   </div>
                 </div>
               </div>
   
+              <!-- Correspondence Address Tab -->
               <div class="tab-pane fade" id="tbCorespondenceAddress" role="tabpanel"
                 aria-labelledby="tbCorespondenceAddress-tab">
-                <br />
-                <div class="row">
-                  <div class="col-12" style="align-content:end;align-items: end;text-align: end;">
-                    <label type="button" style="color: cornflowerblue;cursor: pointer;" (click)="CopyAddress()">Same as permanent address</label>
+                <div class="copy-address-btn mb-3">
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="CopyAddress()">
+                    <i class="bi bi-files me-1"></i>Copy from Permanent Address
+                  </button>
+                </div>
+                <div class="row g-3 mb-3">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label for="txtCorsAddress1" class="form-label">
+                        <i class="bi bi-street-view me-1"></i>Address Line 1
+                      </label>
+                      <input type="text" id="txtCorsAddress1" name="CorrAddress1" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.CorrAddress1" (ngModelChange)="user.Address && (user.Address.CorrAddress1 = $event)"
+                        placeholder="Enter address line 1">
+                    </div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-2">
-                    <label for="txtCorsAddress1" class="form-label">Address Line 1</label>
-                  </div>
-                  <div class="col-9">
-                    <input type="text" id="txtCorsAddress1" name="CorrAddress1" class="form-control" 
-                      [ngModel]="user.Address?.CorrAddress1" (ngModelChange)="user.Address && (user.Address.CorrAddress1 = $event)">
-                  </div>
-                </div>
-                <br />
-                <div class="row">
-                  <div class="col-2">
-                    <label for="txtCorsAddress2" class="form-label">Address Line 2</label>
-                  </div>
-                  <div class="col-9">
-                    <input type="text" id="txtCorsAddress2" name="CorrAddress2" class="form-control" 
-                      [ngModel]="user.Address?.CorrAddress2" (ngModelChange)="user.Address && (user.Address.CorrAddress2 = $event)">
+                <div class="row g-3 mb-3">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label for="txtCorsAddress2" class="form-label">
+                        <i class="bi bi-street-view me-1"></i>Address Line 2
+                      </label>
+                      <input type="text" id="txtCorsAddress2" name="CorrAddress2" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.CorrAddress2" (ngModelChange)="user.Address && (user.Address.CorrAddress2 = $event)"
+                        placeholder="Enter address line 2">
+                    </div>
                   </div>
                 </div>
-                <br />
-                <div class="row">
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtCorsCity" class="form-label">City</label>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtCorsCity" class="form-label">
+                        <i class="bi bi-geo-alt me-1"></i>City
+                      </label>
+                      <input type="text" id="txtCorsCity" name="CorrCity" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.CorrCity" (ngModelChange)="user.Address && (user.Address.CorrCity = $event)"
+                        placeholder="Enter city">
+                    </div>
                   </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsCity" name="CorrCity" class="form-control" 
-                      [ngModel]="user.Address?.CorrCity" (ngModelChange)="user.Address && (user.Address.CorrCity = $event)">
-                  </div>
-                  <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtCorsState" class="form-label">State</label>
-                  </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsState" name="CorrState" class="form-control" 
-                      [ngModel]="user.Address?.CorrState" (ngModelChange)="user.Address && (user.Address.CorrState = $event)">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtCorsState" class="form-label">
+                        <i class="bi bi-map me-1"></i>State
+                      </label>
+                      <input type="text" id="txtCorsState" name="CorrState" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.CorrState" (ngModelChange)="user.Address && (user.Address.CorrState = $event)"
+                        placeholder="Enter state">
+                    </div>
                   </div>
                 </div>
-                <br />
-                <div class="row">
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtCorsCountry" class="form-label">Country</label>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtCorsCountry" class="form-label">
+                        <i class="bi bi-globe me-1"></i>Country
+                      </label>
+                      <input type="text" id="txtCorsCountry" name="CorrCountry" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.CorrCountry" (ngModelChange)="user.Address && (user.Address.CorrCountry = $event)"
+                        placeholder="Enter country">
+                    </div>
                   </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsCountry" name="CorrCountry" class="form-control" 
-                      [ngModel]="user.Address?.CorrCountry" (ngModelChange)="user.Address && (user.Address.CorrCountry = $event)">
-                  </div>
-                  <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-                  <div class="col-xs-12 col-sm-5 col-md-2">
-                    <label for="txtCorsZipCode" class="form-label">Zip Code</label>
-                  </div>
-                  <div class="col-xs-12 col-sm-5 col-md-3">
-                    <input type="text" id="txtCorsZipCode" name="CorrZipCode" class="form-control" 
-                      [ngModel]="user.Address?.CorrZipCode" (ngModelChange)="user.Address && (user.Address.CorrZipCode = $event)">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtCorsZipCode" class="form-label">
+                        <i class="bi bi-mailbox me-1"></i>Zip Code
+                      </label>
+                      <input type="text" id="txtCorsZipCode" name="CorrZipCode" class="form-control form-control-lg" 
+                        [ngModel]="user.Address?.CorrZipCode" (ngModelChange)="user.Address && (user.Address.CorrZipCode = $event)"
+                        placeholder="Enter zip code">
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            </fieldset>
           </div>
         </div>
       </div>
@@ -319,53 +408,68 @@
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-          data-bs-target="#accPatientContact" aria-expanded="true" aria-controls="accPatientContact">
-          Patient Contact
+          data-bs-target="#accPatientContact" aria-expanded="false" aria-controls="accPatientContact">
+          <i class="bi bi-telephone me-2"></i>
+          <span class="accordion-title">Contact Information</span>
+          <span class="accordion-badge badge bg-success ms-auto">2</span>
         </button>
       </h2>
-      <div id="accPatientContact" class="accordion-collapse collapse show" data-bs-parent="#accPatientBaseInfo">
+      <div id="accPatientContact" class="accordion-collapse collapse">
         <div class="accordion-body">
-          <div class="container">
-            <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtPrimaryPhone" class="form-label">Primary Phone</label>
+          <div class="form-section">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtPrimaryPhone" class="form-label">
+                    <i class="bi bi-telephone me-1"></i>Primary Phone
+                  </label>
+                  <input type="text" id="txtPrimaryPhone" name="PrimaryPhone" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.PrimaryPhone" (ngModelChange)="user.Contact && (user.Contact.PrimaryPhone = $event)" 
+                    required placeholder="Enter primary phone">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please provide a primary phone.
+                  </div>
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtPrimaryPhone" name="PrimaryPhone" class="form-control" 
-                  [ngModel]="user.Contact?.PrimaryPhone" (ngModelChange)="user.Contact && (user.Contact.PrimaryPhone = $event)" required>
-                <div class="invalid-feedback">Please provide a primary phone.</div>
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtSecondaryPhone" class="form-label">Secondary Phone</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtSecondaryPhone" name="SecondaryPhone" class="form-control" 
-                  [ngModel]="user.Contact?.SecondaryPhone" (ngModelChange)="user.Contact && (user.Contact.SecondaryPhone = $event)">
-              </div>
-            </div>
-            <br />
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtPrimaryEmail" class="form-label">Primary Email</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtPrimaryEmail" name="PrimaryEmail" class="form-control" email
-                  [ngModel]="user.Contact?.PrimaryEmail" (ngModelChange)="user.Contact && (user.Contact.PrimaryEmail = $event)" required>
-                <div class="invalid-feedback">Please provide a valid primary email.</div>
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtSecondaryEmail" class="form-label">Secondary Email</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtSecondaryEmail" name="SecondaryEmail" class="form-control" email
-                  [ngModel]="user.Contact?.SecondaryEmail" (ngModelChange)="user.Contact && (user.Contact.SecondaryEmail = $event)">
-                <div class="invalid-feedback">Please provide a valid secondary email.</div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtSecondaryPhone" class="form-label">
+                    <i class="bi bi-telephone me-1"></i>Secondary Phone
+                  </label>
+                  <input type="text" id="txtSecondaryPhone" name="SecondaryPhone" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.SecondaryPhone" (ngModelChange)="user.Contact && (user.Contact.SecondaryPhone = $event)"
+                    placeholder="Enter secondary phone">
+                </div>
               </div>
             </div>
-            </fieldset>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtPrimaryEmail" class="form-label">
+                    <i class="bi bi-envelope me-1"></i>Primary Email
+                  </label>
+                  <input type="email" id="txtPrimaryEmail" name="PrimaryEmail" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.PrimaryEmail" (ngModelChange)="user.Contact && (user.Contact.PrimaryEmail = $event)" 
+                    required placeholder="Enter primary email">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please provide a valid primary email.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtSecondaryEmail" class="form-label">
+                    <i class="bi bi-envelope me-1"></i>Secondary Email
+                  </label>
+                  <input type="email" id="txtSecondaryEmail" name="SecondaryEmail" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.SecondaryEmail" (ngModelChange)="user.Contact && (user.Contact.SecondaryEmail = $event)"
+                    placeholder="Enter secondary email">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please provide a valid secondary email.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -375,75 +479,85 @@
     <div class="accordion-item">
       <h2 class="accordion-header">
         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-          data-bs-target="#accPatientEmergency" aria-expanded="true" aria-controls="accPatientEmergency">
-          Patient Emergency Contact
+          data-bs-target="#accPatientEmergency" aria-expanded="false" aria-controls="accPatientEmergency">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          <span class="accordion-title">Emergency Contact</span>
+          <span class="accordion-badge badge bg-warning ms-auto">4</span>
         </button>
       </h2>
-      <div id="accPatientEmergency" class="accordion-collapse collapse show" data-bs-parent="#accPatientBaseInfo">
+      <div id="accPatientEmergency" class="accordion-collapse collapse">
         <div class="accordion-body">
-          <div class="container">
-            <div class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactName" class="form-label">Emergency Contact Name</label>
+          <div class="form-section">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtEmemergencyContactName" class="form-label">
+                    <i class="bi bi-person me-1"></i>Emergency Contact Name
+                  </label>
+                  <input type="text" id="txtEmemergencyContactName" name="RelativeName" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.RelativeName" (ngModelChange)="user.Contact && (user.Contact.RelativeName = $event)"
+                    placeholder="Enter emergency contact name">
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactName" name="RelativeName" class="form-control" 
-                  [ngModel]="user.Contact?.RelativeName" (ngModelChange)="user.Contact && (user.Contact.RelativeName = $event)">
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactRelation" class="form-label">Emergency Contact Relation</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactRelation" name="RelativeRealtion" class="form-control" 
-                  [ngModel]="user.Contact?.RelativeRealtion" (ngModelChange)="user.Contact && (user.Contact.RelativeRealtion = $event)">
-              </div>
-            </div>
-            <br />
-            <div class="row">
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactPhone" class="form-label">Emergency Contact Phone</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtEmemergencyContactPhone" name="RelativePhone" class="form-control" 
-                  [ngModel]="user.Contact?.RelativePhone" (ngModelChange)="user.Contact && (user.Contact.RelativePhone = $event)">
-              </div>
-              <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-              <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtEmemergencyContactEmail" class="form-label">Emergency Contact Email</label>
-              </div>
-              <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="email" id="txtEmemergencyContactEmail" name="RelativeEmail" class="form-control" email
-                  [ngModel]="user.Contact?.RelativeEmail" (ngModelChange)="user.Contact && (user.Contact.RelativeEmail = $event)" >
-                <div class="invalid-feedback">Please provide a valid email address.</div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtEmemergencyContactRelation" class="form-label">
+                    <i class="bi bi-share me-1"></i>Relationship
+                  </label>
+                  <input type="text" id="txtEmemergencyContactRelation" name="RelativeRealtion" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.RelativeRealtion" (ngModelChange)="user.Contact && (user.Contact.RelativeRealtion = $event)"
+                    placeholder="e.g., Brother, Sister, Parent">
+                </div>
               </div>
             </div>
-          </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtEmemergencyContactPhone" class="form-label">
+                    <i class="bi bi-telephone me-1"></i>Emergency Phone
+                  </label>
+                  <input type="text" id="txtEmemergencyContactPhone" name="RelativePhone" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.RelativePhone" (ngModelChange)="user.Contact && (user.Contact.RelativePhone = $event)"
+                    placeholder="Enter emergency phone">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="txtEmemergencyContactEmail" class="form-label">
+                    <i class="bi bi-envelope me-1"></i>Emergency Email
+                  </label>
+                  <input type="email" id="txtEmemergencyContactEmail" name="RelativeEmail" class="form-control form-control-lg" 
+                    [ngModel]="user.Contact?.RelativeEmail" (ngModelChange)="user.Contact && (user.Contact.RelativeEmail = $event)"
+                    placeholder="Enter emergency email">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please provide a valid email address.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+    </div>
 
-  <br />
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <button type="button" id="btnPatientSave" class="btn btn-primary" style="width: 25%;"
-          (click)="SaveUserInformation()">Save</button>
-      </div>
-      <div class="col">
-        <button type="button" id="btnPatientClear" class="btn btn-secondary" style="width: 25%;"
-          (click)="ClearUserInformation()">Clear</button>
-      </div>
-      <div class="col">
-        <button type="button" id="btnPatientDelete" class="btn btn-secondary" style="width: 25%;"
-          (click)="DeleteUserInformation()">Delete</button>
+    <!-- Action Buttons -->
+    <div class="action-buttons-section mt-4 mb-4">
+      <div class="button-group d-flex gap-3 flex-wrap">
+        <button type="button" id="btnPatientSave" class="btn btn-lg btn-primary flex-grow-1" 
+          (click)="SaveUserInformation()">
+          <i class="bi bi-check-circle me-2"></i>Save Changes
+        </button>
+        <button type="button" id="btnPatientClear" class="btn btn-lg btn-outline-secondary flex-grow-1" 
+          (click)="ClearUserInformation()">
+          <i class="bi bi-arrow-counterclockwise me-2"></i>Clear Form
+        </button>
+        <button type="button" id="btnPatientDelete" class="btn btn-lg btn-outline-danger flex-grow-1" 
+          (click)="DeleteUserInformation()">
+          <i class="bi bi-trash me-2"></i>Delete User
+        </button>
       </div>
     </div>
+    </form>
   </div>
-</form>
-<br />
-<br />
-<br />
+</div>

@@ -1,46 +1,124 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-gradient shadow-sm sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">CM-Clinic Manager</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold fs-5" href="#" style="letter-spacing: 0.5px;">
+      <i class="bi bi-hospital me-2"></i>CM - Clinic Manager
+    </a>
+    
+    <!-- Toggler Button -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
+    <!-- Navigation Content -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- Left Navigation Items -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         @if(!isLoginURL){
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/dashboard" id="navDashBoard"
-            routerLink="/dashboard">Dashboard</a>
+          <a class="nav-link px-3 rounded-pill transition-all" aria-current="page" href="/dashboard" id="navDashBoard"
+            routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link px-3 rounded-pill transition-all dropdown-toggle" href="#" id="navPatientDropdown" 
+            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-people me-2"></i>Patient
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navPatientDropdown">
+             <li>
+              <a class="dropdown-item" id="navUser" routerLink="/user" routerLinkActive="active">
+                <i class="bi bi-person-plus me-2"></i>Registration
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" id="navPatientSearch" routerLink="/patient/search" routerLinkActive="active">
+                <i class="bi bi-person me-2"></i>Search
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" id="navPatientAppointment" routerLink="/patient/appointment" routerLinkActive="active">
+                <i class="bi bi-calendar-event me-2"></i>Appointments
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" id="navPatientTreatment" routerLink="/patient/treatment" routerLinkActive="active">
+                <i class="bi bi-bandaid me-2"></i>Treatments
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" id="navPatientHistory" routerLink="/patient/history" routerLinkActive="active">
+                <i class="bi bi-clock-history me-2"></i>History
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" id="navPatientVitals" routerLink="/patient/vitals" routerLinkActive="active">
+                <i class="bi bi-heart-pulse me-2"></i>Vitals
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" id="navPatientReports" routerLink="/patient/reports" routerLinkActive="active">
+                <i class="bi bi-file-earmark-text me-2"></i>Reports
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" id="navPatientPreviousTreatments" routerLink="/patient/previous-treatments" routerLinkActive="active">
+                <i class="bi bi-archive me-2"></i>Previous Treatments
+              </a>
+            </li>
+          </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/user" id="navUser"
-            routerLink="/user">User</a>
+          <a class="nav-link px-3 rounded-pill transition-all" href="/doctorAppointments" id="navAppointment" 
+            routerLink="/doctorAppointments" routerLinkActive="active">
+            <i class="bi bi-calendar-event me-2"></i>Appointment
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/patient" id="navPatient" routerLink="/patient">Patient</a>
+          <a class="nav-link px-3 rounded-pill transition-all" href="#" tabindex="-1" id="navReports">
+            <i class="bi bi-file-earmark-text me-2"></i>Reports
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/doctorAppointments" id="navAppointment" routerLink="/doctorAppointments">Appointment</a>
+          <a class="nav-link px-3 rounded-pill transition-all" href="/billing" id="navBilling" routerLink="/billing" 
+            routerLinkActive="active">
+            <i class="bi bi-credit-card me-2"></i>Billing
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" tabindex="-1" id="navReports">Reports</a>
+          <a class="nav-link px-3 rounded-pill transition-all" href="/appconfig" id="navAppConfig" routerLink="/appconfig" 
+            routerLinkActive="active">
+            <i class="bi bi-gear me-2"></i>Configuration
+          </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/billing" id="navBilling" routerLink="/billing">Billing</a>
-        </li>
-         <li class="nav-item">
-          <a class="nav-link" href="/appconfig" id="navAppConfig" routerLink="/appconfig">Configuration</a>
-        </li>
-      }
+        }
       </ul>
-    
+      
+      <!-- Right Navigation Items (User Menu) -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false" id="navbarDropdownMenuLink" ><i class="bi bi-person-fill"></i>User</a>
-          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#">{{loginUser?.user?.FirstName || ''}}</a>
-            <a class="dropdown-item" href="#" (click)="logout()">Logout</a>
+          <a class="nav-link dropdown-toggle px-3 rounded-pill transition-all" href="#" data-bs-toggle="dropdown" 
+            aria-haspopup="true" aria-expanded="false" id="navbarDropdownMenuLink" role="button">
+            <i class="bi bi-person-circle me-2"></i>
+            <span class="d-lg-inline d-none">{{loginUser?.user?.FirstName || 'User'}}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="navbarDropdownMenuLink">
+            <div class="dropdown-header">
+              <strong>{{loginUser?.user?.FirstName || 'User'}}</strong>
+            </div>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item px-3" href="#">
+              <i class="bi bi-person me-2"></i>Profile
+            </a>
+            <a class="dropdown-item px-3" href="#">
+              <i class="bi bi-gear me-2"></i>Settings
+            </a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item px-3" href="#" (click)="logout()">
+              <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </a>
           </div>
         </li>
       </ul>

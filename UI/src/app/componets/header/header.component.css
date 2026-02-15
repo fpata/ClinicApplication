@@ -1,0 +1,160 @@
+/* Navbar Styling */
+.navbar {
+  padding: 0.75rem 0;
+  transition: all 0.3s ease;
+}
+
+.navbar-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: 0.5px;
+  transition: transform 0.3s ease;
+  color: white !important;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+/* Navigation Links */
+.nav-link {
+  font-weight: 500;
+  margin: 0 0.25rem;
+  position: relative;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.nav-link:hover {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+}
+
+.nav-link.active {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Icons in Navigation */
+.nav-link i {
+  margin-right: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover i {
+  transform: translateY(-2px);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0;
+  animation: slideDown 0.2s ease-out;
+  background-color: rgba(102, 126, 234, 0.95);
+}
+
+.dropdown-menu-dark {
+  background-color: rgba(118, 75, 162, 0.95);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu .dropdown-item {
+  color: white;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left-color: white;
+  padding-left: 1.75rem;
+  color: white;
+}
+
+.dropdown-menu .dropdown-item.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-left-color: white;
+}
+
+.dropdown-menu .dropdown-item i {
+  color: rgba(255, 255, 255, 0.9);
+  width: 20px;
+}
+
+.dropdown-header {
+  color: #667eea;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    margin-top: 1rem;
+  }
+
+  .nav-link {
+    padding: 0.75rem 0 !important;
+    margin-left: 0;
+  }
+
+  .nav-link.active {
+    border-left: 3px solid white;
+    padding-left: 1rem !important;
+  }
+
+  .dropdown-menu {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+
+  .dropdown-menu-dark {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+
+  .dropdown-menu-dark .dropdown-item {
+    color: #333;
+  }
+
+  .dropdown-menu-dark .dropdown-item:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+    border-left-color: #667eea;
+    color: #667eea;
+  }
+
+  .dropdown-menu-dark .dropdown-item.active {
+    background-color: rgba(102, 126, 234, 0.15);
+    border-left-color: #667eea;
+    color: #667eea;
+  }
+
+  .dropdown-menu-dark .dropdown-item i {
+    color: #667eea;
+  }
+}
+
+/* Transition utility class */
+.transition-all {
+  transition: all 0.3s ease;
+}
