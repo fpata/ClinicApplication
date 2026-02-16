@@ -1,77 +1,62 @@
-<div class="container-fluid">
-  <br />
-  <div class="rounded" style="border:0.5px solid lightblue;">
-    <div class="row d-none d-md-block">
-      <div class="col-12">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><button type="button" id="btnAddReport" type="button" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#addReportModal" (click)="AddReport()">Add Report</button></td>
-              </tr>
-              <tr>
-                <th>Date</th>
-                <th>Report Name</th>
-                <th>Doctor Name</th>
-                <th>Report Finding</th>
-                <th>Operations</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for(report of reports; track report.ID) {
-              <tr>
-                <td>{{report.ReportDate}}</td>
-                <td>{{report.ReportName}}</td>
-                <td>{{report.DoctorName}}</td>
-                <td>{{report.ReportDetails}}</td>
-                <td>
-                  <button class="btn btn-primary" (click)="DownloadReport(report.ReportFilePath)" title="Download Report" type="button">
-                    <i class="bi bi-cloud-download-fill"></i></button>&nbsp;&nbsp;
-                  <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addReportModal"
-                    (click)="EditReport(report.ID)" title="Edit Report"><i class="bi bi-person-fill-gear"></i></button>
-                  &nbsp;&nbsp;<button class="btn btn-secondary" type="button"
-                    (click)="DeleteReport(report.ID)" title="Delete Report"><i class="bi bi-person-fill-x"></i></button>
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+<div class="container-fluid py-3">
+  <app-patient-header [patient]="patient" [patientId]="patientId" [isNew]="isNewPatient"></app-patient-header>
+  <div class="card patient-card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Reports</h5>
+        <button type="button" id="btnAddReport" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal" (click)="AddReport()">Add Report</button>
       </div>
-    </div>
 
-    <div class="row d-block d-md-none">
-      <div class="table-responsive">
-        <table class="table table-striped">
-          @for(report of reports; track report.ID) {
-          <tr>
-            <td>
-              <div class="d-flex justify-content-between align-items-center mb-3 border rounded p-2">
-                <div style="display: block;">
-                  Report Date : {{report.ReportDate}} <br>
-                  Report Name : {{report.ReportName}} <br>
-                  Doctor Name : {{report.DoctorName}} <br>
-                  Report Finding : {{report.ReportDetails}} <br>
+      <div class="table-responsive d-none d-md-block">
+        <table class="table table-striped mb-0">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Report Name</th>
+              <th>Doctor Name</th>
+              <th>Report Finding</th>
+              <th>Operations</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(report of reports; track report.ID) {
+            <tr>
+              <td>{{report.ReportDate}}</td>
+              <td>{{report.ReportName}}</td>
+              <td>{{report.DoctorName}}</td>
+              <td>{{report.ReportDetails}}</td>
+              <td>
+                <div class="btn-group" role="group">
+                  <button class="btn btn-outline-primary btn-sm" (click)="DownloadReport(report.ReportFilePath)" title="Download Report"><i class="bi bi-cloud-download-fill"></i></button>
+                  <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addReportModal" (click)="EditReport(report.ID)" title="Edit Report"><i class="bi bi-person-fill-gear"></i></button>
+                  <button class="btn btn-danger btn-sm" type="button" (click)="DeleteReport(report.ID)" title="Delete Report"><i class="bi bi-person-fill-x"></i></button>
                 </div>
-                <div>
-                  <button  type="button" class="btn btn-primary" (click)="DownloadReport(report.ReportFilePath)" title="Download Report">
-                    <i class="bi bi-cloud-download-fill" ></i></button>&nbsp;&nbsp;
-                  <button class="btn btn-primary mb-2" type="button" data-bs-toggle="modal"
-                    data-bs-target="#addReportModal" (click)="EditReport(report.ID)"><i class="bi bi-person-fill-gear"></i></button>
-                  &nbsp;&nbsp;<button class="btn btn-secondary" type="button"
-                    (click)="DeleteReport(report.ID)"><i class="bi bi-person-fill-x"></i></button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          }
+              </td>
+            </tr>
+            }
+          </tbody>
         </table>
+      </div>
+
+      <div class="d-block d-md-none">
+        <div class="list-group">
+          @for(report of reports; track report.ID) {
+          <div class="list-group-item list-group-item-action mb-2">
+            <div class="d-flex w-100 justify-content-between align-items-start">
+              <div>
+                <h6 class="mb-1">{{report.ReportName}}</h6>
+                <small class="text-muted">{{report.ReportDate}} — {{report.DoctorName}}</small>
+                <p class="mb-1 mt-2">{{report.ReportDetails}}</p>
+              </div>
+              <div class="btn-group-vertical">
+                <button class="btn btn-outline-primary btn-sm" (click)="DownloadReport(report.ReportFilePath)"><i class="bi bi-cloud-download-fill"></i></button>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addReportModal" (click)="EditReport(report.ID)"><i class="bi bi-person-fill-gear"></i></button>
+                <button class="btn btn-danger btn-sm" (click)="DeleteReport(report.ID)"><i class="bi bi-person-fill-x"></i></button>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
       </div>
     </div>
   </div>

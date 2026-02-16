@@ -1,35 +1,56 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { DataService } from '../../../services/data.service';
+import { PatientService } from '../../../services/patient.service';
 import { UtilityService } from '../../../services/utility.service';
 import { Subscription } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { PatientTreatmentDetail } from '../../../models/patient-treatment-detail.model';
 import { Patient } from '../../../models/patient.model';
+import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 
 @Component({
   selector: 'app-patient-treatment',
-  imports: [FormsModule],
+  imports: [FormsModule, PatientHeaderComponent],
   templateUrl: './patient-treatment.component.html',
   styleUrls: ['./patient-treatment.component.css'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientTreatmentComponent {
-
-
+export class PatientTreatmentComponent implements OnInit, OnDestroy {
 
   patient: Patient | null = null;
   treatment: PatientTreatment | null = null;
+  patientId: number | null = null;
+  isNewPatient = false;
   isEditOperation = false;
   newTreatmentDetail: PatientTreatmentDetail | null = null;
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService, private util: UtilityService, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private dataService: DataService,
+    private patientService: PatientService,
+    private util: UtilityService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
+    // Get patient ID from route
+    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
+    
+    if (this.patientId === null) {
+      console.error('Patient ID is required');
+      this.router.navigate(['/patient/search']);
+      return;
+    }
+
+    this.isNewPatient = this.patientId === 0;
+
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.patient$.subscribe({
       next: (newPatient: Patient) => {
@@ -130,6 +151,7 @@ export class PatientTreatmentComponent {
         this.treatment.ActualCost = this.calculateTotalCost();
         this.patient.PatientTreatment = this.treatment;
         this.dataService.setPatient(this.patient);
+        this.dataService.setPatientId(this.patient?.ID ?? null);
         this.cdr.markForCheck();
       } else {
         alert('Treatment detail not found.');
@@ -198,6 +220,7 @@ export class PatientTreatmentComponent {
     
     // Update data service
     this.dataService.setPatient(updatedPatient);
+    this.dataService.setPatientId(updatedPatient?.ID ?? null);
     
     this.newTreatmentDetail = null;
     this.isEditOperation = false;
@@ -223,7 +246,54 @@ export class PatientTreatmentComponent {
       // Update the treatment details with server-generated IDs
       this.treatment = updatedPatient.PatientTreatment;
       this.patient = updatedPatient;
+      // ensure data service is updated with server-saved patient
+      this.dataService.setPatient(updatedPatient);
+      this.dataService.setPatientId(updatedPatient?.ID ?? null);
       this.cdr.markForCheck();
+    }
+  }
+
+  // Method to save patient and handle redirect for new patients
+  SavePatientAndRedirect(): void {
+    if (!this.patient) {
+      alert('No patient data to save');
+      return;
+    }
+
+    // If this is a new patient (ID is 0), save it first
+    if (this.isNewPatient && this.patientId === 0) {
+      this.patientService.createPatient(this.patient).subscribe({
+        next: (savedPatient: Patient) => {
+          console.log('New patient created successfully:', savedPatient);
+          this.dataService.setPatient(savedPatient);
+          // persist patientId explicitly (setPatient also updates it)
+          this.dataService.setPatientId(savedPatient.ID ?? null);
+
+          // Navigate to the new patient ID
+          this.router.navigate(['/patient', savedPatient.ID, 'treatment']);
+        },
+        error: (error) => {
+          console.error('Error saving new patient:', error);
+          alert('Failed to save patient. Please try again.');
+        }
+      });
+    } else {
+      // For existing patients, update
+      if (this.patient.ID && this.patient.ID > 0) {
+        this.patientService.updatePatient(this.patient.ID, this.patient).subscribe({
+          next: (updatedPatient: Patient) => {
+            console.log('Patient updated successfully:', updatedPatient);
+            this.dataService.setPatient(updatedPatient);
+            this.dataService.setPatientId(updatedPatient.ID ?? null);
+            alert('Patient information saved successfully');
+            this.cdr.markForCheck();
+          },
+          error: (error) => {
+            console.error('Error updating patient:', error);
+            alert('Failed to update patient. Please try again.');
+          }
+        });
+      }
     }
   }
 }

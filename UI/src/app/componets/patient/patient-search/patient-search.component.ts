@@ -109,13 +109,22 @@ export class PatientSearchComponent {
 
   OnPatientIdClick(patientId: number, userId: number) {
     if (patientId === 0 || patientId === undefined || patientId === null) {
+      // New patient flow
       this.userService.getUser(userId).subscribe({
         next: (user: User) => {
           this.dataService.setUser(user);
           this.dataService.setUserId(user.ID);
-          this.messageService.info('Please add patient information for the selected user.');
-          this.cdRef.detectChanges();
-
+          
+          // Initialize new patient
+          const newPatient = new Patient();
+          newPatient.ID = 0; // Temporary ID for new patient
+          newPatient.UserID = user.ID;
+          this.dataService.setPatient(newPatient);
+          // ensure patientId is recorded (persists to sessionStorage)
+          this.dataService.setPatientId(newPatient.ID ?? 0);
+          
+          // Navigate with patientId = 0
+          this.router.navigate(['/patient', 0, 'treatment']);
         },
         error: (err: Error) => {
           console.error('Error fetching user data:', err);
@@ -123,12 +132,7 @@ export class PatientSearchComponent {
           this.cdRef.detectChanges();
         }
       });
-      // this.patientService.AddNewPatient();
-      /*setTimeout(() => {
-            document.getElementById('tbPersonalInfo-tab')?.click();
-          }, 100);*/
     }
-
   }
 
   AddNewUser() {
@@ -160,7 +164,6 @@ export class PatientSearchComponent {
       this.patientService.getCompletePatient(result.PatientID).subscribe({
         next: (newUser: User) => {
           // Handle the patient data as needed
-          // console.log('User data:', user);
           this.dataService.setUser(newUser);
           this.dataService.setUserId(newUser.ID);
           if (newUser.Patients === undefined || newUser.Patients === null || newUser.Patients.length === 0) {
@@ -168,14 +171,17 @@ export class PatientSearchComponent {
             return;
           }
           let index = newUser?.Patients?.length === 0 ? 0 : newUser?.Patients.length - 1;
-          this.dataService.setPatient(newUser?.Patients[index] || null);
-          this.cdRef.detectChanges();
-          setTimeout(() => {
-            document.getElementById('tbPersonalInfo-tab')?.click();
-          }, 100);
+          const patient = newUser?.Patients[index] || null;
+          this.dataService.setPatient(patient);
+          // persist the selected patient id
+          this.dataService.setPatientId(result.PatientID || (patient?.ID ?? null));
+          
+          // Navigate with patient ID in URL
+          this.router.navigate(['/patient', result.PatientID, 'treatment']);
         },
         error: (err) => {
           console.error('Error fetching patient data:', err);
+          this.messageService.error('Error fetching patient data. Please try again.');
         }
       });
     } else {

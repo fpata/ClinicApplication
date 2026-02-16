@@ -17,7 +17,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         @if(!isLoginURL){
         <li class="nav-item">
-          <a class="nav-link px-3 rounded-pill transition-all" aria-current="page" href="/dashboard" id="navDashBoard"
+          <a class="nav-link px-3 rounded-pill transition-all" aria-current="page" href="#" id="navDashBoard"
             routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <i class="bi bi-speedometer2 me-2"></i>Dashboard
           </a>
@@ -39,32 +39,32 @@
               </a>
             </li>
             <li>
-              <a class="dropdown-item" id="navPatientAppointment" routerLink="/patient/appointment" routerLinkActive="active">
+              <a class="dropdown-item" id="navPatientAppointment" href="#" [routerLink]="['/patient', patientId ?? 0, 'appointment']" routerLinkActive="active">
                 <i class="bi bi-calendar-event me-2"></i>Appointments
               </a>
             </li>
             <li>
-              <a class="dropdown-item" id="navPatientTreatment" routerLink="/patient/treatment" routerLinkActive="active">
+              <a class="dropdown-item" id="navPatientTreatment" href="#" [routerLink]="['/patient', patientId ?? 0, 'treatment']" routerLinkActive="active">
                 <i class="bi bi-bandaid me-2"></i>Treatments
               </a>
             </li>
             <li>
-              <a class="dropdown-item" id="navPatientHistory" routerLink="/patient/history" routerLinkActive="active">
+              <a class="dropdown-item" id="navPatientHistory" href="#" [routerLink]="['/patient', patientId ?? 0, 'history']" routerLinkActive="active">
                 <i class="bi bi-clock-history me-2"></i>History
               </a>
             </li>
             <li>
-              <a class="dropdown-item" id="navPatientVitals" routerLink="/patient/vitals" routerLinkActive="active">
+              <a class="dropdown-item" id="navPatientVitals" href="#" [routerLink]="['/patient', patientId ?? 0, 'vitals']" routerLinkActive="active">
                 <i class="bi bi-heart-pulse me-2"></i>Vitals
               </a>
             </li>
             <li>
-              <a class="dropdown-item" id="navPatientReports" routerLink="/patient/reports" routerLinkActive="active">
+              <a class="dropdown-item" id="navPatientReports" href="#" [routerLink]="['/patient', patientId ?? 0, 'reports']" routerLinkActive="active">
                 <i class="bi bi-file-earmark-text me-2"></i>Reports
               </a>
             </li>
             <li>
-              <a class="dropdown-item" id="navPatientPreviousTreatments" routerLink="/patient/previous-treatments" routerLinkActive="active">
+              <a class="dropdown-item" id="navPatientPreviousTreatments" href="#" [routerLink]="['/patient', patientId ?? 0, 'previous-treatments']" routerLinkActive="active">
                 <i class="bi bi-archive me-2"></i>Previous Treatments
               </a>
             </li>

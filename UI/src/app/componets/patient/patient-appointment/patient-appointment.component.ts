@@ -1,4 +1,5 @@
-import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PatientAppointment } from '../../../models/patient-appointment.model';
 import { map, Observable, Subscription } from 'rxjs';
 import { DataService } from '../../../services/data.service';
@@ -11,31 +12,51 @@ import { FormsModule } from '@angular/forms';
 import { SearchModel } from '../../../models/search.model';
 import { SearchService } from '../../../services/search.service';
 import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
+import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 import { PatientAppointmentService } from '../../../services/patient-appointment.service';
 
 @Component({
   selector: 'app-patient-appointment',
-  imports: [SchedulerComponent, DayPilotModule, FormsModule,TypeaheadComponent],
+  imports: [SchedulerComponent, DayPilotModule, FormsModule, TypeaheadComponent, PatientHeaderComponent],
   templateUrl: './patient-appointment.component.html',
   styleUrls: ['./patient-appointment.component.css'],
   standalone: true,
-  changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientAppointmentComponent {
-
+export class PatientAppointmentComponent implements OnInit, OnDestroy {
 
   @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
 
   patient: Patient | null = null;
   appointments: PatientAppointment[] | null = [];
+  patientId: number | null = null;
+  isNewPatient = false;
   newAppointment: PatientAppointment = new PatientAppointment();
   newStartDateString: string;
   // Subscription to handle patient changes
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService, private util: UtilityService, private searchService: SearchService  ) { }
+  constructor(
+    private dataService: DataService,
+    private util: UtilityService,
+    private searchService: SearchService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
+    // Get patient ID from route
+    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
+    
+    if (this.patientId === null) {
+      console.error('Patient ID is required');
+      this.router.navigate(['/patient/search']);
+      return;
+    }
+
+    this.isNewPatient = this.patientId === 0;
+
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.patient$.subscribe({
       next: (_newPatient: Patient) => {
@@ -48,10 +69,8 @@ export class PatientAppointmentComponent {
         if (this.scheduler && this.appointments && this.appointments.length > 0) {
           this.AddEventsToScheduler(this.appointments);
           console.log('Events added to scheduler:');
-          // Pass the appointments to the scheduler component
-
         }
-        //console.log('Patient updated:', _newPatient);
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error subscribing to patient changes:', error);
@@ -94,12 +113,13 @@ export class PatientAppointmentComponent {
     this.scheduler.deleteEvent(appointmentID.toString());
     const index = this.appointments.findIndex(x => x.ID === appointmentID);
       if (index > -1) {
-        this.appointments.splice(index, 1);
-        this.patient.PatientAppointments = this.appointments;
-      } else {
-        alert('Appointment not found.');
-      }
-    this.dataService.setPatient(this.patient);
+          this.appointments.splice(index, 1);
+          this.patient.PatientAppointments = this.appointments;
+        } else {
+          alert('Appointment not found.');
+        }
+      this.dataService.setPatient(this.patient);
+      this.dataService.setPatientId(this.patient?.ID ?? null);
   }
 
   SaveAppointment() {
@@ -135,6 +155,7 @@ export class PatientAppointmentComponent {
     this.AddEventsToScheduler(this.appointments);
     this.patient.PatientAppointments = this.appointments;
     this.dataService.setPatient(this.patient);
+    this.dataService.setPatientId(this.patient?.ID ?? null);
   }
 
   AddAppointment() {

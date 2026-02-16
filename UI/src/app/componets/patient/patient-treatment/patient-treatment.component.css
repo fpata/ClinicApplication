@@ -1,0 +1,44 @@
+/* Treatment specific tweaks */
+.patient-card .form-label { color: #333; font-weight: 600; }
+.patient-card textarea.form-control { min-height: 56px; }
+.patient-card .btn-sm { padding: 0.35rem 0.6rem; }
+.patient-card .w-1 { width: 48px; }
+.app-table tbody td { vertical-align: middle; }
+.result-card { background: #fff; border: 1px solid #eef2ff; border-radius: .6rem; }
+.result-card h6 { font-size: 1rem; margin-bottom: .25rem; }
+.result-card p { margin-bottom: .25rem; color: #444; }
+.cards-view { gap: .75rem; }
+
+/* Card header */
+.patient-card h5 { font-size: 1.1rem; color: #222; font-weight: 700; }
+.patient-card .badge { border-radius: .5rem; }
+
+/* Table tweaks */
+.app-table thead th { background: linear-gradient(90deg,#f8f9fb,#f4f6fb); font-weight:700; }
+.app-table { border: 1px solid #eef2ff; border-radius: .5rem; overflow: hidden; }
+.app-table thead th:first-child, .app-table tbody td:first-child { padding-left: .75rem; }
+
+/* Action buttons */
+.patient-card .btn-primary { background: linear-gradient(135deg,#667eea,#764ba2); border: none; }
+.patient-card .btn-outline-primary { border-color: #667eea; color: #667eea; }
+
+/* Mobile result card */
+.result-card { transition: all .25s ease; box-shadow: 0 2px 6px rgba(102,126,234,0.04); }
+.result-card .mb-1 { color: #333; }
+.result-card .text-muted { color: #7a7a7a; }
+
+/* Cards container spacing */
+.cards-view { display: flex; flex-direction: column; gap: .85rem; }
+
+/* Modal form small spacing */
+.modal-body .form-label { font-weight:600; }
+
+/* Helpers */
+.text-end { text-align: end; }
+.fw-medium { font-weight:600; }
+
+/* Small responsive adjustments */
+@media (max-width: 575px) {
+	.patient-card { padding: .5rem; }
+	.app-table thead th { font-size: .85rem; }
+}

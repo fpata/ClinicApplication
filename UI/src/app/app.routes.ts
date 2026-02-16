@@ -8,6 +8,7 @@ import { PatientCompleteHistoryComponent } from './componets/patient/patientcomp
 import { UserMasterComponent } from './componets/user/user-master/user-master.component';
 import { BillingrecordComponent } from './componets/billing/billingrecord.component/billingrecord.component'; 
 import { authGuard } from './guards/auth.guard';
+import { PatientIdGuard } from './guards/patient-id.guard';
 import { AppconfigComponent } from './componets/appconfig/appconfig.component';
 import { ForgotPasswordComponent } from './componets/login/forgotpassword/forgotpassword.component';
 import { UserSearch } from './componets/user/user-search/user-search.component';
@@ -32,12 +33,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'search', component: PatientSearchComponent },
-      { path: 'vitals', component: PatientVitalsComponent },
-      { path: 'history', component: PatientHistoryComponent },
-      { path: 'treatment', component: PatientTreatmentComponent },
-      { path: 'appointment', component: PatientAppointmentComponent },
-      { path: 'reports', component: PatientReportComponent },
-      { path: 'previous-treatments', component: PatientCompleteHistoryComponent },
+      { path: ':patientId', canActivate: [PatientIdGuard],
+        children: [
+          { path: 'vitals', component: PatientVitalsComponent },
+          { path: 'history', component: PatientHistoryComponent },
+          { path: 'treatment', component: PatientTreatmentComponent },
+          { path: 'appointment', component: PatientAppointmentComponent },
+          { path: 'reports', component: PatientReportComponent },
+          { path: 'previous-treatments', component: PatientCompleteHistoryComponent },
+          { path: '', redirectTo: 'treatment', pathMatch: 'full' }
+        ]
+      },
       { path: '', redirectTo: 'search', pathMatch: 'full' }
     ]
   },

@@ -73,5 +73,7 @@ export class PatientService {
     patient.PatientReports[0].PatientID = patient.ID;
     patient.PatientReports[0].UserID = patient.UserID;
     this.dataService.setPatient(patient);
+    // persist patientId for session fallback
+    this.dataService.setPatientId(patient.ID ?? null);
   }
 }

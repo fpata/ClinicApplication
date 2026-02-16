@@ -1,4 +1,5 @@
-import { Component,ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PatientReport } from '../../../models/patient-report.model';
 import { User, UserType } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
@@ -8,34 +9,51 @@ import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../common/fileupload/fileupload.component';
 import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
+import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 import { SearchModel } from '../../../models/search.model';
 import { SearchService } from '../../../services/search.service';
 import { MessageService } from '../../../services/message.service';
 import { PatientReportService } from '../../../services/patient-report.service';
+
 @Component({
   selector: 'app-patient-report',
-  imports: [FormsModule, FileUploadComponent, TypeaheadComponent],
+  imports: [FormsModule, FileUploadComponent, TypeaheadComponent, PatientHeaderComponent],
   templateUrl: './patient-report.component.html',
   styleUrls: ['./patient-report.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true
 })
-export class PatientReportComponent {
-
+export class PatientReportComponent implements OnInit, OnDestroy {
 
   reports: PatientReport[] = [];
   private patientSubscription: Subscription = new Subscription();
   patient: Patient | null = null;
   newReport: PatientReport | null = null; // Initialize new report object
+  patientId: number | null = null;
+  isNewPatient = false;
 
   constructor(private dataService: DataService, private util: UtilityService,
     private searchService: SearchService,
     private messageService: MessageService,
-    private reportService: PatientReportService
+    private reportService: PatientReportService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
   }
 
   ngOnInit() {
+    // Get patient ID from route
+    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
+    
+    if (this.patientId === null) {
+      console.error('Patient ID is required');
+      this.router.navigate(['/patient/search']);
+      return;
+    }
+
+    this.isNewPatient = this.patientId === 0;
+
     // Subscribe to user changes from the data service
     this.patientSubscription = this.dataService.patient$.subscribe({
       next: (newPatient: Patient) => {
@@ -46,6 +64,7 @@ export class PatientReportComponent {
         else {
           this.reports = []; // Ensure reports is initialized to an empty array if no reports are
         }
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error subscribing to patient changes:', error);
@@ -88,6 +107,7 @@ export class PatientReportComponent {
     // Update the patient reports in the data service
     this.patient.PatientReports = this.reports;
     this.dataService.setPatient(this.patient);
+    this.dataService.setPatientId(this.patient?.ID ?? null);
   }
 
   SaveReport() {
@@ -105,6 +125,7 @@ export class PatientReportComponent {
       this.newReport = null;
       this.patient.PatientReports = this.reports; // Update the patient reports in the data service
       this.dataService.setPatient(this.patient);
+      this.dataService.setPatientId(this.patient?.ID ?? null);
     }
   }
 

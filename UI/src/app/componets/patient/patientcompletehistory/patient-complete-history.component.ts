@@ -6,9 +6,10 @@ import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';
 import { PatientService } from '../../../services/patient.service';
 import { User } from '../../../models/user.model';
+import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 @Component({
   selector: 'app-patientcompletehistory',
-  imports: [FormsModule],
+  imports: [FormsModule, PatientHeaderComponent],
   templateUrl: './patient-complete-history.component.html',
   styleUrls: ['./patient-complete-history.component.css'],
   standalone: true,
@@ -31,6 +32,8 @@ export class PatientCompleteHistoryComponent {
         user.Patients[0] = _newPatient;
         this.dataService.setUser(user);
         this.dataService.setPatient(_newPatient);
+        // Persist patientId as well for session fallback
+        this.dataService.setPatientId(_newPatient?.ID ?? null);
         this.cdr.markForCheck();
       },
       error: (error: any) => {

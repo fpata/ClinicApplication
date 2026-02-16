@@ -405,3 +405,44 @@ form.app-form {
 html {
   scroll-behavior: smooth;
 }
+
+/* Patient specific card used across patient components */
+.patient-card {
+  border: 1px solid #cfe8ff;
+  box-shadow: 0 2px 6px rgba(102,126,234,0.04);
+  border-radius: 0.6rem;
+}
+
+.patient-card .card-body {
+  padding: 1.25rem;
+}
+
+/* Modal content spacing tweaks */
+.modal-body .form-control {
+  margin-top: 0.25rem;
+}
+
+/* Small helpers for responsive action groups */
+.btn-group-vertical .btn {
+  margin-bottom: 0.35rem;
+}
+
+/* List group report item */
+.list-group-item h6 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.list-group-item p {
+  margin-bottom: 0.25rem;
+}
+
+.patient-card .table thead th {
+  text-transform: none;
+  font-weight: 600;
+}
+
+/* Ensure small inputs look consistent */
+input[type="number"], input[type="date"] {
+  max-width: 100%;
+}

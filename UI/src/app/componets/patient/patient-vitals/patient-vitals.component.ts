@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
@@ -7,27 +8,47 @@ import { Subscription } from 'rxjs';
 import { MessageService } from '../../../services/message.service';
 import { UtilityService } from '../../../services/utility.service';
 import { AuthService } from '../../../services/auth.service';
+import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 
 @Component({
   selector: 'app-patient-vitals',
-  imports: [FormsModule],
+  imports: [FormsModule, PatientHeaderComponent],
   templateUrl: './patient-vitals.component.html',
   styleUrls: ['./patient-vitals.component.css'],
   standalone: true,
  changeDetection:ChangeDetectionStrategy.OnPush
 })
-export class PatientVitalsComponent {
+export class PatientVitalsComponent implements OnInit, OnDestroy {
   vitals: PatientVitals|null = null;
   patient: Patient | null = null;
+  patientId: number | null = null;
+  isNewPatient = false;
 
   private patientSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService, private messageService: MessageService,
-    private util: UtilityService, private authService :AuthService, private cdRef: ChangeDetectorRef
+  constructor(
+    private dataService: DataService,
+    private messageService: MessageService,
+    private util: UtilityService,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdRef: ChangeDetectorRef
   ) {
   }
 
   ngOnInit() {
+    // Get patient ID from route
+    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
+    
+    if (this.patientId === null) {
+      console.error('Patient ID is required');
+      this.router.navigate(['/patient/search']);
+      return;
+    }
+
+    this.isNewPatient = this.patientId === 0;
+
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.patient$.subscribe({
       next: (_newpatient: Patient) => {
@@ -50,11 +71,12 @@ export class PatientVitalsComponent {
   }
 
   ngOnDestroy() {
-    // Clean up subscription to prevent memory leaks
+      // Clean up subscription to prevent memory leaks
     if (this.patientSubscription) {
       this.patientSubscription.unsubscribe();
     }
   }
+
 
   SetValuesForVitalID(vitalID: number) {
     if (this.patient?.PatientVitals) {
