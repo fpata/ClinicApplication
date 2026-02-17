@@ -55,18 +55,18 @@ export class PatientReportComponent implements OnInit, OnDestroy {
     this.isNewPatient = this.patientId === 0;
 
     // Subscribe to user changes from the data service
-    this.patientSubscription = this.dataService.patient$.subscribe({
-      next: (newPatient: Patient) => {
-        this.patient = newPatient;
-        if (newPatient && newPatient.PatientReports && newPatient.PatientReports.length > 0) {
-          this.reports = newPatient.PatientReports || []; // Assuming Reports is part of the patient model
+    this.patientSubscription = this.dataService.user$.subscribe({
+      next: (newUser: User) => {
+        this.patient = newUser.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
+        if (this.patient && this.patient.PatientReports && this.patient.PatientReports.length > 0) {
+          this.reports = this.patient.PatientReports || []; // Assuming Reports is part of the patient model
         }
         else {
           this.reports = []; // Ensure reports is initialized to an empty array if no reports are
         }
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: (error:any) => {
         console.error('Error subscribing to patient changes:', error);
       }
     });
@@ -106,8 +106,6 @@ export class PatientReportComponent implements OnInit, OnDestroy {
     this.reports.splice(reportIndex, 1);
     // Update the patient reports in the data service
     this.patient.PatientReports = this.reports;
-    this.dataService.setPatient(this.patient);
-    this.dataService.setPatientId(this.patient?.ID ?? null);
   }
 
   SaveReport() {
@@ -124,8 +122,7 @@ export class PatientReportComponent implements OnInit, OnDestroy {
       // Reset new report object
       this.newReport = null;
       this.patient.PatientReports = this.reports; // Update the patient reports in the data service
-      this.dataService.setPatient(this.patient);
-      this.dataService.setPatientId(this.patient?.ID ?? null);
+
     }
   }
 

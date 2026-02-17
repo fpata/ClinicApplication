@@ -31,6 +31,10 @@ export class PatientService {
     return this.http.get<Patient>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
+  getLatestPatientbyUserId(id: number): Observable<Patient> {
+    return this.http.get<Patient>(`${this.apiUrl}/Latest/${id}`, { headers: this.getAuthHeaders() });
+  }
+
   getCompletePatient(id: number): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/Complete/${id}`, { headers: this.getAuthHeaders() });
   }
@@ -47,10 +51,10 @@ export class PatientService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
-   AddNewPatient() {
+   AddNewPatient(user:User) {
    
     var patient: Patient = new Patient();
-    patient.UserID = this.dataService.getUser()?.ID || 0;
+    patient.UserID = user.ID;
     
     patient.ID = 0; // New patient, so ID is 0
     patient.CreatedBy = this.authService.getUser()?.ID || 0;
@@ -72,8 +76,7 @@ export class PatientService {
     patient.PatientReports = new Array<PatientReport>(new PatientReport());
     patient.PatientReports[0].PatientID = patient.ID;
     patient.PatientReports[0].UserID = patient.UserID;
-    this.dataService.setPatient(patient);
+   // this.dataService.setPatient(patient);
     // persist patientId for session fallback
-    this.dataService.setPatientId(patient.ID ?? null);
   }
 }

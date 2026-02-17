@@ -31,9 +31,7 @@ export class PatientCompleteHistoryComponent {
         var user: User = this.dataService.getUser();
         user.Patients[0] = _newPatient;
         this.dataService.setUser(user);
-        this.dataService.setPatient(_newPatient);
         // Persist patientId as well for session fallback
-        this.dataService.setPatientId(_newPatient?.ID ?? null);
         this.cdr.markForCheck();
       },
       error: (error: any) => {

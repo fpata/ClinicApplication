@@ -9,6 +9,7 @@ import { MessageService } from '../../../services/message.service';
 import { UtilityService } from '../../../services/utility.service';
 import { AuthService } from '../../../services/auth.service';
 import { PatientHeaderComponent } from '../patient-header/patient-header.component';
+import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-patient-vitals',
@@ -50,9 +51,9 @@ export class PatientVitalsComponent implements OnInit, OnDestroy {
     this.isNewPatient = this.patientId === 0;
 
     // Subscribe to patient changes from the data service
-    this.patientSubscription = this.dataService.patient$.subscribe({
-      next: (_newpatient: Patient) => {
-        this.patient = _newpatient;
+    this.patientSubscription = this.dataService.user$.subscribe({
+      next: (_user: User) => {
+          this.patient = _user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
         this.patient.UserID = this.dataService.getUser().ID || 0;
         if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {
             this.vitals = this.patient.PatientVitals[this.patient.PatientVitals.length - 1]  as PatientVitals; // get the last vitals entry

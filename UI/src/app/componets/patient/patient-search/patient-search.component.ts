@@ -107,22 +107,14 @@ export class PatientSearchComponent {
     this.cdRef.detectChanges();
   }
 
-  OnPatientIdClick(patientId: number, userId: number) {
+  /*OnPatientIdClick(patientId: number, userId: number) {
     if (patientId === 0 || patientId === undefined || patientId === null) {
       // New patient flow
       this.userService.getUser(userId).subscribe({
         next: (user: User) => {
           this.dataService.setUser(user);
           this.dataService.setUserId(user.ID);
-          
-          // Initialize new patient
-          const newPatient = new Patient();
-          newPatient.ID = 0; // Temporary ID for new patient
-          newPatient.UserID = user.ID;
-          this.dataService.setPatient(newPatient);
-          // ensure patientId is recorded (persists to sessionStorage)
-          this.dataService.setPatientId(newPatient.ID ?? 0);
-          
+
           // Navigate with patientId = 0
           this.router.navigate(['/patient', 0, 'treatment']);
         },
@@ -133,7 +125,7 @@ export class PatientSearchComponent {
         }
       });
     }
-  }
+  }*/
 
   AddNewUser() {
     this.router.navigate(['/user', 'new']);
@@ -161,7 +153,7 @@ export class PatientSearchComponent {
 
   UpdatePatient(result: SearchModel) {
     if (result.PatientID && result.PatientID > 0) {
-      this.patientService.getCompletePatient(result.PatientID).subscribe({
+      this.patientService.getCompletePatient(result.UserID).subscribe({
         next: (newUser: User) => {
           // Handle the patient data as needed
           this.dataService.setUser(newUser);
@@ -172,12 +164,8 @@ export class PatientSearchComponent {
           }
           let index = newUser?.Patients?.length === 0 ? 0 : newUser?.Patients.length - 1;
           const patient = newUser?.Patients[index] || null;
-          this.dataService.setPatient(patient);
-          // persist the selected patient id
-          this.dataService.setPatientId(result.PatientID || (patient?.ID ?? null));
-          
           // Navigate with patient ID in URL
-          this.router.navigate(['/patient', result.PatientID, 'treatment']);
+          //this.router.navigate(['/patient', result.PatientID, 'treatment']);
         },
         error: (err) => {
           console.error('Error fetching patient data:', err);
@@ -195,16 +183,13 @@ export class PatientSearchComponent {
         this.dataService.setUser(user);
         this.dataService.setUserId(user.ID);
         this.dataService.setQuickCreateMode(isQuickCreateMode);
+         this.patientService.AddNewPatient(user);
         this.cdRef.detectChanges();
       },
       error: (err: Error) => {
         console.error('Error fetching user data:', err);
       }
     });
-    this.patientService.AddNewPatient();
-    setTimeout(() => {
-      document.getElementById('tbPersonalInfo-tab')?.click();
-    }, 100);
   }
 
   onPageChanged($event: number) {

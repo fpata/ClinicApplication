@@ -14,6 +14,7 @@ import { SearchService } from '../../../services/search.service';
 import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
 import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 import { PatientAppointmentService } from '../../../services/patient-appointment.service';
+import { MessageService } from '../../../services/message.service';
 
 @Component({
   selector: 'app-patient-appointment',
@@ -26,10 +27,8 @@ import { PatientAppointmentService } from '../../../services/patient-appointment
 export class PatientAppointmentComponent implements OnInit, OnDestroy {
 
   @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
-
   patient: Patient | null = null;
   appointments: PatientAppointment[] | null = [];
-  patientId: number | null = null;
   isNewPatient = false;
   newAppointment: PatientAppointment = new PatientAppointment();
   newStartDateString: string;
@@ -42,27 +41,18 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
     private searchService: SearchService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private patientAppointmentService: PatientAppointmentService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit() {
-    // Get patient ID from route
-    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
-    
-    if (this.patientId === null) {
-      console.error('Patient ID is required');
-      this.router.navigate(['/patient/search']);
-      return;
-    }
-
-    this.isNewPatient = this.patientId === 0;
-
     // Subscribe to patient changes from the data service
-    this.patientSubscription = this.dataService.patient$.subscribe({
-      next: (_newPatient: Patient) => {
-        this.patient = _newPatient;
-        if (_newPatient && _newPatient.PatientAppointments && _newPatient.PatientAppointments.length > 0) {
-          this.appointments = _newPatient.PatientAppointments;
+    this.patientSubscription = this.dataService.user$.subscribe({
+      next: (_user: User) => {
+        this.patient = _user.Patients && _user.Patients.length > 0 ? _user.Patients[0] : null as Patient ;
+        if (_user && _user.Patients[0] && _user.Patients[0].PatientAppointments && _user.Patients[0].PatientAppointments.length > 0) {
+          this.appointments = _user.Patients[0].PatientAppointments;
         } else {
           this.appointments = [];
         }
@@ -108,18 +98,26 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
   }
 
   DeleteAppointment(appointmentID: number) {
-  
+
     //this.appointments = this.appointments.filter(a => a.ID !== appointmentID);
     this.scheduler.deleteEvent(appointmentID.toString());
     const index = this.appointments.findIndex(x => x.ID === appointmentID);
-      if (index > -1) {
-          this.appointments.splice(index, 1);
-          this.patient.PatientAppointments = this.appointments;
-        } else {
-          alert('Appointment not found.');
+    if (index > -1) {
+      this.appointments.splice(index, 1);
+      this.patient.PatientAppointments = this.appointments;
+      this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
+        next: () => {
+          this.messageService.success('Appointment deleted successfully.');
+        },
+        error: (error) => {
+          console.error('Error deleting appointment:', error);
+          this.messageService.error('Error occurred while deleting appointment. Please try again.');
         }
-      this.dataService.setPatient(this.patient);
-      this.dataService.setPatientId(this.patient?.ID ?? null);
+      });
+    }
+    else {
+      this.messageService.error('Appointment not found.');
+    }
   }
 
   SaveAppointment() {
@@ -154,21 +152,17 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
     }
     this.AddEventsToScheduler(this.appointments);
     this.patient.PatientAppointments = this.appointments;
-    this.dataService.setPatient(this.patient);
-    this.dataService.setPatientId(this.patient?.ID ?? null);
   }
 
   AddAppointment() {
     var user = this.dataService.getUser();
     this.newAppointment = new PatientAppointment();
-    if(this.appointments.length > 0)
-    {
+    if (this.appointments.length > 0) {
       var tempID = Math.min(...this.appointments.map(a => a.ID)) - 1;
       if (tempID > 0 || tempID === null || tempID === undefined) tempID = 0; // Ensure ID is not negative
       this.newAppointment.ID = tempID;
     }
-    else
-    {
+    else {
       this.newAppointment.ID = 0;
     }
     this.newAppointment.PatientID = this.patient?.ID || 1;
@@ -188,29 +182,26 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
     this.newAppointment.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newAppointment.DoctorID = this.dataService.getLoginUser()?.user?.ID || 1;
 
-     const now = this.util.roundToNearestInterval(new Date());
-     const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
+    const now = this.util.roundToNearestInterval(new Date());
+    const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
 
-    this.newAppointment.StartTime =  now.toLocaleTimeString('en-GB').slice(0, 5);
+    this.newAppointment.StartTime = now.toLocaleTimeString('en-GB').slice(0, 5);
     this.newAppointment.EndTime = thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5);;
-
-   // document.getElementById('txtAppointmentTime')!.setAttribute('value', startTime);
-   // document.getElementById('txtAppointmentEndTime')!.setAttribute('value', endTime);
   }
 
-     getDoctors = (name: string): Observable<SearchModel[]> => {
-        var searchModel: SearchModel = new  SearchModel(this.util);
-        searchModel.UserType = UserType.Doctor;
-        searchModel.FirstName = name;
-        return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
-     }
+  getDoctors = (name: string): Observable<SearchModel[]> => {
+    var searchModel: SearchModel = new SearchModel(this.util);
+    searchModel.UserType = UserType.Doctor;
+    searchModel.FirstName = name;
+    return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+  }
 
-      displayName(d: any): string {
-      if (!d) return 'Unknown Patient';
-      const first = d.FirstName || '';
-      const last = d.LastName || '';
-      const name = (first + ' ' + last).trim();
-      return name.length ? name : 'Unknown Patient';
-   }
+  displayName(d: any): string {
+    if (!d) return 'Unknown Patient';
+    const first = d.FirstName || '';
+    const last = d.LastName || '';
+    const name = (first + ' ' + last).trim();
+    return name.length ? name : 'Unknown Patient';
+  }
 
 }

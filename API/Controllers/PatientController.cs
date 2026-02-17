@@ -71,75 +71,123 @@ namespace ClinicManager.Controllers
             return entity;
         }
 
-        [HttpGet("Complete/{id}")]
-        public async Task<ActionResult<User>> GetComplete(int id)
+        [HttpGet("Latest/{userId}")]
+        public async Task<ActionResult<Patient>> GetLatestPatientByUserId(int userId)
         {
-            _logger.LogInformation($"Fetching complete patient data with ID: {id}");
-
-            var cacheKey = $"patient_complete_{id}";
-           
-
-            // Optimize with single query using projection to avoid loading unnecessary data
-            var userData = await (from _patient in _context.Patients
-                                  join _user in _context.Users on _patient.UserID equals _user.ID
-                                  where _patient.ID == id && _patient.IsActive ==1 && _user.IsActive ==1
-                                  select new
-                                  {
-                                      User = _user,
-                                      Patient = _patient,
-                                      Address = _context.Addresses
-                                          .Where(a => a.UserID == _user.ID && a.IsActive == 1)
-                                          .FirstOrDefault(),
-                                      Contact = _context.Contacts
-                                          .Where(c => c.UserID == _user.ID && c.IsActive == 1)
-                                          .FirstOrDefault(),
-                                      PatientAppointments = _context.PatientAppointments
-                                          .Where(pa => pa.PatientID == id)
-                                          .ToList(),
-                                      PatientReports = _context.PatientReports
-                                          .Where(pr => pr.PatientID == id)
-                                          .ToList(),
-                                      PatientTreatment = _context.PatientTreatments
-                                          .Where(pt => pt.PatientID == id)
-                                          .FirstOrDefault(),
-                                      PatientVitals = _context.PatientVitals
-                                            .Where(pv => pv.PatientID == id)
-                                            .ToList(),
-                                      PatientTreatmentDetails = _context.PatientTreatmentDetails
-                                          .Where(ptd => ptd.PatientID == id)
-                                          .ToList()
-                                  })
-                                 .AsNoTracking()
-                                 .AsSplitQuery() // Use AsSplitQuery to optimize loading related entities
-                                 .FirstOrDefaultAsync();
-
-            if (userData == null)
+            _logger.LogInformation($"Fetching latest patient for user ID: {userId}");
+            
+            var patient = await _context.Patients
+                .AsNoTracking()
+                .Where(p => p.UserID == userId && p.IsActive == 1)
+                .OrderByDescending(p => p.ID)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+            
+            if (patient == null)
             {
-                _logger.LogWarning($"Patient with ID: {id} not found");
+                _logger.LogWarning($"No active patient found for user ID: {userId}");
+                return NotFound();
+            }
+            
+            _logger.LogInformation($"Fetched latest patient with ID: {patient.ID} for user ID: {userId}");
+            return patient;
+        }
+
+        [HttpGet("Complete/{userId}")]
+        public async Task<ActionResult<User>> GetComplete(int userId)
+        {
+            _logger.LogInformation($"Fetching complete data for user ID: {userId}");
+
+            // First, get the user by ID
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.ID == userId && u.IsActive == 1);
+
+            if (user == null)
+            {
+                _logger.LogWarning($"User with ID: {userId} not found or is inactive");
                 return NotFound();
             }
 
-            // Construct the result
-            var user = userData.User;
-            user.Address = userData.Address;
-            user.Contact = userData.Contact;
-            
-            var patient = userData.Patient;
-            patient.PatientAppointments = userData.PatientAppointments;
-            patient.PatientReports = userData.PatientReports;
-            patient.PatientVitals = userData.PatientVitals;
-            patient.PatientTreatment = userData.PatientTreatment;
-            
-            if (patient.PatientTreatment != null)
+            // Get user's address and contact
+            var address = await _context.Addresses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.UserID == userId && a.IsActive == 1);
+
+            var contact = await _context.Contacts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.UserID == userId && c.IsActive == 1);
+
+            user.Address = address;
+            user.Contact = contact;
+
+            // Try to get the max patient ID for the user
+            var maxPatientId = await _context.Patients
+                .Where(p => p.UserID == userId && p.IsActive == 1)
+                .MaxAsync(p => (int?)p.ID);
+
+            // If patient exists, fetch complete patient data
+            if (maxPatientId.HasValue)
             {
-                patient.PatientTreatment.PatientTreatmentDetails = userData.PatientTreatmentDetails;
+                var patientId = maxPatientId.Value;
+
+                // Fetch patient data with all related entities
+                var patientData = await (from _patient in _context.Patients
+                                         where _patient.ID == patientId && _patient.IsActive == 1
+                                         select new
+                                         {
+                                             Patient = _patient,
+                                             PatientAppointments = _context.PatientAppointments
+                                                 .Where(pa => pa.PatientID == patientId)
+                                                 .ToList(),
+                                             PatientReports = _context.PatientReports
+                                                 .Where(pr => pr.PatientID == patientId)
+                                                 .ToList(),
+                                             PatientTreatment = _context.PatientTreatments
+                                                 .Where(pt => pt.PatientID == patientId)
+                                                 .FirstOrDefault(),
+                                             PatientVitals = _context.PatientVitals
+                                                 .Where(pv => pv.PatientID == patientId)
+                                                 .ToList(),
+                                             PatientTreatmentDetails = _context.PatientTreatmentDetails
+                                                 .Where(ptd => ptd.PatientID == patientId)
+                                                 .ToList()
+                                         })
+                                        .AsNoTracking()
+                                        .AsSplitQuery()
+                                        .FirstOrDefaultAsync();
+
+                if (patientData != null)
+                {
+                    var patient = patientData.Patient;
+                    patient.PatientAppointments = patientData.PatientAppointments;
+                    patient.PatientReports = patientData.PatientReports;
+                    patient.PatientVitals = patientData.PatientVitals;
+                    patient.PatientTreatment = patientData.PatientTreatment;
+
+                    if (patient.PatientTreatment != null)
+                    {
+                        patient.PatientTreatment.PatientTreatmentDetails = patientData.PatientTreatmentDetails;
+                    }
+
+                    user.Patients = new List<Patient> { patient };
+                    _logger.LogInformation($"Fetched complete data for user ID: {userId} with patient ID: {patientId}");
+                }
+                else
+                {
+                    // Patient ID found but patient data not available
+                    user.Patients = new List<Patient>();
+                    _logger.LogWarning($"Patient with ID: {maxPatientId} not found for user ID: {userId}");
+                }
+            }
+            else
+            {
+                // No patient found for user, return empty patient list
+                user.Patients = new List<Patient>();
+                _logger.LogInformation($"No active patients found for user ID: {userId}. Returning user data without patient.");
             }
 
-            user.Patients = new List<Patient> { patient };
-           
-            _logger.LogInformation($"Fetched complete patient data with ID: {id}");
-
-            return user;
+            return Ok(user);
         }
 
         [HttpPost]

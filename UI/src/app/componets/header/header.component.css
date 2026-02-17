@@ -158,3 +158,28 @@
 .transition-all {
   transition: all 0.3s ease;
 }
+
+/* Patient sub-navbar */
+.subnav {
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.subnav {
+  z-index: 1050;
+}
+
+.subnav .nav-link {
+  color: #333 !important;
+  padding: 0.4rem 0.75rem;
+  font-weight: 500;
+}
+
+.subnav .nav-link i {
+  color: #667eea;
+}
+
+.subnav .nav-link.active {
+  color: #667eea !important;
+  background: transparent;
+  border-bottom: 2px solid #667eea;
+}

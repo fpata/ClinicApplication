@@ -10,6 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { PatientTreatmentDetail } from '../../../models/patient-treatment-detail.model';
 import { Patient } from '../../../models/patient.model';
 import { PatientHeaderComponent } from '../patient-header/patient-header.component';
+import { MessageService } from '../../../services/message.service';
+import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-patient-treatment',
@@ -36,7 +38,8 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     private util: UtilityService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService
   ) { }
 
   ngOnInit() {
@@ -52,11 +55,11 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     this.isNewPatient = this.patientId === 0;
 
     // Subscribe to patient changes from the data service
-    this.patientSubscription = this.dataService.patient$.subscribe({
-      next: (newPatient: Patient) => {
-        this.patient = newPatient;
-        if (newPatient && newPatient.PatientTreatment) {
-          this.treatment = newPatient.PatientTreatment;
+    this.patientSubscription = this.dataService.user$.subscribe({
+      next: (_user: User) => {
+        this.patient = _user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
+        if (this.patient && this.patient.PatientTreatment) {
+          this.treatment = this.patient.PatientTreatment;
           this.newTreatmentDetail = null;
           console.log('Patient loaded with treatment:', this.treatment);
           console.log('Treatment details count:', this.treatment.PatientTreatmentDetails?.length || 0);
@@ -150,8 +153,6 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
         alert('Treatment detail deleted successfully.');
         this.treatment.ActualCost = this.calculateTotalCost();
         this.patient.PatientTreatment = this.treatment;
-        this.dataService.setPatient(this.patient);
-        this.dataService.setPatientId(this.patient?.ID ?? null);
         this.cdr.markForCheck();
       } else {
         alert('Treatment detail not found.');
@@ -218,10 +219,7 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     
     console.log('Saving patient with treatment details:', updatedPatient.PatientTreatment);
     
-    // Update data service
-    this.dataService.setPatient(updatedPatient);
-    this.dataService.setPatientId(updatedPatient?.ID ?? null);
-    
+   
     this.newTreatmentDetail = null;
     this.isEditOperation = false;
     this.cdr.markForCheck();
@@ -247,8 +245,6 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
       this.treatment = updatedPatient.PatientTreatment;
       this.patient = updatedPatient;
       // ensure data service is updated with server-saved patient
-      this.dataService.setPatient(updatedPatient);
-      this.dataService.setPatientId(updatedPatient?.ID ?? null);
       this.cdr.markForCheck();
     }
   }
@@ -265,9 +261,7 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
       this.patientService.createPatient(this.patient).subscribe({
         next: (savedPatient: Patient) => {
           console.log('New patient created successfully:', savedPatient);
-          this.dataService.setPatient(savedPatient);
-          // persist patientId explicitly (setPatient also updates it)
-          this.dataService.setPatientId(savedPatient.ID ?? null);
+          this.messageService.success('New patient created successfully');
 
           // Navigate to the new patient ID
           this.router.navigate(['/patient', savedPatient.ID, 'treatment']);
@@ -283,14 +277,12 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
         this.patientService.updatePatient(this.patient.ID, this.patient).subscribe({
           next: (updatedPatient: Patient) => {
             console.log('Patient updated successfully:', updatedPatient);
-            this.dataService.setPatient(updatedPatient);
-            this.dataService.setPatientId(updatedPatient.ID ?? null);
-            alert('Patient information saved successfully');
+            this.messageService.success('Patient information saved successfully');
             this.cdr.markForCheck();
           },
           error: (error) => {
             console.error('Error updating patient:', error);
-            alert('Failed to update patient. Please try again.');
+            this.messageService.error('Failed to update patient. Please try again.');
           }
         });
       }

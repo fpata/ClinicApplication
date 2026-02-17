@@ -15,61 +15,31 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <!-- Left Navigation Items -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        @if(!isLoginURL){
         <li class="nav-item">
           <a class="nav-link px-3 rounded-pill transition-all" aria-current="page" href="#" id="navDashBoard"
             routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <i class="bi bi-speedometer2 me-2"></i>Dashboard
           </a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link px-3 rounded-pill transition-all dropdown-toggle" href="#" id="navPatientDropdown" 
-            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+         <li class="nav-item">
+          <a
+            class="nav-link px-3 rounded-pill transition-all"
+            href="#"
+            role="button"
+            (click)="toggleUserSubnav($event)">
+            <i class="bi bi-people-fill me-2"></i>User
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link px-3 rounded-pill transition-all"
+            href="#"
+            role="button"
+            (click)="togglePatientSubnav($event)">
             <i class="bi bi-people me-2"></i>Patient
           </a>
-          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navPatientDropdown">
-             <li>
-              <a class="dropdown-item" id="navUser" routerLink="/user" routerLinkActive="active">
-                <i class="bi bi-person-plus me-2"></i>Registration
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="navPatientSearch" routerLink="/patient/search" routerLinkActive="active">
-                <i class="bi bi-person me-2"></i>Search
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="navPatientAppointment" href="#" [routerLink]="['/patient', patientId ?? 0, 'appointment']" routerLinkActive="active">
-                <i class="bi bi-calendar-event me-2"></i>Appointments
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="navPatientTreatment" href="#" [routerLink]="['/patient', patientId ?? 0, 'treatment']" routerLinkActive="active">
-                <i class="bi bi-bandaid me-2"></i>Treatments
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="navPatientHistory" href="#" [routerLink]="['/patient', patientId ?? 0, 'history']" routerLinkActive="active">
-                <i class="bi bi-clock-history me-2"></i>History
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="navPatientVitals" href="#" [routerLink]="['/patient', patientId ?? 0, 'vitals']" routerLinkActive="active">
-                <i class="bi bi-heart-pulse me-2"></i>Vitals
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="navPatientReports" href="#" [routerLink]="['/patient', patientId ?? 0, 'reports']" routerLinkActive="active">
-                <i class="bi bi-file-earmark-text me-2"></i>Reports
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" id="navPatientPreviousTreatments" href="#" [routerLink]="['/patient', patientId ?? 0, 'previous-treatments']" routerLinkActive="active">
-                <i class="bi bi-archive me-2"></i>Previous Treatments
-              </a>
-            </li>
-          </ul>
         </li>
+       
         <li class="nav-item">
           <a class="nav-link px-3 rounded-pill transition-all" href="/doctorAppointments" id="navAppointment" 
             routerLink="/doctorAppointments" routerLinkActive="active">
@@ -93,8 +63,8 @@
             <i class="bi bi-gear me-2"></i>Configuration
           </a>
         </li>
-        }
       </ul>
+      
       
       <!-- Right Navigation Items (User Menu) -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -125,3 +95,74 @@
     </div>
   </div>
 </nav>
+
+<!-- Patient Sub-navbar (placed below main navbar) -->
+<div *ngIf="showPatientSubnav" class="w-100 bg-white shadow-sm subnav">
+  <div class="container-fluid">
+    <ul class="nav py-2">
+      <li class="nav-item">
+        <a class="nav-link" id="navUser" routerLink="/user-quick-create" routerLinkActive="active">
+          <i class="bi bi-person-plus me-1"></i>Registration
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navPatientSearch" routerLink="/patient/search" routerLinkActive="active">
+          <i class="bi bi-person me-1"></i>Search
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navPatientAppointment" [routerLink]="['/patient', patientId ?? 0, 'appointment']" routerLinkActive="active">
+          <i class="bi bi-calendar-event me-1"></i>Appointments
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navPatientTreatment" [routerLink]="['/patient', patientId ?? 0, 'treatment']" routerLinkActive="active">
+          <i class="bi bi-bandaid me-1"></i>Treatments
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navPatientHistory" [routerLink]="['/patient', patientId ?? 0, 'history']" routerLinkActive="active">
+          <i class="bi bi-clock-history me-1"></i>History
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navPatientVitals" [routerLink]="['/patient', patientId ?? 0, 'vitals']" routerLinkActive="active">
+          <i class="bi bi-heart-pulse me-1"></i>Vitals
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navPatientReports" [routerLink]="['/patient', patientId ?? 0, 'reports']" routerLinkActive="active">
+          <i class="bi bi-file-earmark-text me-1"></i>Reports
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navPatientPreviousTreatments" [routerLink]="['/patient', patientId ?? 0, 'previous-treatments']" routerLinkActive="active">
+          <i class="bi bi-archive me-1"></i>Previous Treatments
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- User Sub-navbar (placed below main navbar) -->
+<div *ngIf="showUserSubnav" class="w-100 bg-white shadow-sm subnav">
+  <div class="container-fluid">
+    <ul class="nav py-2">
+       <li class="nav-item">
+        <a class="nav-link" id="navUserSearch" routerLink="/user-search" routerLinkActive="active">
+          <i class="bi bi-search me-1"></i>User Search
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navUserRegistration" routerLink="/user-create" routerLinkActive="active">
+          <i class="bi bi-person-plus me-1"></i>User Registration
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navUserQuickRegistration" routerLink="/user-quick-create" routerLinkActive="active">
+          <i class="bi bi-person-plus me-1"></i>Quick User Registration
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

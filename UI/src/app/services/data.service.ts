@@ -14,59 +14,27 @@ import { Token } from '@angular/compiler';
   providedIn: 'root'
 })
 export class DataService {
-  private patientSource = new BehaviorSubject<Patient | null>(null);
+ // private patientSource = new BehaviorSubject<Patient | null>(null);
   private userSource = new BehaviorSubject<User | null>(null);
   private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
   private loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
   private configSource = new BehaviorSubject<AppConfig | null>(null);
   private userId = new BehaviorSubject<number | null>(null);
-  private patientId = new BehaviorSubject<number | null>(null);
   private IsQuickCreateMode = new BehaviorSubject<boolean>(false);
 
-  readonly patient$: Observable<Patient> = this.patientSource.asObservable();
+ // readonly patient$: Observable<Patient> = this.patientSource.asObservable();
   readonly user$: Observable<User> = this.userSource.asObservable();
   readonly calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
   readonly loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
   readonly config$: Observable<AppConfig> = this.configSource.asObservable();
   readonly userId$: Observable<number | null> = this.userId.asObservable();
-  readonly patientId$: Observable<number | null> = this.patientId.asObservable();
   readonly IsQuickCreateMode$: Observable<boolean> = this.IsQuickCreateMode.asObservable();
 
   private tokenKey = 'token';
   private userKey = 'user';
   private patientKey = 'patientId';
 
-  setPatient(patient: Patient): void {
-    this.patientSource.next(patient);
-    // update patientId and persist to sessionStorage as a fallback for refresh
-    const id = patient?.ID ?? null;
-    this.patientId.next(id);
-    if (id === null) {
-      sessionStorage.removeItem(this.patientKey);
-    } else {
-      try { sessionStorage.setItem(this.patientKey, String(id)); } catch (e) { /* ignore */ }
-    }
-  }
-
-  getPatient(): Patient | null {
-    return this.patientSource.value;
-  }
-
-  setPatientId(id: number | null): void {
-    this.patientId.next(id);
-    if (id === null) {
-      sessionStorage.removeItem(this.patientKey);
-    } else {
-      try { sessionStorage.setItem(this.patientKey, String(id)); } catch (e) { /* ignore */ }
-    }
-  }
-
-  getPatientId(): number | null {
-    const v = this.patientId.value;
-    if (v !== null) return v;
-    const s = sessionStorage.getItem(this.patientKey);
-    return s ? Number(s) : null;
-  }
+ 
 
   setUser(newUser: User): void {
     this.userSource.next(newUser);

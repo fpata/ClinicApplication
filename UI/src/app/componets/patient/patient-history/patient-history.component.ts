@@ -42,9 +42,9 @@ export class PatientHistoryComponent implements OnInit, OnDestroy {
     this.isNewPatient = this.patientId === 0;
 
     // Subscribe to patient changes from the data service
-    this.patientSubscription = this.dataService.patient$.subscribe({
-      next: (patient: Patient) => {
-        this.patient = patient;
+    this.patientSubscription = this.dataService.user$.subscribe({
+      next: (user: User) => {
+        this.patient = user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
         this.cdr.markForCheck();
       },
       error: (error: any) => {
