@@ -17,6 +17,7 @@ import { PatientHeaderComponent } from '../patient-header/patient-header.compone
 })
 
 export class PatientCompleteHistoryComponent {
+  user: User | null = null;
 
   constructor(private dataService: DataService,
     private patientTreatmentService: PatientTreatmentService, private patientService: PatientService,
@@ -28,9 +29,9 @@ export class PatientCompleteHistoryComponent {
   OnPatientIdClick(patientID: number) {
     this.patientService.getPatient(patientID).subscribe({
       next: (_newPatient: Patient) => {
-        var user: User = this.dataService.getUser();
-        user.Patients[0] = _newPatient;
-        this.dataService.setUser(user);
+       this.user = this.dataService.getUser();
+        this.user.Patients[0] = _newPatient;
+        this.dataService.setUser(this.user);
         // Persist patientId as well for session fallback
         this.cdr.markForCheck();
       },

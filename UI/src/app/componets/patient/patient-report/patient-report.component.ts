@@ -24,7 +24,7 @@ import { PatientReportService } from '../../../services/patient-report.service';
   standalone: true
 })
 export class PatientReportComponent implements OnInit, OnDestroy {
-
+  user: User | null = null;
   reports: PatientReport[] = [];
   private patientSubscription: Subscription = new Subscription();
   patient: Patient | null = null;
@@ -57,6 +57,7 @@ export class PatientReportComponent implements OnInit, OnDestroy {
     // Subscribe to user changes from the data service
     this.patientSubscription = this.dataService.user$.subscribe({
       next: (newUser: User) => {
+        this.user = newUser;
         this.patient = newUser.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
         if (this.patient && this.patient.PatientReports && this.patient.PatientReports.length > 0) {
           this.reports = this.patient.PatientReports || []; // Assuming Reports is part of the patient model

@@ -39,7 +39,7 @@ export class Header implements OnInit, OnDestroy {
     });
     // subscribe to patient changes so header links can include patientId
     this.patientSub = this.dataService.user$.subscribe(p => {
-      this.patient = p.Patients[0] ?? null;
+      this.patient = p?.Patients[0] ?? null;
       this.patientId = this.patient?.ID ?? null;
       this.isNewPatient = (this.patientId === 0);
       this.cdr.markForCheck();

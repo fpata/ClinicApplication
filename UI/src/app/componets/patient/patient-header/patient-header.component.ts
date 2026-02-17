@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Patient } from '../../../models/patient.model';
+import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-patient-header',
@@ -11,17 +12,15 @@ import { Patient } from '../../../models/patient.model';
   styleUrls: ['./patient-header.component.css']
 })
 export class PatientHeaderComponent {
-  @Input() patient: Patient | null = null;
-  @Input() patientId: number | null = null;
-  @Input() isNew: boolean = false;
+  @Input() user:User
 
   get displayName(): string {
-    if (this.patient) {
-      const first = this.patient.user.FirstName || '';
-      const last = this.patient.user.LastName || '';
+    if (this.user) {
+      const first = this.user.FirstName || '';
+      const last = this.user.LastName || '';
       const name = (first + ' ' + last).trim();
       return name.length ? name : 'Unknown Patient';
     }
-    return this.isNew ? 'New Patient' : 'No Patient Selected';
+    return 'No Patient Selected';
   }
 }

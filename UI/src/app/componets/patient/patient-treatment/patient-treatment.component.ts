@@ -22,7 +22,7 @@ import { User } from '../../../models/user.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientTreatmentComponent implements OnInit, OnDestroy {
-
+  user: User | null = null;
   patient: Patient | null = null;
   treatment: PatientTreatment | null = null;
   patientId: number | null = null;
@@ -57,6 +57,7 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.user$.subscribe({
       next: (_user: User) => {
+        this.user = _user;
         this.patient = _user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
         if (this.patient && this.patient.PatientTreatment) {
           this.treatment = this.patient.PatientTreatment;

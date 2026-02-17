@@ -1,78 +1,100 @@
-<div class="container-fluid">
-  <app-patient-header
-    [patient]="patient"
-    [isNew]="isNewPatient">
+<div class="appointment-container">
+  <app-patient-header [user]="user">
   </app-patient-header>
 
-  <div class="rounded mt-3" style="border: 0.5px solid lightblue;">
-    <div class="row d-none d-md-block">
-      <div class="col-12">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th colspan="4"></th>
-                <th class="text-end">
+  <!-- Appointments Table Section -->
+  <div class="appointments-section mt-4">
+    <div class="section-header d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title">
+        <i class="bi bi-calendar-event me-2"></i>Appointments
+      </h2>
+      <button
+        type="button"
+        class="btn btn-success btn-lg"
+        data-bs-toggle="modal"
+        data-bs-target="#addAppointmentModal"
+        (click)="AddAppointment()">
+        <i class="bi bi-plus-circle me-2"></i>Add Appointment
+      </button>
+    </div>
+
+    <div class="table-card d-none d-md-block">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr class="table-header-row">
+              <th class="col-start">Start Date</th>
+              <th class="col-end">End Date</th>
+              <th class="col-doctor">Doctor</th>
+              <th class="col-procedure">Procedure</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(appointment of appointments; track appointment.ID) {
+              <tr class="appointment-row">
+                <td class="col-start">
+                  <span class="date-badge">{{ appointment.StartDateTime }}</span>
+                </td>
+                <td class="col-end">
+                  <span class="date-badge">{{ appointment.EndDateTime }}</span>
+                </td>
+                <td class="col-doctor">
+                  <span class="doctor-badge">{{ appointment.DoctorName }}</span>
+                </td>
+                <td class="col-procedure">
+                  <span class="procedure-text">{{ appointment.TreatmentName }}</span>
+                </td>
+                <td class="col-actions">
                   <button
-                    type="button"
-                    class="btn btn-primary"
+                    class="btn btn-sm btn-outline-primary me-2"
                     data-bs-toggle="modal"
                     data-bs-target="#addAppointmentModal"
-                    (click)="AddAppointment()">
-                    Add Appointment
+                    (click)="EditAppointment(appointment.ID)"
+                    type="button"
+                    title="Edit appointment">
+                    <i class="bi bi-pencil-square"></i> Edit
                   </button>
-                </th>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="DeleteAppointment(appointment.ID)"
+                    type="button"
+                    title="Delete appointment">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>
               </tr>
+            }
+            @if((!appointments || appointments.length === 0)) {
               <tr>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Doctor</th>
-                <th>Procedure</th>
-                <th></th>
+                <td colspan="5" class="text-center py-5">
+                  <div class="no-data-message">
+                    <i class="bi bi-inbox"></i>
+                    <p>No appointments scheduled yet</p>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @for(appointment of appointments; track appointment.ID) {
-                <tr>
-                  <td>{{ appointment.StartDateTime }}</td>
-                  <td>{{ appointment.EndDateTime }}</td>
-                  <td>{{ appointment.DoctorName }}</td>
-                  <td>{{ appointment.TreatmentName }}</td>
-                  <td>
-                    <button
-                      class="btn btn-primary me-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#addAppointmentModal"
-                      (click)="EditAppointment(appointment.ID)"
-                      type="button">
-                      Edit
-                    </button>
-                    <button
-                      class="btn btn-secondary"
-                      (click)="DeleteAppointment(appointment.ID)"
-                      type="button">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <div class="rounded mt-4 p-4" style="border: 0.5px solid lightblue;">
-    <div class="row">
-      <div class="col">
-        <app-scheduler></app-scheduler>
-      </div>
+  <!-- Calendar/Scheduler Section -->
+  <div class="scheduler-section mt-5">
+    <div class="section-header mb-4">
+      <h2 class="section-title">
+        <i class="bi bi-calendar3 me-2"></i>Schedule View
+      </h2>
+    </div>
+    <div class="scheduler-card">
+      <app-scheduler></app-scheduler>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Add/Edit Appointment Modal -->
 <div
   class="modal fade"
   id="addAppointmentModal"
@@ -81,88 +103,90 @@
   data-bs-backdrop="static"
   data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="apptModalLabel">Add Appointment</h5>
+    <div class="modal-content appointment-modal">
+      <div class="modal-header appointment-modal-header">
+        <h5 class="modal-title" id="apptModalLabel">
+          <i class="bi bi-calendar-plus me-2"></i>Appointment Details
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <div class="row mb-3">
-          <div class="col-5">
-            <label for="txtAppointmentDate" class="form-label">Appointment Date</label>
+      <div class="modal-body appointment-modal-body">
+        <div class="form-group mb-4">
+          <label for="txtAppointmentDate" class="form-label form-label-required">
+            <i class="bi bi-calendar-event me-2"></i>Appointment Date
+          </label>
+          <input
+            id="txtAppointmentDate"
+            type="date"
+            class="form-control form-control-lg"
+            min="2024-01-01T00:00:00"
+            max="2025-12-31T00:00:00"
+            [ngModel]="this.newStartDateString"
+            (ngModelChange)="newStartDateString = $event">
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-4">
+              <label for="txtAppointmentTime" class="form-label form-label-required">
+                <i class="bi bi-clock me-2"></i>Start Time
+              </label>
+              <input
+                id="txtAppointmentTime"
+                type="time"
+                class="form-control form-control-lg"
+                [ngModel]="this.newAppointment.StartTime"
+                (ngModelChange)="newAppointment.StartTime = $event">
+            </div>
           </div>
-          <div class="col-7">
-            <input
-              id="txtAppointmentDate"
-              type="date"
-              class="form-control"
-              min="2024-01-01T00:00:00"
-              max="2025-12-31T00:00:00"
-              [ngModel]="this.newStartDateString"
-              (ngModelChange)="newStartDateString = $event">
+          <div class="col-md-6">
+            <div class="form-group mb-4">
+              <label for="txtAppointmentEndTime" class="form-label form-label-required">
+                <i class="bi bi-clock-history me-2"></i>End Time
+              </label>
+              <input
+                id="txtAppointmentEndTime"
+                type="time"
+                class="form-control form-control-lg"
+                [ngModel]="this.newAppointment.EndTime"
+                (ngModelChange)="newAppointment.EndTime = $event">
+            </div>
           </div>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-5">
-            <label for="txtAppointmentTime" class="form-label">Appointment Start Time</label>
-          </div>
-          <div class="col-7">
-            <input
-              id="txtAppointmentTime"
-              type="time"
-              class="form-control"
-              [ngModel]="this.newAppointment.StartTime"
-              (ngModelChange)="newAppointment.StartTime = $event">
-          </div>
+        <div class="form-group mb-4">
+          <label for="txtApptDoctorName" class="form-label form-label-required">
+            <i class="bi bi-person-badge me-2"></i>Doctor Name
+          </label>
+          <app-typeahead
+            [minLength]="2"
+            [debounce]="300"
+            [searchFn]="getDoctors"
+            [displayWith]="displayName"
+            (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
+          </app-typeahead>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-5">
-            <label for="txtAppointmentEndTime" class="form-label">Appointment End Time</label>
-          </div>
-          <div class="col-7">
-            <input
-              id="txtAppointmentEndTime"
-              type="time"
-              class="form-control"
-              [ngModel]="this.newAppointment.EndTime"
-              (ngModelChange)="newAppointment.EndTime = $event">
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-5">
-            <label for="txtApptDoctorName" class="form-label">Doctor Name</label>
-          </div>
-          <div class="col-7">
-            <app-typeahead
-              [minLength]="2"
-              [debounce]="300"
-              [searchFn]="getDoctors"
-              [displayWith]="displayName"
-              (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
-            </app-typeahead>
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-5">
-            <label for="txtApptProcedure" class="form-label">Procedure</label>
-          </div>
-          <div class="col-7">
-            <input
-              id="txtApptProcedure"
-              type="text"
-              class="form-control"
-              [ngModel]="newAppointment?.TreatmentName"
-              (ngModelChange)="newAppointment.TreatmentName = $event">
-          </div>
+        <div class="form-group mb-4">
+          <label for="txtApptProcedure" class="form-label form-label-required">
+            <i class="bi bi-bandaid me-2"></i>Procedure
+          </label>
+          <input
+            id="txtApptProcedure"
+            type="text"
+            class="form-control form-control-lg"
+            placeholder="Enter procedure name"
+            [ngModel]="newAppointment?.TreatmentName"
+            (ngModelChange)="newAppointment.TreatmentName = $event">
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="SaveAppointment()">Save changes</button>
+      <div class="modal-footer appointment-modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="SaveAppointment()">
+          <i class="bi bi-check-circle me-2"></i>Save Appointment
+        </button>
       </div>
     </div>
   </div>

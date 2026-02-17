@@ -1,0 +1,511 @@
+/* ============================================
+   Appointment Container & General Styles
+   ============================================ */
+
+.appointment-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 1rem;
+}
+
+/* ============================================
+   Section Styles
+   ============================================ */
+
+.appointments-section,
+.scheduler-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.appointments-section:hover,
+.scheduler-section:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Section Header
+   ============================================ */
+
+.section-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.section-title i {
+  color: #3498db;
+}
+
+/* ============================================
+   Table Card & Styles
+   ============================================ */
+
+.table-card {
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table-header-row {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.table-header-row th {
+  color: white;
+  font-weight: 600;
+  padding: 1rem;
+  text-align: left;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.table-header-row th:last-child {
+  text-align: center;
+}
+
+.appointment-row {
+  border-bottom: 1px solid #ecf0f1;
+  transition: all 0.3s ease;
+}
+
+.appointment-row:hover {
+  background-color: #f8f9fa;
+  transform: translateX(2px);
+}
+
+.appointment-row:last-child {
+  border-bottom: none;
+}
+
+.appointment-row td {
+  padding: 1rem;
+  vertical-align: middle;
+  color: #34495e;
+}
+
+/* ============================================
+   Table Column Styles
+   ============================================ */
+
+.col-start,
+.col-end {
+  width: 18%;
+}
+
+.col-doctor {
+  width: 22%;
+}
+
+.col-procedure {
+  width: 22%;
+}
+
+.col-actions {
+  width: 20%;
+  text-align: center;
+}
+
+/* Badge Styles */
+
+.date-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.doctor-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.procedure-text {
+  display: inline-block;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ============================================
+   Button Styles
+   ============================================ */
+
+.btn-success {
+  background: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #00a86b 0%, #008c5a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 208, 132, 0.4);
+}
+
+.btn-outline-primary,
+.btn-outline-danger {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary {
+  color: #3498db;
+  border-color: #3498db;
+}
+
+.btn-outline-primary:hover {
+  background-color: #3498db;
+  border-color: #3498db;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+}
+
+.btn-outline-danger {
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.btn-outline-danger:hover {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+}
+
+.btn-lg {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* ============================================
+   No Data Message
+   ============================================ */
+
+.no-data-message {
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.no-data-message i {
+  font-size: 3rem;
+  color: #bdc3c7;
+  margin-bottom: 0.5rem;
+}
+
+.no-data-message p {
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ============================================
+   Scheduler Card
+   ============================================ */
+
+.scheduler-card {
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 1rem;
+  background: #fafafa;
+}
+
+/* ============================================
+   Modal Styles
+   ============================================ */
+
+.appointment-modal {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.appointment-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1.5rem;
+}
+
+.appointment-modal-header .modal-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.appointment-modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.appointment-modal-body {
+  padding: 2rem;
+  background: white;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.form-label i {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.form-label-required::after {
+  content: ' *';
+  color: #e74c3c;
+}
+
+.form-control,
+.form-control-lg {
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  color: #34495e;
+}
+
+.form-control:focus,
+.form-control-lg:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  outline: none;
+}
+
+.form-control-lg {
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  min-height: 44px;
+}
+
+.appointment-modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #ecf0f1;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.appointment-modal-footer .btn {
+  font-weight: 500;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary {
+  color: #7f8c8d;
+  border-color: #bdc3c7;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #ecf0f1;
+  border-color: #7f8c8d;
+}
+
+/* ============================================
+   Typeahead Component Override
+   ============================================ */
+
+::ng-deep .typeahead-container {
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .typeahead-container:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+::ng-deep .typeahead-input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  min-height: 44px;
+  border: none !important;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+  .appointment-container {
+    padding: 0.5rem;
+  }
+
+  .appointments-section,
+  .scheduler-section {
+    padding: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+
+  .section-header {
+    flex-direction: column !important;
+  }
+
+  .section-header h2 {
+    margin-bottom: 1rem;
+  }
+
+  .btn-success {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .table-header-row th {
+    font-size: 0.85rem;
+    padding: 0.7rem;
+  }
+
+  .appointment-row td {
+    font-size: 0.9rem;
+    padding: 0.7rem;
+  }
+
+  .date-badge,
+  .doctor-badge,
+  .procedure-text {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .form-control,
+  .form-control-lg {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .appointment-container {
+    padding: 0;
+  }
+
+  .appointments-section,
+  .scheduler-section {
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin: 0.5rem 0;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .btn-success {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .appointment-modal-body {
+    padding: 1rem;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+  }
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.appointments-section,
+.scheduler-section {
+  animation: slideInDown 0.4s ease-out;
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.me-2 {
+  margin-right: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.mt-5 {
+  margin-top: 3rem;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}

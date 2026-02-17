@@ -24,7 +24,7 @@ export class PatientVitalsComponent implements OnInit, OnDestroy {
   patient: Patient | null = null;
   patientId: number | null = null;
   isNewPatient = false;
-
+  user: User | null = null;
   private patientSubscription: Subscription = new Subscription();
 
   constructor(
@@ -53,6 +53,7 @@ export class PatientVitalsComponent implements OnInit, OnDestroy {
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.user$.subscribe({
       next: (_user: User) => {
+        this.user = _user;
           this.patient = _user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
         this.patient.UserID = this.dataService.getUser().ID || 0;
         if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {

@@ -28,6 +28,7 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
 
   @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
   patient: Patient | null = null;
+  user: User | null = null;
   appointments: PatientAppointment[] | null = [];
   isNewPatient = false;
   newAppointment: PatientAppointment = new PatientAppointment();
@@ -50,6 +51,15 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.user$.subscribe({
       next: (_user: User) => {
+        this.user = _user;
+        if(!_user) {
+          this.router.navigate(['/dashboard']);
+          return;
+        }
+        if(!_user.Patients || _user.Patients.length === 0) {
+          this.router.navigate(['/patient/search']);
+          return;
+        }
         this.patient = _user.Patients && _user.Patients.length > 0 ? _user.Patients[0] : null as Patient ;
         if (_user && _user.Patients[0] && _user.Patients[0].PatientAppointments && _user.Patients[0].PatientAppointments.length > 0) {
           this.appointments = _user.Patients[0].PatientAppointments;

@@ -19,7 +19,7 @@ export class PatientHistoryComponent implements OnInit, OnDestroy {
   patient: Patient; // Assuming patient is defined and has the necessary properties
   patientId: number | null = null;
   isNewPatient = false;
-
+  user: User | null = null;
   private patientSubscription: Subscription = new Subscription();
 
   constructor(
@@ -44,7 +44,8 @@ export class PatientHistoryComponent implements OnInit, OnDestroy {
     // Subscribe to patient changes from the data service
     this.patientSubscription = this.dataService.user$.subscribe({
       next: (user: User) => {
-        this.patient = user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
+        this.user = user;
+         this.patient = user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
         this.cdr.markForCheck();
       },
       error: (error: any) => {
