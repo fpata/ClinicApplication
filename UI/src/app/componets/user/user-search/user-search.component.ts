@@ -24,7 +24,7 @@ import { PagingComponent } from '../../../common/paging/paging.component';
 export class UserSearch {
 
  currentPage: number = 1;
-   pageSize: number = 10;
+  pageSize: number = 5;
    totalItems: number = 0;
   searchPatient: SearchModel;
   searchResult: SearchResultModel;
@@ -58,6 +58,9 @@ validateSearchInput() {
       return;
     }
     this.searchPatient.StartDate = '2022-01-01';
+    // Ensure paging parameters are sent with the search so initial load respects pageSize
+    this.searchPatient.pageNumber = this.currentPage;
+    this.searchPatient.pageSize = this.pageSize;
     this.searchService.Search(this.searchPatient).subscribe({
       next: (result:any) => {
         this.searchResult = result;
@@ -96,7 +99,7 @@ validateSearchInput() {
           user.Contact = new Contact();
         }
         this.dataService.setUser(user);
-        this.router.navigate(['/user-info']);
+        this.router.navigate(['/user-create']);
 
       },
       error: (err: any) => {
@@ -104,6 +107,7 @@ validateSearchInput() {
        this.cdRef.detectChanges();
       }
     });
+    this.router.navigate(['/user-info', userId]);
   }
 
   EditUser(userId: number) {
@@ -147,7 +151,7 @@ validateSearchInput() {
     user.Address = new Address();
     user.Contact = new Contact();
     this.dataService.setUser(user);
-   this.router.navigate(['/user-info']);
+   this.router.navigate(['/user-create']);
   }
 
     ClearUserInformation() {

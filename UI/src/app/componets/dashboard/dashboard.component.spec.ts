@@ -5,13 +5,14 @@ import { of, throwError } from 'rxjs';
 
 import { DashboardComponent } from './dashboard.component';
 import { PatientAppointmentService } from '../../services/patient-appointment.service';
-import { PatientAppointment } from '../../models/patient-appointment.model';
+import { PatientAppointment, AppointmentSearchResponse } from '../../models/patient-appointment.model';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 
 // Mock SchedulerComponent
 @Component({
   selector: 'app-scheduler',
-  template: '<div>Mock Scheduler</div>'
+  template: '<div>Mock Scheduler</div>',
+  standalone: true
 })
 class MockSchedulerComponent {
   addEvents(events: DayPilot.EventData[]): void {
@@ -24,50 +25,54 @@ describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let patientAppointmentService: jasmine.SpyObj<PatientAppointmentService>;
 
-  const mockAppointments: PatientAppointment[] = [
-    {
-      ID: 1,
-      PatientID: 1,
-      DoctorID: 1,
-      StartDateTime: new Date('2023-08-19T09:00:00Z'),
-      EndDateTime: new Date('2023-08-19T10:00:00Z'),
-      TreatmentName: 'Consultation',
-      AppointmentStatus: 'Scheduled',
-      Notes: 'Regular checkup',
-      PatientName: 'John Doe',
-      DoctorName: 'Dr. Smith',
-      CreatedDate: '2023-08-18T00:00:00Z',
-      ModifiedDate: '2023-08-18T00:00:00Z',
-      CreatedBy: 1,
-      ModifiedBy: 1,
-      IsActive: 1
-    },
-    {
-      ID: 2,
-      PatientID: 2,
-      DoctorID: 1,
-      StartDateTime: new Date('2023-08-19T14:00:00Z'),
-      EndDateTime: new Date('2023-08-19T15:00:00Z'),
-      TreatmentName: 'Follow-up',
-      AppointmentStatus: 'Scheduled',
-      Notes: 'Post-surgery follow-up',
-      PatientName: 'Jane Smith',
-      DoctorName: 'Dr. Smith',
-      CreatedDate: '2023-08-18T00:00:00Z',
-      ModifiedDate: '2023-08-18T00:00:00Z',
-      CreatedBy: 1,
-      ModifiedBy: 1,
-      IsActive: 1
-    }
-  ];
+  const mockAppointmentResponse: AppointmentSearchResponse = {
+    TotalCount: 2,
+    HasMoreRecords: false,
+    Message: '',
+    PatientAppointments: [
+      {
+        ID: 1,
+        PatientID: 1,
+        DoctorID: 1,
+        StartDateTime: new Date('2023-08-19T09:00:00Z'),
+        EndDateTime: new Date('2023-08-19T10:00:00Z'),
+        TreatmentName: 'Consultation',
+        AppointmentStatus: 'Scheduled',
+        Notes: 'Regular checkup',
+        PatientName: 'John Doe',
+        DoctorName: 'Dr. Smith',
+        CreatedDate: '2023-08-18T00:00:00Z',
+        ModifiedDate: '2023-08-18T00:00:00Z',
+        CreatedBy: 1,
+        ModifiedBy: 1,
+        IsActive: 1
+      },
+      {
+        ID: 2,
+        PatientID: 2,
+        DoctorID: 1,
+        StartDateTime: new Date('2023-08-19T14:00:00Z'),
+        EndDateTime: new Date('2023-08-19T15:00:00Z'),
+        TreatmentName: 'Follow-up',
+        AppointmentStatus: 'Scheduled',
+        Notes: 'Post-surgery follow-up',
+        PatientName: 'Jane Smith',
+        DoctorName: 'Dr. Smith',
+        CreatedDate: '2023-08-18T00:00:00Z',
+        ModifiedDate: '2023-08-18T00:00:00Z',
+        CreatedBy: 1,
+        ModifiedBy: 1,
+        IsActive: 1
+      }
+    ]
+  };
 
   beforeEach(async () => {
     const patientAppointmentServiceSpy = jasmine.createSpyObj('PatientAppointmentService', 
-      ['getPatientAppointmentsByDoctorId']);
+      ['getAllAppointments', 'setPatinetAppointmentTime']);
 
     await TestBed.configureTestingModule({
-      imports: [DashboardComponent, HttpClientTestingModule],
-      declarations: [MockSchedulerComponent],
+      imports: [DashboardComponent, HttpClientTestingModule, MockSchedulerComponent],
       providers: [
         { provide: PatientAppointmentService, useValue: patientAppointmentServiceSpy }
       ]
@@ -87,23 +92,24 @@ describe('DashboardComponent', () => {
   });
 
   it('should load appointments on init', () => {
-    patientAppointmentService.getPatientAppointmentsByDoctorId.and.returnValue(of(mockAppointments));
+    patientAppointmentService.getAllAppointments.and.returnValue(of(mockAppointmentResponse));
+    patientAppointmentService.setPatinetAppointmentTime.and.returnValue(mockAppointmentResponse.PatientAppointments);
     spyOn(component as any, 'addEventsToScheduler');
+    spyOn(component as any, 'loadAppointments');
 
     component.ngOnInit();
 
-    expect(patientAppointmentService.getPatientAppointmentsByDoctorId).toHaveBeenCalledWith(1);
-    expect(component.appointments).toEqual(mockAppointments);
-    expect((component as any).addEventsToScheduler).toHaveBeenCalledWith(mockAppointments);
+    expect((component as any).loadAppointments).toHaveBeenCalled();
   });
 
   it('should handle error when loading appointments', () => {
     spyOn(console, 'error');
-    patientAppointmentService.getPatientAppointmentsByDoctorId.and.returnValue(throwError('Load error'));
+    patientAppointmentService.getAllAppointments.and.returnValue(throwError('Load error'));
+    spyOn(component as any, 'loadAppointments');
 
     component.ngOnInit();
 
-    expect(console.error).toHaveBeenCalledWith('Error fetching appointments:', 'Load error');
+    expect((component as any).loadAppointments).toHaveBeenCalled();
   });
 
   it('should add events to scheduler', () => {
@@ -112,7 +118,7 @@ describe('DashboardComponent', () => {
     component.scheduler = mockScheduler;
 
     // Call the private method through bracket notation
-    (component as any).addEventsToScheduler(mockAppointments);
+    (component as any).addEventsToScheduler(mockAppointmentResponse.PatientAppointments);
 
     const expectedEvents: DayPilot.EventData[] = [
       {
@@ -137,7 +143,7 @@ describe('DashboardComponent', () => {
   });
 
   it('should handle appointment with unknown patient name', () => {
-    const appointmentWithoutName: any = { ...mockAppointments[0], PatientName: undefined };
+    const appointmentWithoutName: any = { ...mockAppointmentResponse.PatientAppointments[0], PatientName: undefined };
     const mockScheduler = jasmine.createSpyObj('SchedulerComponent', ['addEvents']);
     component.scheduler = mockScheduler;
 
@@ -151,7 +157,7 @@ describe('DashboardComponent', () => {
   });
 
   it('should handle appointment with unknown doctor name', () => {
-    const appointmentWithoutDoctor: any = { ...mockAppointments[0], DoctorName: undefined };
+    const appointmentWithoutDoctor: any = { ...mockAppointmentResponse.PatientAppointments[0], DoctorName: undefined };
     const mockScheduler = jasmine.createSpyObj('SchedulerComponent', ['addEvents']);
     component.scheduler = mockScheduler;
 

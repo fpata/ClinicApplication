@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { User, UserType } from '../../../models/user.model';
 import { Address } from '../../../models/address.model';
@@ -21,6 +21,7 @@ import { MessageService } from '../../../services/message.service';
 export class UserInfoComponent {
 
   @ViewChild('userForm') userForm!: NgForm;
+  @ViewChild('userForm', { read: ElementRef }) userFormElement!: ElementRef<HTMLFormElement>;
 
   user: User | null = null;
   formSubmitted = false;
@@ -115,10 +116,12 @@ export class UserInfoComponent {
 
   SaveUserInformation() {
     this.formSubmitted = true;
-    
+
     if (!this.userForm || !this.userForm.valid) {
       this.messageService.warn('Please fill out all required fields correctly');
       this.cdRef.detectChanges();
+      // After view updates, open accordion containing first invalid field and focus it
+      setTimeout(() => this.focusFirstInvalidField(), 0);
       return;
     }
 
@@ -161,5 +164,42 @@ export class UserInfoComponent {
     this.user.Address.ID = 0;
     this.user.Contact.ID = 0;
     this.cdRef.detectChanges();
+  }
+
+  private focusFirstInvalidField() {
+    try {
+      const formEl: HTMLElement | undefined = this.userFormElement?.nativeElement;
+      if (!formEl) return;
+
+      // Find the first invalid control inside the form
+      const invalidEl = formEl.querySelector('.ng-invalid') as HTMLElement | null;
+      if (!invalidEl) return;
+
+      // If it's inside a collapsed accordion, open that accordion pane
+      const collapse = invalidEl.closest('.accordion-collapse') as HTMLElement | null;
+      if (collapse) {
+        // Find the toggle button that targets this collapse
+        const toggle = formEl.querySelector(`[data-bs-target="#${collapse.id}"]`) as HTMLElement | null;
+        if (toggle && !collapse.classList.contains('show')) {
+          // Trigger the button to let Bootstrap handle opening animation and aria states
+          toggle.click();
+        }
+      }
+
+      // Focus the most relevant input inside the nearest form-group
+      const formGroup = (invalidEl.closest('.form-group') as HTMLElement) || invalidEl;
+      const focusable = formGroup.querySelector('input:not([type=hidden]), select, textarea, button, [tabindex]') as HTMLElement | null;
+      if (focusable && typeof focusable.focus === 'function') {
+        focusable.focus();
+        focusable.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        if (typeof (invalidEl as any).focus === 'function') {
+          (invalidEl as any).focus();
+        }
+        invalidEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } catch (err) {
+      console.error('Error while focusing first invalid field', err);
+    }
   }
 }

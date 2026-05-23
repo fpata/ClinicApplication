@@ -160,11 +160,25 @@ export class DoctorAppointmentsComponent {
   }
 
   DeleteAppointment(ID: number) {
+    if (!confirm('Are you sure you want to delete this appointment?')) {
+      return;
+    }
+
     this.patientAppointmentService.deletePatientAppointment(ID).subscribe({
       next: (result: any) => {
         this.messageService.success('Appointment deleted successfully.');
         this.searchResult.PatientAppointments = this.searchResult.PatientAppointments?.filter(a => a.ID !== ID) || null;
-        this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
+        // Keep the search result total count in sync with the delete
+        if (this.searchResult.TotalCount != null && this.searchResult.TotalCount > 0) {
+          this.searchResult.TotalCount -= 1;
+        }
+        this.totalItems = this.searchResult.TotalCount || this.searchResult.PatientAppointments?.length || 0;
+        try {
+          this.scheduler.removeEventById(ID.toString());
+        } catch (e) {
+          this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
+        }
+        this.cdrRef.detectChanges();
       },
       error: (err: any) => {
         console.error(err);
@@ -186,7 +200,24 @@ export class DoctorAppointmentsComponent {
           if (this.searchResult.PatientAppointments == null || this.searchResult.PatientAppointments == undefined)
             this.searchResult.PatientAppointments = [];
           this.searchResult.PatientAppointments?.push(result);
-          setTimeout(() => this.AddEventsToScheduler(this.searchResult.PatientAppointments || []), 500);
+          // Keep the search result total count in sync with the add
+          this.searchResult.TotalCount = (this.searchResult.TotalCount || 0) + 1;
+          this.totalItems = this.searchResult.TotalCount;
+          try {
+            const appt: any = result;
+            const ev: DayPilot.EventData = {
+              id: appt.ID.toString(),
+              text: appt.PatientName || 'Unknown Patient',
+              start: new DayPilot.Date(appt.StartDateTime),
+              end: new DayPilot.Date(appt.EndDateTime),
+              resource: appt.DoctorName || 'General',
+              backColor: '#3c8dbc'
+            };
+            this.scheduler.addEvent(ev);
+          } catch (e) {
+            this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
+          }
+          this.cdrRef.detectChanges();
         },
         error: (err: any) => {
           this.messageService.error('Error occurred while creating appointment.');
@@ -202,7 +233,21 @@ export class DoctorAppointmentsComponent {
           const index = this.searchResult.PatientAppointments?.findIndex(a => a.ID === appointmentToSave.ID);
           if (index !== undefined && index >= 0 && this.searchResult.PatientAppointments) {
             this.searchResult.PatientAppointments[index] = appointmentToSave;
-              setTimeout(() => this.AddEventsToScheduler(this.searchResult.PatientAppointments || []), 500);
+              try {
+                const appt: any = appointmentToSave;
+                const ev: DayPilot.EventData = {
+                  id: appt.ID.toString(),
+                  text: appt.PatientName || 'Unknown Patient',
+                  start: new DayPilot.Date(appt.StartDateTime),
+                  end: new DayPilot.Date(appt.EndDateTime),
+                  resource: appt.DoctorName || 'General',
+                  backColor: '#3c8dbc'
+                };
+                this.scheduler.updateEvent(ev);
+              } catch (e) {
+                this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
+              }
+              this.cdrRef.detectChanges();
           }
         },
         error: (err: any) => {

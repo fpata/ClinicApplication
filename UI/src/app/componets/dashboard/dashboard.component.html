@@ -181,12 +181,12 @@
           <div class="col-6">
             <label for="txtAppointmentTime" class="form-label fw-semibold">Start Time</label>
             <input type="time" id="txtAppointmentTime" class="form-control form-control-lg" step="1800" 
-              [ngModel]="this.newAppointment?.StartTime" (ngModelChange)="newAppointment.StartTime = $event">
+              [ngModel]="this.newAppointment?.StartTime" (ngModelChange)="onStartTimeChanged($event)">
           </div>
           <div class="col-6">
             <label for="txtAppointmentEndTime" class="form-label fw-semibold">End Time</label>
             <input type="time" id="txtAppointmentEndTime" class="form-control form-control-lg" step="1800" 
-              [ngModel]="this.newAppointment?.EndTime" (ngModelChange)="newAppointment.EndTime = $event">
+              [ngModel]="this.newAppointment?.EndTime" (ngModelChange)="onEndTimeChanged($event)">
           </div>
         </div>
 
@@ -196,7 +196,7 @@
         <div class="mb-3">
           <label for="txtApptPatientName" class="form-label fw-semibold">Patient Name</label>
           <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients" [displayWith]="displayName"
-            (selectItem)="newAppointment.PatientID = $event.PatientID; newAppointment.PatientName = $event.FirstName + ' ' + $event.LastName; newAppointment.UserID = $event.UserID">
+            [(ngModel)]="selectedPatient" (ngModelChange)="onPatientSelected($event)">
           </app-typeahead>
         </div>
 
@@ -204,7 +204,7 @@
         <div class="mb-3">
           <label for="txtApptDoctorName" class="form-label fw-semibold">Doctor Name</label>
           <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getDoctors" [displayWith]="displayName"
-            (selectItem)="newAppointment.DoctorID = $event.UserID; newAppointment.DoctorName = $event.FirstName + ' ' + $event.LastName">
+            [(ngModel)]="selectedDoctor" (ngModelChange)="onDoctorSelected($event)">
           </app-typeahead>
         </div>
 

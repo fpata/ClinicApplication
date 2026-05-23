@@ -26,10 +26,10 @@ describe('SearchService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should include Authorization header on searchUser', () => {
-    service.searchUser({} as any).subscribe();
+  it('should include Authorization header on Search', () => {
+    service.Search({} as any).subscribe();
     const req = httpMock.expectOne(() => true);
     expect(req.request.headers.get('Authorization')).toContain('Bearer');
-    req.flush([]);
+    req.flush({ TotalCount: 0, HasMoreRecords: false, Message: '', Results: [] });
   });
 });

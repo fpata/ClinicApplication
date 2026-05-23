@@ -33,6 +33,8 @@ export class DashboardComponent implements OnInit {
    totalItems: number = 0;
    newAppointment: PatientAppointment | null = null;
    appointments: PatientAppointment[] = [];
+   selectedPatient: any | null = null;
+   selectedDoctor: any | null = null;
    doctors: SearchModel[] | null = null;
    newStartDateString: string = '';
    private readonly eventColors = ['#88bddb', '#a0d4bd', '#8a6d69', '#70624c', '#bc9fc7', '#8295a8'];
@@ -94,7 +96,7 @@ export class DashboardComponent implements OnInit {
       }
       const events: DayPilot.EventData[] = appointments.map(appointment => ({
          id: appointment.ID.toString(),
-         text: appointment.PatientName || 'Unknown Patient',
+         text: appointment.PatientName + " : " + appointment.TreatmentName|| 'Unknown Patient',
          start: new DayPilot.Date(appointment.StartDateTime),
          end: new DayPilot.Date(appointment.EndDateTime),
          resource: appointment.DoctorName || 'General',
@@ -123,11 +125,17 @@ export class DashboardComponent implements OnInit {
          );
       }
 
+      const appointmentPayload: any = {
+         ...appointmentToSave,
+         StartDateTime: appointmentToSave.StartDateTime ? this.util.toLocalDateTimeString(appointmentToSave.StartDateTime) : undefined,
+         EndDateTime: appointmentToSave.EndDateTime ? this.util.toLocalDateTimeString(appointmentToSave.EndDateTime) : undefined
+      };
+
       appointmentToSave.AppointmentStatus = 'Scheduled';
       appointmentToSave.IsActive = 1;
       if (appointmentToSave.ID && appointmentToSave.ID > 0) {
          // Update existing appointment
-         this.patientAppointmentService.updatePatientAppointment(appointmentToSave.ID, appointmentToSave)
+         this.patientAppointmentService.updatePatientAppointment(appointmentToSave.ID, appointmentPayload)
             .subscribe({
                next: (result) => {
                   this.messageService.success('Appointment updated successfully.');
@@ -135,7 +143,28 @@ export class DashboardComponent implements OnInit {
                   if (index > -1) {
                      this.appointments[index] = result;
                   }
-                  this.cdr.detectChanges();
+                  // Refresh scheduler events so the calendar shows the updated appointment
+                  this.addEventsToScheduler(this.appointments);
+                   // If the global user state contains this patient, update it so other components refresh
+                  try {
+                     const user: any = this.dataService.getUser();
+                     if (user && user.Patients && user.Patients.length) {
+                        const patient: any = user.Patients.find((p: any) => p.ID === result.PatientID);
+                        if (patient) {
+                           if (!patient.PatientAppointments) patient.PatientAppointments = [];
+                           const pIndex = patient.PatientAppointments.findIndex((a: any) => a.ID === result.ID);
+                           if (pIndex > -1) {
+                              patient.PatientAppointments[pIndex] = result;
+                           } else {
+                              patient.PatientAppointments.push(result);
+                           }
+                           this.dataService.setUser(user);
+                        }
+                     }
+                  } catch (e) {
+                     // ignore if no global user
+                  }
+                   this.cdr.detectChanges();
                },
                error: (error) => {
                   this.messageService.error('Error updating appointment:');
@@ -144,7 +173,7 @@ export class DashboardComponent implements OnInit {
             });
       } else {
          // Continue with saving...
-         this.patientAppointmentService.createPatientAppointment(appointmentToSave)
+         this.patientAppointmentService.createPatientAppointment(appointmentPayload)
             .subscribe({
                next: (result) => {
                   this.messageService.success('Appointment saved successfully.');
@@ -152,7 +181,22 @@ export class DashboardComponent implements OnInit {
                      this.appointments = [];
                   }
                   this.appointments.push(result);
+                  this.totalItems = this.appointments.length;
                   this.addEventsToScheduler(this.appointments);
+                  // Update global user/patient appointments if present
+                  try {
+                     const user: any = this.dataService.getUser();
+                     if (user && user.Patients && user.Patients.length) {
+                        const patient: any = user.Patients.find((p: any) => p.ID === result.PatientID);
+                        if (patient) {
+                           if (!patient.PatientAppointments) patient.PatientAppointments = [];
+                           patient.PatientAppointments.push(result);
+                           this.dataService.setUser(user);
+                        }
+                     }
+                  } catch (e) {
+                     // ignore
+                  }
                   this.cdr.detectChanges();
                },
                error: (error) => {
@@ -170,6 +214,32 @@ export class DashboardComponent implements OnInit {
       searchModel.UserType = UserType.Doctor;
       searchModel.FirstName = name;
       return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+   }
+
+   onPatientSelected(patient: any | null) {
+      if (!this.newAppointment) return;
+      this.selectedPatient = patient;
+      if (!patient) {
+         this.newAppointment.PatientID = 0;
+         this.newAppointment.PatientName = '';
+         this.newAppointment.UserID = 0;
+         return;
+      }
+      this.newAppointment.PatientID = patient.PatientID ?? patient.UserID ?? 0;
+      this.newAppointment.PatientName = `${patient.FirstName || ''} ${patient.LastName || ''}`.trim();
+      this.newAppointment.UserID = patient.UserID ?? this.newAppointment.UserID ?? 0;
+   }
+
+   onDoctorSelected(doctor: any | null) {
+      if (!this.newAppointment) return;
+      this.selectedDoctor = doctor;
+      if (!doctor) {
+         this.newAppointment.DoctorID = 0;
+         this.newAppointment.DoctorName = '';
+         return;
+      }
+      this.newAppointment.DoctorID = doctor.UserID ?? 0;
+      this.newAppointment.DoctorName = `${doctor.FirstName || ''} ${doctor.LastName || ''}`.trim();
    }
 
    getPatients = (name: string): Observable<SearchModel[]> => {
@@ -213,9 +283,17 @@ export class DashboardComponent implements OnInit {
       this.newAppointment.EndTime = endTime;
 
 
+      this.selectedPatient = null;
+      this.selectedDoctor = null;
+
       if (loginUser?.user?.UserType === UserType.Doctor) {
          this.newAppointment.DoctorID = loginUser.user?.ID || 0;
          this.newAppointment.DoctorName = loginUser.user?.FirstName + ' ' + loginUser.user?.LastName;
+         this.selectedDoctor = {
+            UserID: loginUser.user?.ID,
+            FirstName: loginUser.user?.FirstName,
+            LastName: loginUser.user?.LastName
+         };
       }
       this.cdr.detectChanges();
    }
@@ -252,10 +330,63 @@ export class DashboardComponent implements OnInit {
       document.getElementById('btnAddNewAppointment')!.click();
       this.newAppointment!.StartDateTime = $event.startDateTime.toDate();
       this.newAppointment!.EndDateTime = $event.endDateTime.toDate();
+      // Set date and time strings for the modal inputs
+      this.newStartDateString = this.util.format(this.newAppointment!.StartDateTime, 'yyyy-MM-dd');
+      this.newAppointment!.StartTime = this.util.format(this.newAppointment!.StartDateTime, 'HH:mm');
+      this.newAppointment!.EndTime = this.util.format(this.newAppointment!.EndDateTime, 'HH:mm');
       document.getElementById('appointmentDatePicker')!.setAttribute('value', this.util.formatAppointmentDateTime(this.newAppointment!.StartDateTime));
       this.cdr.detectChanges();
       // document.getElementById('txtAppointmentTime')!.setAttribute('value', this.newAppointment!.StartDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.StartDateTime.getMinutes().toString().padStart(2, '0'));
       //document.getElementById('txtAppointmentEndTime')!.setAttribute('value', this.newAppointment!.EndDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.EndDateTime.getMinutes().toString().padStart(2, '0'));
+   }
+
+   onStartTimeChanged(newTime: string) {
+      if (!this.newAppointment) return;
+      this.newAppointment.StartTime = newTime;
+
+      // Update StartDateTime based on current selected date
+      if (this.newStartDateString) {
+         this.newAppointment.StartDateTime = this.util.createAppointmentDateTimeFromString(this.newStartDateString, newTime);
+      } else if (this.newAppointment.StartDateTime) {
+         this.newAppointment.StartDateTime = this.util.createAppointmentDateTime(this.newAppointment.StartDateTime, newTime);
+      }
+
+      // Ensure EndTime is after StartTime; default to +30 minutes if not
+      const start = new Date(this.newAppointment.StartDateTime as any);
+      let end: Date;
+      if (this.newAppointment.EndTime) {
+         end = this.util.createAppointmentDateTimeFromString(this.newStartDateString || this.util.format(this.newAppointment.StartDateTime, 'yyyy-MM-dd'), this.newAppointment.EndTime);
+         if (end <= start) {
+            end = new Date(start.getTime() + 30 * 60000);
+            this.newAppointment.EndTime = this.util.format(end, 'HH:mm');
+         }
+      } else {
+         end = new Date(start.getTime() + 30 * 60000);
+         this.newAppointment.EndTime = this.util.format(end, 'HH:mm');
+      }
+      this.newAppointment.EndDateTime = end;
+      this.cdr.detectChanges();
+   }
+
+   onEndTimeChanged(newTime: string) {
+      if (!this.newAppointment) return;
+      this.newAppointment.EndTime = newTime;
+
+      if (this.newStartDateString) {
+         this.newAppointment.EndDateTime = this.util.createAppointmentDateTimeFromString(this.newStartDateString, newTime);
+      } else if (this.newAppointment.EndDateTime) {
+         this.newAppointment.EndDateTime = this.util.createAppointmentDateTime(this.newAppointment.EndDateTime, newTime);
+      }
+
+      // If end is before or equal to start, push end to start + 30m
+      const start = new Date(this.newAppointment.StartDateTime as any);
+      const end = new Date(this.newAppointment.EndDateTime as any);
+      if (end <= start) {
+         const corrected = new Date(start.getTime() + 30 * 60000);
+         this.newAppointment.EndDateTime = corrected;
+         this.newAppointment.EndTime = this.util.format(corrected, 'HH:mm');
+      }
+      this.cdr.detectChanges();
    }
 
    onAppointmentDateChanged(newDate: string) {
@@ -296,30 +427,49 @@ export class DashboardComponent implements OnInit {
       const appointment = this.appointments.find(a => a.ID === appointmentID);
       if (appointment) {
          this.newAppointment = { ...appointment };
+         this.newStartDateString = this.util.formatDate(appointment.StartDateTime, 'yyyy-MM-dd');
+         this.selectedPatient = {
+            PatientID: appointment.PatientID,
+            UserID: appointment.UserID,
+            FirstName: appointment.PatientName?.split(' ')[0] || '',
+            LastName: appointment.PatientName?.split(' ').slice(1).join(' ') || ''
+         };
+         this.selectedDoctor = {
+            UserID: appointment.DoctorID,
+            FirstName: appointment.DoctorName?.split(' ')[0] || '',
+            LastName: appointment.DoctorName?.split(' ').slice(1).join(' ') || ''
+         };
       }
    }
 
    DeleteAppointment(appointmentID: number) {
-
-      //this.appointments = this.appointments.filter(a => a.ID !== appointmentID);
-      this.scheduler.deleteEvent(appointmentID.toString());
-      const index = this.appointments.findIndex(x => x.ID === appointmentID);
-      if (index > -1) {
-         this.appointments.splice(index, 1);
-         this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
-            next: () => {
-               this.messageService.success('Appointment deleted successfully.');
-            }
-            , error: (error) => {
-               this.messageService.error('Error deleting appointment:');
-               console.error('Error deleting appointment:', error);
-            }
-         });
-         this.cdr.detectChanges();
-      } else {
-         this.messageService.error('Appointment not found.');
+      if (!confirm('Are you sure you want to delete this appointment?')) {
+         return;
       }
 
+      const index = this.appointments.findIndex(x => x.ID === appointmentID);
+      if (index === -1) {
+         this.messageService.error('Appointment not found.');
+         return;
+      }
+
+      this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
+         next: () => {
+            this.appointments.splice(index, 1);
+            this.totalItems = this.appointments.length;
+            try {
+               this.scheduler.removeEventById(appointmentID.toString());
+            } catch (e) {
+               // ignore scheduler delete failures
+            }
+            this.messageService.success('Appointment deleted successfully.');
+            this.cdr.detectChanges();
+         },
+         error: (error) => {
+            this.messageService.error('Error deleting appointment:');
+            console.error('Error deleting appointment:', error);
+         }
+      });
    }
 
 }

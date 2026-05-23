@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { AppointmentSearchResponse, PatientAppointment } from '../models/patient-appointment.model';
 import { SearchModel } from '../models/search.model';
 import { environment } from '../../environments/environment';
+import { UtilityService } from './utility.service';
 
 @Injectable({ providedIn: 'root' })
 export class PatientAppointmentService {
 
   private readonly apiUrl = `${environment.API_BASE_URL}/PatientAppointment`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private util: UtilityService) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -25,12 +26,25 @@ export class PatientAppointmentService {
     return this.http.get<PatientAppointment>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
+  private prepareAppointmentPayload(appt: PatientAppointment): any {
+    const payload: any = { ...appt };
+
+    if (appt.StartDateTime) {
+      payload.StartDateTime = this.util.toLocalDateTimeString(appt.StartDateTime);
+    }
+    if (appt.EndDateTime) {
+      payload.EndDateTime = this.util.toLocalDateTimeString(appt.EndDateTime);
+    }
+
+    return payload;
+  }
+
   createPatientAppointment(appt: PatientAppointment): Observable<PatientAppointment> {
-    return this.http.post<PatientAppointment>(this.apiUrl, appt, { headers: this.getAuthHeaders() });
+    return this.http.post<PatientAppointment>(this.apiUrl, this.prepareAppointmentPayload(appt), { headers: this.getAuthHeaders() });
   }
 
   updatePatientAppointment(id: number, appt: PatientAppointment): Observable<PatientAppointment> {
-    return this.http.put<PatientAppointment>(`${this.apiUrl}/${id}`, appt, { headers: this.getAuthHeaders() });
+    return this.http.put<PatientAppointment>(`${this.apiUrl}/${id}`, this.prepareAppointmentPayload(appt), { headers: this.getAuthHeaders() });
   }
 
   deletePatientAppointment(id: number): Observable<void> {

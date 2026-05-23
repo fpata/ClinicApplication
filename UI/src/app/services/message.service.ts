@@ -19,7 +19,7 @@ export class MessageService {
 
     // convenience methods
     success(message: string, options?: any) {
-        this.message(new Message({ ...options, type: MessageType.Success, message }));
+        this.message(new Message({ ...options, type: MessageType.Success, message, autoClose: true, autoCloseTimeout: 10000 }));
     }
 
     error(message: string, options?: any) {

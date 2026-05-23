@@ -452,6 +452,13 @@
   font-weight: 600;
 }
 
+/* Required field indicator */
+.required-star {
+  color: #dc3545;
+  margin-left: 0.25rem;
+  font-weight: 700;
+}
+
 /* Animation */
 @keyframes slideIn {
   from {

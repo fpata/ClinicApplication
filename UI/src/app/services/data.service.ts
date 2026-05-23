@@ -14,7 +14,7 @@ import { Token } from '@angular/compiler';
   providedIn: 'root'
 })
 export class DataService {
- // private patientSource = new BehaviorSubject<Patient | null>(null);
+  private patientSource = new BehaviorSubject<Patient | null>(null);
   private userSource = new BehaviorSubject<User | null>(null);
   private calendarEvents = new BehaviorSubject<DayPilot.EventData[]>([]);
   private loginUserSource = new BehaviorSubject<LoginResponse | null>(null);
@@ -22,7 +22,7 @@ export class DataService {
   private userId = new BehaviorSubject<number | null>(null);
   private IsQuickCreateMode = new BehaviorSubject<boolean>(false);
 
- // readonly patient$: Observable<Patient> = this.patientSource.asObservable();
+  readonly patient$: Observable<Patient> = this.patientSource.asObservable();
   readonly user$: Observable<User> = this.userSource.asObservable();
   readonly calendarEvents$: Observable<DayPilot.EventData[]> = this.calendarEvents.asObservable();
   readonly loginUser$: Observable<LoginResponse> = this.loginUserSource.asObservable();
@@ -42,6 +42,14 @@ export class DataService {
 
   getUser(): User | null {
     return this.userSource.value;
+  }
+
+  setPatient(newPatient: Patient): void {
+    this.patientSource.next(newPatient);
+  }
+
+  getPatient(): Patient | null {
+    return this.patientSource.value;
   }
 
   getCalendarEvents(): DayPilot.EventData[] {

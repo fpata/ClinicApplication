@@ -108,26 +108,32 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
   }
 
   DeleteAppointment(appointmentID: number) {
+    if (!confirm('Are you sure you want to delete this appointment?')) {
+      return;
+    }
 
-    //this.appointments = this.appointments.filter(a => a.ID !== appointmentID);
-    this.scheduler.deleteEvent(appointmentID.toString());
     const index = this.appointments.findIndex(x => x.ID === appointmentID);
-    if (index > -1) {
-      this.appointments.splice(index, 1);
-      this.patient.PatientAppointments = this.appointments;
-      this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
-        next: () => {
-          this.messageService.success('Appointment deleted successfully.');
-        },
-        error: (error) => {
-          console.error('Error deleting appointment:', error);
-          this.messageService.error('Error occurred while deleting appointment. Please try again.');
-        }
-      });
-    }
-    else {
+    if (index === -1) {
       this.messageService.error('Appointment not found.');
+      return;
     }
+
+    this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
+      next: () => {
+        this.appointments.splice(index, 1);
+        this.patient.PatientAppointments = this.appointments;
+        try {
+          this.scheduler.removeEventById(appointmentID.toString());
+        } catch (e) {
+          // ignore scheduler delete failures
+        }
+        this.messageService.success('Appointment deleted successfully.');
+      },
+      error: (error) => {
+        console.error('Error deleting appointment:', error);
+        this.messageService.error('Error occurred while deleting appointment. Please try again.');
+      }
+    });
   }
 
   SaveAppointment() {

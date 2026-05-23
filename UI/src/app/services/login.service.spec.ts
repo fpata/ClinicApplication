@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoginService, LoginResponse } from './login.service';
 import { AuthService } from './auth.service';
+import { UserType } from '../models/user.model';
 
 
 describe('LoginService', () => {
@@ -36,7 +37,7 @@ describe('LoginService', () => {
     service.login('u', 'p').subscribe();
 
     const req = httpMock.expectOne(() => true);
-    const fake: LoginResponse = { token: 'abc', user: { ID:1, UserName:'u', UserType:'A', FirstName:'F', LastName:'L' } };
+    const fake: LoginResponse = { token: 'abc', user: { ID:1, UserName:'u', UserType: UserType.Administrator, FirstName:'F', LastName:'L' } };
     req.flush(fake);
     expect(setTokenSpy).toHaveBeenCalledWith('abc');
     expect(setUserSpy).toHaveBeenCalled();

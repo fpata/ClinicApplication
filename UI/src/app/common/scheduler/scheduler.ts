@@ -109,6 +109,45 @@ End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
     this.calendar.control.update(this.config);
   }
 
+  /** Add a single event to the calendar */
+  addEvent(event: DayPilot.EventData): void {
+    if (!this.calendar || !this.calendar.control) return;
+    try {
+      this.calendar.control.events.add(event);
+    } catch (e) {
+      // fallback to full refresh
+      this.calendarEvents.push(event);
+      this.updateCalendar();
+    }
+  }
+
+  /** Update a single event by id */
+  updateEvent(event: DayPilot.EventData): void {
+    if (!this.calendar || !this.calendar.control) return;
+    try {
+      this.calendar.control.events.update(event);
+    } catch (e) {
+      // fallback: replace matching event in array and refresh
+      const idx = this.calendarEvents.findIndex(ev => ev.id === event.id);
+      if (idx > -1) this.calendarEvents[idx] = event;
+      else this.calendarEvents.push(event);
+      this.updateCalendar();
+    }
+  }
+
+  /** Remove an event by id */
+  removeEventById(id: string): void {
+    if (!this.calendar || !this.calendar.control) return;
+    try {
+      const ev = this.calendar.control.events.find(id);
+      if (ev) this.calendar.control.events.remove(ev);
+    } catch (e) {
+      // fallback: filter array and refresh
+      this.calendarEvents = this.calendarEvents.filter(ev => ev.id !== id);
+      this.updateCalendar();
+    }
+  }
+
   /*addAppointment(): void {
     const name = prompt('Appointment name:');
     const resource = prompt('Resource (Doctor/Room):') || 'General';

@@ -8,8 +8,7 @@ describe('PatientHistoryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PatientHistoryComponent],
-      declarations: [PatientHistoryComponent],
+      imports: [PatientHistoryComponent, HttpClientTestingModule],
       providers: [] // Add any necessary providers here if needed 
     })
     .compileComponents();

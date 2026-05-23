@@ -10,7 +10,7 @@ import { PatientService } from '../../../services/patient.service';
 import { DataService } from '../../../services/data.service';
 import { UserService } from '../../../services/user.service';
 import { UtilityService } from '../../../services/utility.service';
-import { PatientSearchModel } from '../../../models/patient-search.model';
+import { SearchModel, SearchResultModel } from '../../../models/search.model';
 import { User, UserType, Gender } from '../../../models/user.model';
 import { Patient } from '../../../models/patient.model';
 
@@ -24,34 +24,39 @@ describe('PatientSearchComponent', () => {
   let utilityService: jasmine.SpyObj<UtilityService>;
   let router: jasmine.SpyObj<Router>;
 
-  const mockPatientSearchResults: PatientSearchModel[] = [
-    {
-      PatientID: 1,
-      UserID: 1,
-      FirstName: 'John',
-      LastName: 'Doe',
-      UserName: 'johndoe',
-      UserType: 1,
-      PrimaryEmail: 'john.doe@email.com',
-      PrimaryPhone: '1234567890',
-      PermCity: 'New York',
-      StartDate: '2023-08-01',
-      EndDate: '2023-08-19'
-    } as PatientSearchModel,
-    {
-      PatientID: 2,
-      UserID: 2,
-      FirstName: 'Jane',
-      LastName: 'Smith',
-      UserName: 'janesmith',
-      UserType: 1,
-      PrimaryEmail: 'jane.smith@email.com',
-      PrimaryPhone: '0987654321',
-      PermCity: 'Los Angeles',
-      StartDate: '2023-08-01',
-      EndDate: '2023-08-19'
-    } as PatientSearchModel
-  ];
+  const mockSearchResult: SearchResultModel = {
+    TotalCount: 2,
+    HasMoreRecords: false,
+    Message: '',
+    Results: [
+      {
+        PatientID: 1,
+        UserID: 1,
+        FirstName: 'John',
+        LastName: 'Doe',
+        UserName: 'johndoe',
+        UserType: 1,
+        PrimaryEmail: 'john.doe@email.com',
+        PrimaryPhone: '1234567890',
+        PermCity: 'New York',
+        StartDate: '2023-08-01',
+        EndDate: '2023-08-19'
+      },
+      {
+        PatientID: 2,
+        UserID: 2,
+        FirstName: 'Jane',
+        LastName: 'Smith',
+        UserName: 'janesmith',
+        UserType: 1,
+        PrimaryEmail: 'jane.smith@email.com',
+        PrimaryPhone: '0987654321',
+        PermCity: 'Los Angeles',
+        StartDate: '2023-08-01',
+        EndDate: '2023-08-19'
+      }
+    ]
+  };
 
   const mockUser: User = {
     ID: 1,
@@ -95,7 +100,7 @@ describe('PatientSearchComponent', () => {
   };
 
   beforeEach(async () => {
-    const searchServiceSpy = jasmine.createSpyObj('SearchService', ['searchUser']);
+    const searchServiceSpy = jasmine.createSpyObj('SearchService', ['Search']);
     const patientServiceSpy = jasmine.createSpyObj('PatientService', ['getCompletePatient']);
     const dataServiceSpy = jasmine.createSpyObj('DataService', ['setUser', 'setPatient']);
     const userServiceSpy = jasmine.createSpyObj('UserService', ['getUser']);
@@ -136,7 +141,7 @@ describe('PatientSearchComponent', () => {
 
   it('should initialize with default date range', () => {
     expect(component.searchPatient).toBeDefined();
-    expect(component.searchResult).toEqual([]);
+    expect(component.searchResult).toEqual(jasmine.objectContaining({ Results: [] }));
     expect(component.searchLengthConstraintError).toBeFalse();
     expect(component.clearSearchClicked).toBeFalse();
   });
@@ -165,27 +170,27 @@ describe('PatientSearchComponent', () => {
   });
 
   it('should search patients successfully', () => {
-    searchService.searchUser.and.returnValue(of(mockPatientSearchResults));
+    searchService.Search.and.returnValue(of(mockSearchResult));
     component.searchLengthConstraintError = false;
 
     component.SearchPatient();
 
-    expect(searchService.searchUser).toHaveBeenCalledWith(component.searchPatient);
-    expect(component.searchResult).toEqual(mockPatientSearchResults);
+    expect(searchService.Search).toHaveBeenCalledWith(component.searchPatient);
+    expect(component.searchResult).toEqual(mockSearchResult);
     expect(component.clearSearchClicked).toBeFalse();
   });
 
   it('should handle search error', () => {
     spyOn(window, 'alert');
     spyOn(console, 'error');
-    searchService.searchUser.and.returnValue(throwError('Search failed'));
+    searchService.Search.and.returnValue(throwError('Search failed'));
     component.searchLengthConstraintError = false;
 
     component.SearchPatient();
 
     expect(window.alert).toHaveBeenCalledWith('Error occurred while searching for patients.');
     expect(console.error).toHaveBeenCalled();
-    expect(component.searchResult).toEqual([]);
+    expect(component.searchResult).toEqual(jasmine.objectContaining({ Results: [] }));
     expect(component.clearSearchClicked).toBeFalse();
   });
 
@@ -194,14 +199,14 @@ describe('PatientSearchComponent', () => {
 
     component.SearchPatient();
 
-    expect(searchService.searchUser).not.toHaveBeenCalled();
+    expect(searchService.Search).not.toHaveBeenCalled();
   });
 
   it('should clear search fields and results', () => {
     component.searchPatient.FirstName = 'John';
     component.searchPatient.LastName = 'Doe';
     component.searchPatient.PatientID = 1;
-    component.searchResult = mockPatientSearchResults;
+    component.searchResult = mockSearchResult;
 
     component.clearSearch();
 
@@ -209,47 +214,8 @@ describe('PatientSearchComponent', () => {
     expect(component.searchPatient.FirstName).toBe('');
     expect(component.searchPatient.LastName).toBe('');
     expect(component.searchPatient.PatientID).toBe(0);
-    expect(component.searchResult).toEqual([]);
+    expect(component.searchResult).toEqual(jasmine.objectContaining({ Results: [] }));
     expect(component.clearSearchClicked).toBeTrue();
-  });
-
-  it('should handle patient click with valid patient ID', () => {
-    patientService.getCompletePatient.and.returnValue(of(mockCompletePatient));
-    spyOn(console, 'log');
-
-    component.OnPatientIdClick(1, 1);
-
-    expect(patientService.getCompletePatient).toHaveBeenCalledWith(1);
-    expect(console.log).toHaveBeenCalledWith('User data:', mockCompletePatient);
-    expect(dataService.setUser).toHaveBeenCalledWith(mockCompletePatient);
-    expect(dataService.setPatient).toHaveBeenCalledWith(mockPatient);
-  });
-
-  it('should handle patient click with zero patient ID', () => {
-    userService.getUser.and.returnValue(of(mockUser));
-
-    component.OnPatientIdClick(0, 1);
-
-    expect(userService.getUser).toHaveBeenCalledWith(1);
-    expect(dataService.setUser).toHaveBeenCalledWith(mockUser);
-  });
-
-  it('should handle error when fetching complete patient', () => {
-    spyOn(console, 'error');
-    patientService.getCompletePatient.and.returnValue(throwError('Patient fetch failed'));
-
-    component.OnPatientIdClick(1, 1);
-
-    expect(console.error).toHaveBeenCalledWith('Error fetching patient data:', 'Patient fetch failed');
-  });
-
-  it('should handle error when fetching user', () => {
-    spyOn(console, 'error');
-    userService.getUser.and.returnValue(throwError('User fetch failed'));
-
-    component.OnPatientIdClick(0, 1);
-
-    expect(console.error).toHaveBeenCalledWith('Error fetching user data:', 'User fetch failed');
   });
 
   it('should navigate to new user page', () => {

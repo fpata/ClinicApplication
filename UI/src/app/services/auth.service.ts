@@ -38,17 +38,41 @@ export class AuthService {
   }
 
   setToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
-    this.isLoggedInSubject.next(true);
+    try {
+      if (token) {
+        localStorage.setItem(this.tokenKey, token);
+        this.isLoggedInSubject.next(true);
+      } else {
+        this.logout();
+      }
+    } catch (error) {
+      console.error('Failed to set token:', error);
+    }
   }
 
   setUser(user: any): void {
-    localStorage.setItem(this.userKey, JSON.stringify(user));
+    try {
+      if (user) {
+        localStorage.setItem(this.userKey, JSON.stringify(user));
+      } else {
+        localStorage.removeItem(this.userKey);
+      }
+    } catch (error) {
+      console.error('Failed to set user:', error);
+    }
   }
 
   getUser(): any {
     const user = localStorage.getItem(this.userKey);
-    return user ? JSON.parse(user) : null;
+    if (user) {
+      try {
+        return JSON.parse(user);
+      } catch (error) {
+        console.error('Failed to parse user:', error);
+        return null;
+      }
+    }
+    return null;
   }
 
   logout(): void {

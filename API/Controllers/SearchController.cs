@@ -48,33 +48,40 @@ namespace ClinicManager.Controllers
                                   (contact == null || contact.IsActive == 1)
                             select new { user, patient, address, contact };
 
-                if (!string.IsNullOrWhiteSpace(model.FirstName))
-                    query = query.Where(x => x.user.FirstName != null && x.user.FirstName.Contains(model.FirstName));
+                // If UserID is provided, search only by UserID
+                if (model.UserID.HasValue && model.UserID.Value > 0)
+                    query = query.Where(x => x.user.ID == model.UserID.Value);
+                else
+                {
+                    // Apply other filters only if UserID is not provided
+                    if (!string.IsNullOrWhiteSpace(model.FirstName))
+                        query = query.Where(x => x.user.FirstName != null && x.user.FirstName.Contains(model.FirstName));
 
-                if (!string.IsNullOrWhiteSpace(model.LastName))
-                    query = query.Where(x => x.user.LastName != null && x.user.LastName.Contains(model.LastName));
+                    if (!string.IsNullOrWhiteSpace(model.LastName))
+                        query = query.Where(x => x.user.LastName != null && x.user.LastName.Contains(model.LastName));
 
-                if (!string.IsNullOrWhiteSpace(model.PrimaryEmail))
-                    query = query.Where(x => x.contact != null && x.contact.PrimaryEmail != null && x.contact.PrimaryEmail.Contains(model.PrimaryEmail));
+                    if (!string.IsNullOrWhiteSpace(model.PrimaryEmail))
+                        query = query.Where(x => x.contact != null && x.contact.PrimaryEmail != null && x.contact.PrimaryEmail.Contains(model.PrimaryEmail));
 
-                if (!string.IsNullOrWhiteSpace(model.PrimaryPhone))
-                    query = query.Where(x => x.contact != null && x.contact.PrimaryPhone != null && x.contact.PrimaryPhone.Contains(model.PrimaryPhone));
+                    if (!string.IsNullOrWhiteSpace(model.PrimaryPhone))
+                        query = query.Where(x => x.contact != null && x.contact.PrimaryPhone != null && x.contact.PrimaryPhone.Contains(model.PrimaryPhone));
 
-                if (!string.IsNullOrWhiteSpace(model.PermCity))
-                    query = query.Where(x => x.address != null && x.address.PermCity != null && x.address.PermCity.Contains(model.PermCity));
+                    if (!string.IsNullOrWhiteSpace(model.PermCity))
+                        query = query.Where(x => x.address != null && x.address.PermCity != null && x.address.PermCity.Contains(model.PermCity));
 
-                if (!string.IsNullOrWhiteSpace(model.UserName))
-                    // FIX: Added null check to avoid CS8602 (possible null dereference)
-                    query = query.Where(x => x.user.UserName != null && x.user.UserName.Contains(model.UserName));
+                    if (!string.IsNullOrWhiteSpace(model.UserName))
+                        // FIX: Added null check to avoid CS8602 (possible null dereference)
+                        query = query.Where(x => x.user.UserName != null && x.user.UserName.Contains(model.UserName));
 
-                if (model.UserType.HasValue && model.UserType.Value > 0)
-                    query = query.Where(x => x.user.UserType == model.UserType);
+                    if (model.UserType.HasValue && model.UserType.Value > 0)
+                        query = query.Where(x => x.user.UserType == model.UserType);
 
-                if (model.StartDate.HasValue && model.StartDate.Value < DateTime.Now.Date.AddDays(-10))
-                    query = query.Where(x => x.user.CreatedDate >= model.StartDate.Value);
+                    if (model.StartDate.HasValue && model.StartDate.Value < DateTime.Now.Date.AddDays(-10))
+                        query = query.Where(x => x.user.CreatedDate >= model.StartDate.Value);
 
-                if (model.PatientID.HasValue && model.PatientID.Value > 0)
-                    query = query.Where(x => x.patient != null && x.patient.ID == model.PatientID.Value);
+                    if (model.PatientID.HasValue && model.PatientID.Value > 0)
+                        query = query.Where(x => x.patient != null && x.patient.ID == model.PatientID.Value);
+                }
 
                 var groupedQuery = query
                     .GroupBy(x => new

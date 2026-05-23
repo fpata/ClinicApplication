@@ -8,6 +8,7 @@ import { DataService } from '../../services/data.service';
 import { of, throwError } from 'rxjs';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { UserType } from '../../models/user.model';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -23,7 +24,7 @@ describe('LoginComponent', () => {
       FirstName: 'John',
       LastName: 'Doe',
       UserName: 'johndoe',
-      UserType: 'Doctor',
+      UserType: UserType.Doctor,
       DOB: '1985-05-15',
       LastLoginDate: '2023-08-19T10:00:00Z'
     }
