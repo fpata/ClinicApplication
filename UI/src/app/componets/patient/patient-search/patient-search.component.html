@@ -145,15 +145,28 @@
           <table class="table table-hover table-striped results-table">
             <thead>
               <tr>
-                <th class="text-center" style="width: 50px;"><i class="bi bi-plus-circle me-1"></i>Add</th>
-                <th class="text-center" style="width: 50px;"><i class="bi bi-pencil-square me-1"></i>Edit</th>
-                <th class="text-center" style="width: 50px;"><i class="bi bi-lightning-fill me-1"></i>Quick</th>
-                <th class="text-center" style="width: 50px;"><i class="bi bi-trash3 me-1"></i>Delete</th>
-                <th><i class="bi bi-person me-1"></i>First Name</th>
-                <th><i class="bi bi-person me-1"></i>Last Name</th>
-                <th><i class="bi bi-geo-alt me-1"></i>City</th>
-                <th><i class="bi bi-envelope me-1"></i>Email</th>
-                <th><i class="bi bi-telephone me-1"></i>Phone</th>
+                <th class="text-center" style="width: 50px;" data-bs-toggle="tooltip" 
+                    title="Add New Procedure"><i class="bi bi-plus-circle me-1"></i>Add</th>
+                <th class="text-center" style="width: 50px;" data-bs-toggle="tooltip" 
+                    title="Edit Last Procedure"><i class="bi bi-pencil-square me-1"></i>Edit</th>
+                <th class="text-center" style="width: 50px;" data-bs-toggle="tooltip" 
+                    title="Quick Create New Procedure"><i class="bi bi-lightning-fill me-1"></i>Quick</th>
+                <th class="text-center" style="width: 50px;" data-bs-toggle="tooltip" 
+                    title="Delete Patient"><i class="bi bi-trash3 me-1"></i>Delete</th>
+                <th data-bs-toggle="tooltip" 
+                    title="First Name"><i class="bi bi-person me-1"></i>First Name</th>
+                <th data-bs-toggle="tooltip" 
+                    title="Last Name"><i class="bi bi-person me-1"></i>Last Name</th>
+                <th data-bs-toggle="tooltip" 
+                    title="City"><i class="bi bi-geo-alt me-1"></i>City</th>
+                <th data-bs-toggle="tooltip" 
+                    title="Email"><i class="bi bi-envelope me-1"></i>Email</th>
+                <th data-bs-toggle="tooltip" 
+                    title="Phone"><i class="bi bi-telephone me-1"></i>Phone</th>
+                    <th data-bs-toggle="tooltip"
+                     title="Last Treatment"><i class="bi bi-card-text me-1"></i>Last Treatment</th>
+                    <th data-bs-toggle="tooltip" 
+                     title="Treatment Date"><i class="bi bi-card-text me-1"></i>Treatment Date</th>
               </tr>
             </thead>
             <tbody>
@@ -161,19 +174,19 @@
               <tr class="table-row-hover">
                 <td class="text-center">
                   <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" 
-                    title="Add New Patient" (click)="AddNewPatient(result,false)">
+                    title="Add New Procedure" (click)="AddNewPatient(result,false)">
                     <i class="bi bi-person-fill-add"></i>
                   </button>
                 </td>
                 <td class="text-center">
                   <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" 
-                    title="Update Patient" (click)="UpdatePatient(result)">
+                    title="Update Last Procedure" (click)="UpdatePatient(result)">
                     <i class="bi bi-pencil-square"></i>
                   </button>
                 </td>
                 <td class="text-center">
                   <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" 
-                    title="Quick Create Patient" (click)="AddNewPatient(result,true)">
+                    title="Quick Create New Procedure" (click)="AddNewPatient(result,true)">
                     <i class="bi bi-lightning-fill"></i>
                   </button>
                 </td>
@@ -192,6 +205,8 @@
                 <td>
                   <a href="tel:{{result.PrimaryPhone}}" class="link-phone">{{result.PrimaryPhone}}</a>
                 </td>
+                <td>{{result.LastTreatmentName}}</td>
+                <td>{{result.LastTreatmentDate}}</td>
               </tr>
               }
               @if (searchResult === undefined || searchResult.Results.length == 0) {

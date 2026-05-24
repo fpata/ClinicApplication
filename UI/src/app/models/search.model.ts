@@ -25,7 +25,8 @@ export class SearchModel {
    PatientID?: number = 0;
   DoctorID?: number = 0;
   DoctorName?: string;
-
+LastTreatmentName?: string;
+LastTreatmentDate?: string;
 }
 
 

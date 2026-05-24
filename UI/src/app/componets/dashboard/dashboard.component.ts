@@ -213,7 +213,7 @@ export class DashboardComponent implements OnInit {
       var searchModel: SearchModel = new SearchModel(this.util);
       searchModel.UserType = UserType.Doctor;
       searchModel.FirstName = name;
-      return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+      return this.searchService.SearchUser(searchModel).pipe(map(result => result.Results as SearchModel[]));
    }
 
    onPatientSelected(patient: any | null) {
@@ -246,7 +246,7 @@ export class DashboardComponent implements OnInit {
       const searchModel: SearchModel = new SearchModel(this.util);
       searchModel.UserType = UserType.Patient;
       searchModel.FirstName = name;
-      return this.searchService.Search(searchModel).pipe(map(result => result.Results as SearchModel[]));
+      return this.searchService.SearchPatient(searchModel).pipe(map(result => result.Results as SearchModel[]));
    }
 
 

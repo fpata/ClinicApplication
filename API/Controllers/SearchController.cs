@@ -79,44 +79,31 @@ namespace ClinicManager.Controllers
                     if (model.StartDate.HasValue && model.StartDate.Value < DateTime.Now.Date.AddDays(-10))
                         query = query.Where(x => x.user.CreatedDate >= model.StartDate.Value);
 
-                    if (model.PatientID.HasValue && model.PatientID.Value > 0)
-                        query = query.Where(x => x.patient != null && x.patient.ID == model.PatientID.Value);
                 }
 
+                // Group by user ID only to avoid complex projection issues in EF Core
                 var groupedQuery = query
-                    .GroupBy(x => new
-                    {
-                        x.user.ID,
-                        x.user.FirstName,
-                        x.user.LastName,
-                        x.user.UserName,
-                        x.user.UserType,
-                        x.user.CreatedDate,
-                        x.user.ModifiedDate,
-                        PermCity = x.address != null ? x.address.PermCity : null,
-                        PrimaryEmail = x.contact != null ? x.contact.PrimaryEmail : null,
-                        PrimaryPhone = x.contact != null ? x.contact.PrimaryPhone : null
-                    })
+                    .GroupBy(x => x.user.ID)
                     .Select(g => new SearchModel
                     {
-                        UserID = g.Key.ID,
-                        FirstName = g.Key.FirstName,
-                        LastName = g.Key.LastName,
-                        UserName = g.Key.UserName,
-                        UserType = g.Key.UserType,
+                        UserID = g.Key,
+                        FirstName = g.Select(x => x.user.FirstName).FirstOrDefault(),
+                        LastName = g.Select(x => x.user.LastName).FirstOrDefault(),
+                        UserName = g.Select(x => x.user.UserName).FirstOrDefault(),
+                        UserType = g.Select(x => x.user.UserType).FirstOrDefault(),
                         PatientID = g.Max(x => x.patient != null ? (int?)x.patient.ID : null),
-                        PermCity = g.Key.PermCity,
-                        PrimaryEmail = g.Key.PrimaryEmail,
-                        PrimaryPhone = g.Key.PrimaryPhone,
+                        PermCity = g.Select(x => x.address != null ? x.address.PermCity : null).FirstOrDefault(),
+                        PrimaryEmail = g.Select(x => x.contact != null ? x.contact.PrimaryEmail : null).FirstOrDefault(),
+                        PrimaryPhone = g.Select(x => x.contact != null ? x.contact.PrimaryPhone : null).FirstOrDefault(),
                         DoctorID = 0,
                         DoctorName = string.Empty,
-                        StartDate = g.Key.CreatedDate,
-                        EndDate = g.Key.ModifiedDate
+                        StartDate = g.Select(x => x.user.CreatedDate).FirstOrDefault(),
+                        EndDate = g.Select(x => x.user.ModifiedDate).FirstOrDefault()
                     });
 
                 // Calculate total count after grouping but before pagination
                 var totalCount = await groupedQuery.CountAsync();
-                
+
                 var results = await groupedQuery
                     .AsNoTracking()
                     .Skip((model.pageNumber - 1) * model.pageSize)
@@ -124,6 +111,106 @@ namespace ClinicManager.Controllers
                     .ToListAsync()
                     .ConfigureAwait(false);
 
+                var hasMoreRecords = (model.pageNumber * model.pageSize) < totalCount;
+                var response = new SearchResults
+                {
+                    Results = results,
+                    TotalCount = totalCount,
+                    HasMoreRecords = hasMoreRecords,
+                    Message = hasMoreRecords ? "More records available." : "End of records."
+                };
+                _logger.LogInformation($"Found {results.Count} users matching search criteria out of {totalCount} total");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error performing user search");
+                return StatusCode(500, "An error occurred while searching users");
+            }
+        }
+
+        [HttpPost("patient")]
+        public async Task<ActionResult<IEnumerable<SearchModel>>> SearchPatient([FromBody] SearchModel model)
+        {
+            _logger.LogInformation("Searching patients by fields");
+            try
+            {
+                // call the other action and safely extract the user list
+                var actionResult = await SearchUser(model);
+                IEnumerable<SearchModel> users = actionResult.Value ?? Enumerable.Empty<SearchModel>();
+
+                // If Value was null but the controller returned an object wrapper (e.g. SearchResults),
+                // try to extract Results from the OkObjectResult fallback.
+                if (!users.Any() && actionResult.Result is OkObjectResult okObj && okObj.Value is SearchResults sr)
+                    users = sr.Results ?? Enumerable.Empty<SearchModel>();
+
+
+                // Build a List<int> of non-null UserID values
+                var userIds = users
+                    .Where(u => u.UserID.HasValue)
+                    .Select(u => u.UserID.Value)
+                    .ToList();
+
+                // Select latest PatientTreatment per user (by max Id) for users in the list and active treatments
+                var latestPerUser = await _context.PatientTreatments
+                    .Where(t => t.UserID.HasValue && userIds.Contains(t.UserID.Value) && t.IsActive == 1)
+                    .GroupBy(t => t.UserID)
+                    .Select(g => new
+                    {
+                        UserID = g.Key.Value,
+                        MaxId = g.Max(x => x.ID)
+                    })
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+                    
+
+                // Determine totalCount and pagedResults from the SearchUser response
+                int totalCount;
+                List<SearchModel> pagedResults;
+                var resultObj = actionResult.Result as OkObjectResult;
+                if (resultObj?.Value is SearchResults sr2)
+                {
+                    totalCount = sr2.TotalCount;
+                    pagedResults = sr2.Results?.ToList() ?? users.ToList();
+                }
+                else
+                {
+                    pagedResults = users.ToList();
+                    totalCount = pagedResults.Count;
+                }
+
+                // If there are users in paged results, load latest PatientTreatment per user (by max ID)
+                var pagedUserIds = pagedResults.Where(r => r.UserID.HasValue).Select(r => r.UserID!.Value).Distinct().ToList();
+                if (pagedUserIds.Any())
+                {
+                    // Filter previously computed latestPerUser to only those in the current page
+                    var latestIdsForPaged = latestPerUser.Where(x => pagedUserIds.Contains(x.UserID)).Select(x => x.MaxId).ToList();
+
+                    var latestTreatments = await _context.PatientTreatments
+                        .Where(p => latestIdsForPaged.Contains(p.ID) && p.IsActive == 1)
+                        .Select(p => new
+                        {
+                            UserID = p.UserID.HasValue ? p.UserID.Value : 0,
+                            PatientID = p.PatientID,
+                            ChiefComplaint = p.ChiefComplaint,
+                            CreatedDate = p.CreatedDate,
+                            Prescription = p.Prescription
+                        })
+                        .ToListAsync()
+                        .ConfigureAwait(false);
+
+                    var latestDict = latestTreatments.ToDictionary(x => x.UserID, x => x);
+                    foreach (var res in pagedResults)
+                    {
+                        if (res.UserID.HasValue && latestDict.TryGetValue(res.UserID.Value, out var lt))
+                        {
+                            // Map ChiefComplaint to LastTreatmentName and CreatedDate to LastTreatmentDate
+                            res.LastTreatmentName = lt.ChiefComplaint;
+                            res.LastTreatmentDate = lt.CreatedDate;
+                        }
+                    }
+                }
+                var results = pagedResults;
                 var hasMoreRecords = (model.pageNumber * model.pageSize) < totalCount;
                 var response = new SearchResults
                 {

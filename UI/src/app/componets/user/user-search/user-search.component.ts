@@ -61,7 +61,7 @@ validateSearchInput() {
     // Ensure paging parameters are sent with the search so initial load respects pageSize
     this.searchPatient.pageNumber = this.currentPage;
     this.searchPatient.pageSize = this.pageSize;
-    this.searchService.Search(this.searchPatient).subscribe({
+    this.searchService.SearchUser(this.searchPatient).subscribe({
       next: (result:any) => {
         this.searchResult = result;
         this.clearSearchClicked = false;

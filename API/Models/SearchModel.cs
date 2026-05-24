@@ -19,6 +19,9 @@ namespace ClinicManager.Models
 
         public int? DoctorID { get; set; } = 0;
         public string? DoctorName { get; set; } = string.Empty;
+        // Last treatment info for patients
+        public string? LastTreatmentName { get; set; }
+        public DateTime? LastTreatmentDate { get; set; }
         
         // Apply date filters only if client provides them
         public DateTime? StartDate { get; set; }

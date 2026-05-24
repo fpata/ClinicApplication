@@ -45,11 +45,12 @@ export class Header implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
-    // hide subnavs on route changes
+    // Previously subnavs were hidden on every route change which caused
+    // the patient submenu to disappear when navigating within patient pages.
+    // Keep subnav visibility until another parent menu is explicitly clicked.
     this.routerSub = this.router.events.subscribe(e => {
       if (e instanceof NavigationStart) {
-        this.showPatientSubnav = false;
-        this.showUserSubnav = false;
+        // Do not auto-hide subnavs on navigation. Keep current state.
         this.cdr.markForCheck();
       }
     });

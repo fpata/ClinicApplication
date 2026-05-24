@@ -71,14 +71,14 @@ export class PatientSearchComponent {
     this.dataService.setQuickCreateMode(false);
     this.dataService.setUserId(0);
     this.searchPatient.UserType = UserType.Patient; // Set UserType to Admin for searching all patients
-    this.searchService.Search(this.searchPatient).subscribe({
-      next: (result) => {
+    this.searchService.SearchPatient(this.searchPatient).subscribe({
+      next: (result: SearchResultModel) => {
         this.searchResult = result;
         this.totalItems = result.TotalCount || 0;
         this.clearSearchClicked = false;
         this.cdRef.detectChanges();
       },
-      error: (err) => {
+      error: (err: any) => {
         // Optionally handle error
         alert('Error occurred while searching for patients.');
         console.error(err);
@@ -165,7 +165,7 @@ export class PatientSearchComponent {
           let index = newUser?.Patients?.length === 0 ? 0 : newUser?.Patients.length - 1;
           const patient = newUser?.Patients[index] || null;
           // Navigate with patient ID in URL
-          //this.router.navigate(['/patient', result.PatientID, 'treatment']);
+          this.router.navigate(['/patient', result.PatientID, 'treatment']);
         },
         error: (err) => {
           console.error('Error fetching patient data:', err);

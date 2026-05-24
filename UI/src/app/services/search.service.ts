@@ -24,8 +24,12 @@ export class SearchService {
     };
   }
 
-  Search(model: SearchModel): Observable<SearchResultModel> {
+  SearchUser(model: SearchModel): Observable<SearchResultModel> {
     return this.http.post<SearchResultModel>(`${this.apiUrl}/user`, model, this.getAuthHeaders());
+  }
+
+   SearchPatient(model: SearchModel): Observable<SearchResultModel> {
+    return this.http.post<SearchResultModel>(`${this.apiUrl}/patient`, model, this.getAuthHeaders());
   }
 
  
