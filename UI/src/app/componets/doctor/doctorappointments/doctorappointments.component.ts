@@ -160,30 +160,31 @@ export class DoctorAppointmentsComponent {
   }
 
   DeleteAppointment(ID: number) {
-    if (!confirm('Are you sure you want to delete this appointment?')) {
-      return;
-    }
-
-    this.patientAppointmentService.deletePatientAppointment(ID).subscribe({
-      next: (result: any) => {
-        this.messageService.success('Appointment deleted successfully.');
-        this.searchResult.PatientAppointments = this.searchResult.PatientAppointments?.filter(a => a.ID !== ID) || null;
-        // Keep the search result total count in sync with the delete
-        if (this.searchResult.TotalCount != null && this.searchResult.TotalCount > 0) {
-          this.searchResult.TotalCount -= 1;
+    const msg = 'Are you sure you want to delete this appointment?';
+    const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+    confirmFn(msg).then((confirmed: boolean) => {
+      if (!confirmed) return;
+      this.patientAppointmentService.deletePatientAppointment(ID).subscribe({
+        next: (result: any) => {
+          this.messageService.success('Appointment deleted successfully.');
+          this.searchResult.PatientAppointments = this.searchResult.PatientAppointments?.filter(a => a.ID !== ID) || null;
+          // Keep the search result total count in sync with the delete
+          if (this.searchResult.TotalCount != null && this.searchResult.TotalCount > 0) {
+            this.searchResult.TotalCount -= 1;
+          }
+          this.totalItems = this.searchResult.TotalCount || this.searchResult.PatientAppointments?.length || 0;
+          try {
+            this.scheduler.removeEventById(ID.toString());
+          } catch (e) {
+            this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
+          }
+          this.cdrRef.detectChanges();
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.messageService.error('Error occurred while deleting appointment.');
         }
-        this.totalItems = this.searchResult.TotalCount || this.searchResult.PatientAppointments?.length || 0;
-        try {
-          this.scheduler.removeEventById(ID.toString());
-        } catch (e) {
-          this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
-        }
-        this.cdrRef.detectChanges();
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.messageService.error('Error occurred while deleting appointment.');
-      }
+      });
     });
   }
   

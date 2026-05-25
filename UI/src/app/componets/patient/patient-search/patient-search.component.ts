@@ -133,7 +133,10 @@ export class PatientSearchComponent {
 
 
   DeletePatient(result: SearchModel) {
-    if (confirm(`Are you sure you want to delete patient: ${result.FirstName} ${result.LastName}?`)) {
+    const msg = `Are you sure you want to delete patient: ${result.FirstName} ${result.LastName}?`;
+    const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+    confirmFn(msg).then((confirmed: boolean) => {
+      if (!confirmed) return;
       this.patientService.deletePatient(result.PatientID).subscribe({
         next: () => {
           this.messageService.success('Patient deleted successfully');
@@ -146,7 +149,7 @@ export class PatientSearchComponent {
           this.cdRef.detectChanges();
         }
       });
-    }
+    });
   }
 
 

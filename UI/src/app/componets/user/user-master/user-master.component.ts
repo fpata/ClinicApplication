@@ -56,7 +56,10 @@ export class UserMasterComponent {
       return;
     }
 
-    if (confirm(`Are you sure you want to delete user: ${currentUser.FirstName} ${currentUser.LastName}?`)) {
+    const msg = `Are you sure you want to delete user: ${currentUser.FirstName} ${currentUser.LastName}?`;
+    const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+    confirmFn(msg).then((confirmed: boolean) => {
+      if (!confirmed) return;
       this.userService.deleteUser(currentUser.ID).subscribe({
         next: () => {
           this.messageService.success('User deleted successfully');
@@ -66,7 +69,7 @@ export class UserMasterComponent {
           this.messageService.error('Error deleting user: ' + error.message);
         }
       });
-    }
+    });
   }
 
   AddNewUser() {

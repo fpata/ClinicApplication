@@ -115,22 +115,22 @@ validateSearchInput() {
   }
 
   DeleteUser(userId: number, userName: string) {
-    const confirmDelete = confirm(`Are you sure you want to delete user: ${userName}?`);
-    if (!confirmDelete) {
-      return;
-    }
-
-    this.userService.deleteUser(userId).subscribe({
-      next: () => {
-        this.messageService.success('User deleted successfully');
-        this.SearchUser();
-        this.cdRef.detectChanges();
-      },
-      error: (err: any) => {
-        this.messageService.error('Error occurred while deleting user');
-        console.error(err);
-        this.cdRef.detectChanges();
-      }
+    const msg = `Are you sure you want to delete user: ${userName}?`;
+    const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+    confirmFn(msg).then((confirmed: boolean) => {
+      if (!confirmed) return;
+      this.userService.deleteUser(userId).subscribe({
+        next: () => {
+          this.messageService.success('User deleted successfully');
+          this.SearchUser();
+          this.cdRef.detectChanges();
+        },
+        error: (err: any) => {
+          this.messageService.error('Error occurred while deleting user');
+          console.error(err);
+          this.cdRef.detectChanges();
+        }
+      });
     });
   }
 

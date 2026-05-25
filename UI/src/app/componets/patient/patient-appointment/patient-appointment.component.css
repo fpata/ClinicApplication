@@ -4,7 +4,7 @@
 
 .appointment-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--bg);
   padding: 1rem;
 }
 
@@ -14,16 +14,17 @@
 
 .appointments-section,
 .scheduler-section {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--shadow);
+  padding: 1.5rem;
+  transition: all 0.18s ease;
+  border: 1px solid var(--border);
 }
 
 .appointments-section:hover,
 .scheduler-section:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
 }
 
 /* ============================================
@@ -37,16 +38,16 @@
 }
 
 .section-title {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text);
   margin: 0;
   display: flex;
   align-items: center;
 }
 
 .section-title i {
-  color: #3498db;
+  color: var(--primary-500);
 }
 
 /* ============================================
@@ -56,7 +57,8 @@
 .table-card {
   border-radius: 8px;
   overflow: hidden;
-  background: white;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
 }
 
 .table {
@@ -64,13 +66,13 @@
 }
 
 .table-header-row {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
 }
 
 .table-header-row th {
   color: white;
   font-weight: 600;
-  padding: 1rem;
+  padding: 0.9rem;
   text-align: left;
   letter-spacing: 0.5px;
   border: none;
@@ -86,7 +88,7 @@
 }
 
 .appointment-row:hover {
-  background-color: #f8f9fa;
+  background-color: var(--surface);
   transform: translateX(2px);
 }
 
@@ -124,44 +126,29 @@
 
 /* Badge Styles */
 
-.date-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.doctor-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
+.date-badge,
+.doctor-badge,
 .procedure-text {
   display: inline-block;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: var(--primary-500);
   color: white;
-  padding: 0.5rem 0.75rem;
+  padding: 0.45rem 0.7rem;
   border-radius: 6px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
 }
+
+.doctor-badge { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.procedure-text { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
 
 /* ============================================
    Button Styles
    ============================================ */
 
 .btn-success {
-  background: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
+  background: linear-gradient(135deg, var(--success) 0%, #20c997 100%);
   border: none;
-  transition: all 0.3s ease;
+  transition: all 0.18s ease;
 }
 
 .btn-success:hover {
@@ -247,15 +234,15 @@
 .appointment-modal {
   border: none;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
 
 .appointment-modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
   color: white;
   border: none;
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 
 .appointment-modal-header .modal-title {
@@ -270,47 +257,46 @@
 }
 
 .appointment-modal-body {
-  padding: 2rem;
-  background: white;
+  padding: 1.25rem;
+  background: var(--card-bg);
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-label {
   font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.7rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  font-size: 0.98rem;
 }
 
-.form-label i {
-  color: #667eea;
-  font-size: 1.1rem;
-}
+.form-label i { color: var(--primary-500); font-size: 1.05rem; }
 
 .form-label-required::after {
   content: ' *';
   color: #e74c3c;
 }
 
+
 .form-control,
 .form-control-lg {
-  border: 2px solid #ecf0f1;
+  border: 1.5px solid var(--border);
   border-radius: 8px;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 0.95rem;
   font-size: 1rem;
-  transition: all 0.3s ease;
-  color: #34495e;
+  transition: all 0.18s ease;
+  color: var(--text);
+  background: var(--card-bg);
 }
 
 .form-control:focus,
 .form-control-lg:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 0.12rem rgba(102, 126, 234, 0.12);
   outline: none;
 }
 

@@ -30,6 +30,8 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
   patient: Patient | null = null;
   user: User | null = null;
   appointments: PatientAppointment[] | null = [];
+  pendingDeleteId: number | null = null;
+  private currentDeleteModal: any = null;
   isNewPatient = false;
   newAppointment: PatientAppointment = new PatientAppointment();
   newStartDateString: string;
@@ -107,11 +109,47 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
     }
   }
 
-  DeleteAppointment(appointmentID: number) {
-    if (!confirm('Are you sure you want to delete this appointment?')) {
-      return;
+  /**
+   * Open a Bootstrap confirmation modal for delete and store pending id
+   */
+  openDeleteModal(appointmentID: number) {
+    this.pendingDeleteId = appointmentID;
+    const el = document.getElementById('confirmDeleteModal');
+    if (el && (window as any).bootstrap) {
+      this.currentDeleteModal = new (window as any).bootstrap.Modal(el);
+      this.currentDeleteModal.show();
+    } else {
+      // Fallback to global showConfirm helper (or native confirm)
+      const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+      confirmFn('Are you sure you want to delete this appointment?').then((confirmed: boolean) => {
+        if (confirmed) this.performDelete(appointmentID);
+      });
     }
+  }
 
+  /**
+   * Called when modal confirm button is clicked
+   */
+  confirmDelete() {
+    const id = this.pendingDeleteId;
+    if (id == null) return;
+    this.performDelete(id);
+    this.pendingDeleteId = null;
+    if (this.currentDeleteModal) {
+      try { this.currentDeleteModal.hide(); } catch (e) {}
+      this.currentDeleteModal = null;
+    }
+  }
+
+  cancelDelete() {
+    this.pendingDeleteId = null;
+    if (this.currentDeleteModal) {
+      try { this.currentDeleteModal.hide(); } catch (e) {}
+      this.currentDeleteModal = null;
+    }
+  }
+
+  private performDelete(appointmentID: number) {
     const index = this.appointments.findIndex(x => x.ID === appointmentID);
     if (index === -1) {
       this.messageService.error('Appointment not found.');
@@ -121,13 +159,14 @@ export class PatientAppointmentComponent implements OnInit, OnDestroy {
     this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
       next: () => {
         this.appointments.splice(index, 1);
-        this.patient.PatientAppointments = this.appointments;
+        if (this.patient) this.patient.PatientAppointments = this.appointments;
         try {
           this.scheduler.removeEventById(appointmentID.toString());
         } catch (e) {
           // ignore scheduler delete failures
         }
         this.messageService.success('Appointment deleted successfully.');
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error deleting appointment:', error);

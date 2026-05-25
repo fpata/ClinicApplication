@@ -1,5 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
 @import "bootstrap-icons/font/bootstrap-icons.min.css";
+@import "./styles.theme.css";
+
+/* Theme variables */
+:root {
+  --bg: #ffffff;
+  --surface: #f8f9fa;
+  --card-bg: #ffffff;
+  --text: #333333;
+  --muted: #999999;
+  --primary-500: #667eea;
+  --primary-700: #764ba2;
+  --border: #e0e0e0;
+  --shadow: rgba(0,0,0,0.05);
+  --danger: #dc3545;
+  --success: #28a745;
+}
+
+/* Dark theme (apply by adding .theme-dark to body) */
+body.theme-dark {
+  --bg: #0f1724;
+  --surface: #0b1220;
+  --card-bg: #0b1220;
+  --text: #e6eef8;
+  --muted: #9aa7bf;
+  --primary-500: #4863d6;
+  --primary-700: #633e9a;
+  --border: rgba(255,255,255,0.06);
+  --shadow: rgba(0,0,0,0.5);
+  --danger: #ff6b6b;
+  --success: #39d69a;
+}
 
 /* ============================================
    GLOBAL FORM STYLING

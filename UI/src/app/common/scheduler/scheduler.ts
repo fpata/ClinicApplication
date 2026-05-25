@@ -98,9 +98,12 @@ End: ${args.e.end().toString('yyyy-MM-dd h:mm tt')}
   }
 
   deleteEvent(event: any): void {
-    if (confirm('Are you sure you want to delete this appointment?')) {
+    const msg = 'Are you sure you want to delete this appointment?';
+    const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+    confirmFn(msg).then((confirmed: boolean) => {
+      if (!confirmed) return;
       this.calendar.control.events.remove(event);
-    }
+    });
   }
 
   addEvents(events: DayPilot.EventData[]): void {

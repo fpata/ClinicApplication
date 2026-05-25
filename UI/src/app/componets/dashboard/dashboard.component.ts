@@ -443,32 +443,33 @@ export class DashboardComponent implements OnInit {
    }
 
    DeleteAppointment(appointmentID: number) {
-      if (!confirm('Are you sure you want to delete this appointment?')) {
-         return;
-      }
-
-      const index = this.appointments.findIndex(x => x.ID === appointmentID);
-      if (index === -1) {
-         this.messageService.error('Appointment not found.');
-         return;
-      }
-
-      this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
-         next: () => {
-            this.appointments.splice(index, 1);
-            this.totalItems = this.appointments.length;
-            try {
-               this.scheduler.removeEventById(appointmentID.toString());
-            } catch (e) {
-               // ignore scheduler delete failures
-            }
-            this.messageService.success('Appointment deleted successfully.');
-            this.cdr.detectChanges();
-         },
-         error: (error) => {
-            this.messageService.error('Error deleting appointment:');
-            console.error('Error deleting appointment:', error);
+      const msg = 'Are you sure you want to delete this appointment?';
+      const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+      confirmFn(msg).then((confirmed: boolean) => {
+         if (!confirmed) return;
+         const index = this.appointments.findIndex(x => x.ID === appointmentID);
+         if (index === -1) {
+            this.messageService.error('Appointment not found.');
+            return;
          }
+
+         this.patientAppointmentService.deletePatientAppointment(appointmentID).subscribe({
+            next: () => {
+               this.appointments.splice(index, 1);
+               this.totalItems = this.appointments.length;
+               try {
+                  this.scheduler.removeEventById(appointmentID.toString());
+               } catch (e) {
+                  // ignore scheduler delete failures
+               }
+               this.messageService.success('Appointment deleted successfully.');
+               this.cdr.detectChanges();
+            },
+            error: (error) => {
+               this.messageService.error('Error deleting appointment:');
+               console.error('Error deleting appointment:', error);
+            }
+         });
       });
    }
 

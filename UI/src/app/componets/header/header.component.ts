@@ -16,6 +16,7 @@ import { Patient } from '../../models/patient.model';
 })
 export class Header implements OnInit, OnDestroy {
   loginUser: LoginResponse | null = null;
+  isDarkTheme = false;
   private subscription?: Subscription;
   private patientSub?: Subscription;
   private routerSub?: Subscription;
@@ -54,6 +55,15 @@ export class Header implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       }
     });
+
+    // Load theme preference
+    try {
+      const pref = localStorage.getItem('theme');
+      this.isDarkTheme = pref === 'dark';
+      this.applyTheme(this.isDarkTheme);
+    } catch (e) {
+      this.isDarkTheme = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -80,5 +90,20 @@ export class Header implements OnInit, OnDestroy {
     this.showUserSubnav = !this.showUserSubnav;
     if (this.showUserSubnav) this.showPatientSubnav = false;
     this.cdr.markForCheck();
+  }
+
+  toggleTheme(): void {
+    this.isDarkTheme = !this.isDarkTheme;
+    try {
+      localStorage.setItem('theme', this.isDarkTheme ? 'dark' : 'light');
+    } catch (e) {}
+    this.applyTheme(this.isDarkTheme);
+  }
+
+  private applyTheme(dark: boolean): void {
+    if (typeof document !== 'undefined') {
+      if (dark) document.body.classList.add('theme-dark');
+      else document.body.classList.remove('theme-dark');
+    }
   }
 }

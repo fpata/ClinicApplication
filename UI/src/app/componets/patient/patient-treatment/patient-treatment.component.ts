@@ -147,18 +147,21 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
   }
 
   DeleteTreatmentDetails(treatmentdetailID: number) {
-    if (confirm('Are you sure you want to delete this treatment detail?')) {
+    const msg = 'Are you sure you want to delete this treatment detail?';
+    const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
+    confirmFn(msg).then((confirmed: boolean) => {
+      if (!confirmed) return;
       var index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === treatmentdetailID);
       if (index > -1) {
         this.treatment.PatientTreatmentDetails.splice(index, 1);
         alert('Treatment detail deleted successfully.');
         this.treatment.ActualCost = this.calculateTotalCost();
-        this.patient.PatientTreatment = this.treatment;
+        if (this.patient) this.patient.PatientTreatment = this.treatment;
         this.cdr.markForCheck();
       } else {
         alert('Treatment detail not found.');
       }
-    }
+    });
   }
 
   SaveTreatmentDetails() {
