@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { PatientTreatmentService } from '../../../services/patient-treatment.service';
@@ -16,13 +16,31 @@ import { PatientHeaderComponent } from '../patient-header/patient-header.compone
   changeDetection:ChangeDetectionStrategy.OnPush
 })
 
-export class PatientCompleteHistoryComponent {
+export class PatientCompleteHistoryComponent implements OnInit {
   user: User | null = null;
+  patient: Patient | null = null;
 
   constructor(private dataService: DataService,
     private patientTreatmentService: PatientTreatmentService, private patientService: PatientService,
     private cdr: ChangeDetectorRef
 ) { }
+
+  ngOnInit() {
+    this.dataService.user$.subscribe({
+      next: (_user: User) => {
+        this.user = _user;
+        this.patient = _user?.Patients?.[0] ?? null;
+        if (_user && _user.ID) {
+          this.GetAllTreatmentsForUser(_user.ID);
+        }
+        this.cdr.markForCheck();
+      },
+      error: (error: any) => {
+        console.error('Error loading patient data:', error);
+      }
+    });
+  }
+
 
   patientTreatments: PatientTreatment[] = [];
 

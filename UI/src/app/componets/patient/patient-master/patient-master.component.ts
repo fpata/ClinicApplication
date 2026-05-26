@@ -38,4 +38,19 @@ export class PatientMasterComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
+  onSave(): void {
+    console.log('Save clicked');
+    // TODO: Implement save logic
+  }
+
+  onClear(): void {
+    console.log('Clear clicked');
+    // TODO: Implement clear logic, e.g., reset form
+  }
+
+  onDelete(): void {
+    console.log('Delete clicked');
+    // TODO: Implement delete logic with confirmation
+  }
 }
+

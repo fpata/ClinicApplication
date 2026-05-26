@@ -1,10 +1,10 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { PatientReport } from '../../../models/patient-report.model';
 import { User, UserType } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
 import { UtilityService } from '../../../services/utility.service';
-import { map, Observable, Subscription } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../common/fileupload/fileupload.component';
@@ -14,6 +14,8 @@ import { SearchModel } from '../../../models/search.model';
 import { SearchService } from '../../../services/search.service';
 import { MessageService } from '../../../services/message.service';
 import { PatientReportService } from '../../../services/patient-report.service';
+import { PatientService } from '../../../services/patient.service';
+import { PatientBaseComponent } from '../patient-base.component';
 
 @Component({
   selector: 'app-patient-report',
@@ -23,136 +25,96 @@ import { PatientReportService } from '../../../services/patient-report.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true
 })
-export class PatientReportComponent implements OnInit, OnDestroy {
-  user: User | null = null;
+export class PatientReportComponent extends PatientBaseComponent implements OnInit {
   reports: PatientReport[] = [];
-  private patientSubscription: Subscription = new Subscription();
-  patient: Patient | null = null;
-  newReport: PatientReport | null = null; // Initialize new report object
+  newReport: PatientReport | null = null;
   patientId: number | null = null;
-  isNewPatient = false;
 
-  constructor(private dataService: DataService, private util: UtilityService,
+  constructor(
+    dataService: DataService,
+    patientService: PatientService,
+    messageService: MessageService,
+    router: Router,
+    cdr: ChangeDetectorRef,
+    private util: UtilityService,
     private searchService: SearchService,
-    private messageService: MessageService,
-    private reportService: PatientReportService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private reportService: PatientReportService
   ) {
+    super(dataService, patientService, messageService, router, cdr);
   }
 
-  ngOnInit() {
-    // Get patient ID from route
-    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
-    
-    if (this.patientId === null) {
-      console.error('Patient ID is required');
-      this.router.navigate(['/patient/search']);
-      return;
-    }
-
-    this.isNewPatient = this.patientId === 0;
-
-    // Subscribe to user changes from the data service
-    this.patientSubscription = this.dataService.user$.subscribe({
-      next: (newUser: User) => {
-        this.user = newUser;
-        this.patient = newUser.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
-        if (this.patient && this.patient.PatientReports && this.patient.PatientReports.length > 0) {
-          this.reports = this.patient.PatientReports || []; // Assuming Reports is part of the patient model
-        }
-        else {
-          this.reports = []; // Ensure reports is initialized to an empty array if no reports are
-        }
-        this.cdr.markForCheck();
-      },
-      error: (error:any) => {
-        console.error('Error subscribing to patient changes:', error);
-      }
-    });
+  ngOnInit(): void {
+    this.initPatientSubscription();
   }
 
-  ngOnDestroy() {
-    // Clean up subscription to prevent memory leaks
-    if (this.patientSubscription) {
-      this.patientSubscription.unsubscribe();
-    }
+  protected applyUserData(user: User): void {
+    this.patient = user?.Patients?.[0] as Patient ?? null;
+    this.reports = this.patient?.PatientReports?.length
+      ? this.patient.PatientReports
+      : [];
   }
 
-  AddReport() {
-    var user: User | null = this.dataService.getUser();
+  AddReport(): void {
+    const user = this.dataService.getUser();
     this.newReport = <PatientReport>{
       ID: this.reports.length > 0 ? Math.min(...this.reports.map(r => r.ID)) - 1 : 0,
-      UserID: user?.ID || 0,
-      PatientID: this.patient?.ID || 0,
+      UserID: user?.ID ?? 0,
+      PatientID: this.patient?.ID ?? 0,
       IsActive: 1,
       ReportDate: this.util.formatDate(new Date(), 'yyyy-MM-dd'),
       ReportName: '',
       DoctorName: '',
       ReportDetails: '',
-      CreatedBy: user?.ID || 0,
-      ModifiedBy: user?.ID || 0,
+      CreatedBy: user?.ID ?? 0,
+      ModifiedBy: user?.ID ?? 0,
       ModifiedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd'),
       CreatedDate: this.util.formatDate(new Date(), 'yyyy-MM-dd')
     };
   }
 
-  EditReport(reportId: number) {
+  EditReport(reportId: number): void {
     this.newReport = <PatientReport>this.reports.find(x => x.ID === reportId);
   }
 
-  DeleteReport(reportId: number) {
-    var reportIndex = this.reports.findIndex(x => x.ID === reportId);
-    this.reports.splice(reportIndex, 1);
-    // Update the patient reports in the data service
+  DeleteReport(reportId: number): void {
+    const idx = this.reports.findIndex(x => x.ID === reportId);
+    if (idx > -1) {
+      this.reports.splice(idx, 1);
+      this.patient.PatientReports = this.reports;
+    }
+  }
+
+  SaveReport(): void {
+    if (!this.newReport) return;
+    const idx = this.reports.findIndex(r => r.ID === this.newReport.ID);
+    if (idx > -1) {
+      this.reports[idx] = { ...this.newReport };
+    } else {
+      this.reports.push({ ...this.newReport });
+    }
+    this.newReport = null;
     this.patient.PatientReports = this.reports;
   }
 
-  SaveReport() {
-    if (this.newReport) {
-      // Check if the report already exists
-      const existingReportIndex = this.reports.findIndex(r => r.ID === this.newReport.ID);
-      if (existingReportIndex > -1) {
-        // Update existing report
-        this.reports[existingReportIndex] = { ...this.newReport };
-      } else {
-        // Add new report
-        this.reports.push({ ...this.newReport });
-      }
-      // Reset new report object
-      this.newReport = null;
-      this.patient.PatientReports = this.reports; // Update the patient reports in the data service
-
-    }
-  }
-
   getDoctors = (name: string): Observable<SearchModel[]> => {
-    var searchModel: SearchModel = new SearchModel(this.util);
-    searchModel.UserType = UserType.Doctor;
-    searchModel.FirstName = name;
-    return this.searchService.SearchUser(searchModel).pipe(map(result => result.Results as SearchModel[]));
-  }
+    const s = new SearchModel(this.util);
+    s.UserType = UserType.Doctor;
+    s.FirstName = name;
+    return this.searchService.SearchUser(s).pipe(map(r => r.Results as SearchModel[]));
+  };
 
   displayName(d: any): string {
     if (!d) return 'Unknown Patient';
-    const first = d.FirstName || '';
-    const last = d.LastName || '';
-    const name = (first + ' ' + last).trim();
-    return name.length ? name : 'Unknown Patient';
+    return ((d.FirstName ?? '') + ' ' + (d.LastName ?? '')).trim() || 'Unknown Patient';
   }
 
-  onFileUploaded($event: any) {
+  onFileUploaded($event: any): void {
     this.newReport.ReportFilePath = $event.ReportFilePath;
-    console.log('File uploaded event received:', $event);
     alert('File uploaded successfully.');
   }
 
-  DownloadReport(filePath: string) {
-    if (!filePath) {
-      alert('No file available for download.');
-      return;
-    }
+  DownloadReport(filePath: string): void {
+    if (!filePath) { alert('No file available for download.'); return; }
     this.reportService.downloadReport(filePath).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -164,7 +126,16 @@ export class PatientReportComponent implements OnInit, OnDestroy {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       }
-
     });
+  }
+
+  /** Clear form: reload latest data from server */
+  override onClear(): void {
+    super.onClear();
+  }
+
+  /** Delete patient with confirmation */
+  override onDelete(): void {
+    super.onDelete();
   }
 }

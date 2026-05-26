@@ -1,15 +1,16 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';
-import { FormsModule } from '@angular/forms';
 import { PatientVitals } from '../../../models/patient-vitals.model';
-import { Subscription } from 'rxjs';
 import { MessageService } from '../../../services/message.service';
+import { PatientService } from '../../../services/patient.service';
 import { UtilityService } from '../../../services/utility.service';
 import { AuthService } from '../../../services/auth.service';
 import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 import { User } from '../../../models/user.model';
+import { PatientBaseComponent } from '../patient-base.component';
 
 @Component({
   selector: 'app-patient-vitals',
@@ -17,103 +18,93 @@ import { User } from '../../../models/user.model';
   templateUrl: './patient-vitals.component.html',
   styleUrls: ['./patient-vitals.component.css'],
   standalone: true,
- changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientVitalsComponent implements OnInit, OnDestroy {
-  vitals: PatientVitals|null = null;
-  patient: Patient | null = null;
-  patientId: number | null = null;
+export class PatientVitalsComponent extends PatientBaseComponent implements OnInit {
+  vitals: PatientVitals | null = null;
   isNewPatient = false;
-  user: User | null = null;
-  private patientSubscription: Subscription = new Subscription();
 
   constructor(
-    private dataService: DataService,
-    private messageService: MessageService,
+    dataService: DataService,
+    patientService: PatientService,
+    messageService: MessageService,
+    router: Router,
+    cdr: ChangeDetectorRef,
     private util: UtilityService,
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdRef: ChangeDetectorRef
+    private authService: AuthService
   ) {
+    super(dataService, patientService, messageService, router, cdr);
   }
 
-  ngOnInit() {
-    // Get patient ID from route
-    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
-    
-    if (this.patientId === null) {
-      console.error('Patient ID is required');
-      this.router.navigate(['/patient/search']);
-      return;
+  ngOnInit(): void {
+    this.initPatientSubscription();
+  }
+
+  protected applyUserData(user: User): void {
+    this.patient = user?.Patients?.[0] as Patient ?? null;
+    if (this.patient) {
+      this.patient.UserID = this.dataService.getUser()?.ID ?? 0;
     }
+    if (this.patient?.PatientVitals?.length) {
+      this.vitals = this.patient.PatientVitals[this.patient.PatientVitals.length - 1] as PatientVitals;
+      this.vitals.RecordedDate = this.util.formatDate(this.vitals.RecordedDate.toString(), 'yyyy-MM-dd');
+    } else {
+      this.vitals = new PatientVitals();
+      if (this.patient) this.patient.PatientVitals = [this.vitals];
+    }
+  }
 
-    this.isNewPatient = this.patientId === 0;
+  SetValuesForVitalID(vitalID: number): void {
+    const selected = this.patient?.PatientVitals?.find(v => v.ID === vitalID);
+    if (selected) {
+      this.vitals = selected as PatientVitals;
+      this.cdr.markForCheck();
+    }
+  }
 
-    // Subscribe to patient changes from the data service
-    this.patientSubscription = this.dataService.user$.subscribe({
-      next: (_user: User) => {
-        this.user = _user;
-          this.patient = _user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
-        this.patient.UserID = this.dataService.getUser().ID || 0;
-        if (this.patient && this.patient?.PatientVitals && this.patient?.PatientVitals?.length > 0) {
-            this.vitals = this.patient.PatientVitals[this.patient.PatientVitals.length - 1]  as PatientVitals; // get the last vitals entry
-            this.vitals.RecordedDate = this.util.formatDate(this.vitals.RecordedDate.toString(), 'yyyy-MM-dd');
-        } else {
-            this.vitals = new PatientVitals();
-            if(this.patient) this.patient.PatientVitals = [this.vitals];
-        }
-        this.cdRef.detectChanges();
+  AddPatientVitals(): void {
+    this.vitals = new PatientVitals();
+    if (this.patient) {
+      this.vitals.PatientID = this.patient.ID ?? 0;
+      this.vitals.UserID = this.patient.UserID ?? 0;
+      this.vitals.RecordedBy = this.authService.getUser()?.ID ?? 0;
+      this.vitals.IsActive = 1;
+      this.vitals.CreatedDate = this.util.formatDateTime(new Date());
+      this.vitals.ModifiedDate = this.util.formatDateTime(new Date());
+      this.vitals.ModifiedBy = this.authService.getUser()?.ID ?? 0;
+      this.vitals.RecordedDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
+      if (!this.patient.PatientVitals) {
+        this.patient.PatientVitals = [];
+      } else {
+        const last = this.patient.PatientVitals[this.patient.PatientVitals.length - 1] as PatientVitals;
+        this.vitals.BloodType = last.BloodType;
+        this.vitals.Height = last.Height;
+        this.vitals.Weight = last.Weight;
+      }
+      this.patient.PatientVitals.push(this.vitals);
+      this.cdr.markForCheck();
+    }
+  }
+
+  onSave(): void {
+    // TODO: Implement save logic for vitals
+    this.patientService.savePatient(this.patient).subscribe({
+      next: (response) => {
+        this.messageService.success('Vitals saved successfully.');
       },
-      error: (error: any) => {
-        this.messageService.error('Error subscribing to patient changes:', error?.message || error?.toString());
-        this.cdRef.detectChanges();
+      error: (error) => {
+        this.messageService.error('Error saving vitals.');
       }
     });
   }
 
-  ngOnDestroy() {
-      // Clean up subscription to prevent memory leaks
-    if (this.patientSubscription) {
-      this.patientSubscription.unsubscribe();
-    }
+  /** Clear form: reload latest data from server */
+  override onClear(): void {
+    super.onClear();
   }
 
-
-  SetValuesForVitalID(vitalID: number) {
-    if (this.patient?.PatientVitals) {
-      var selectedVital = this.patient.PatientVitals.find(vital => vital.ID === vitalID);
-      if (selectedVital) {
-        this.vitals = selectedVital as PatientVitals;
-        this.cdRef.detectChanges();
-      }
-    }
-  }
-
-  AddPatientVitals() {
-    this.vitals = new PatientVitals();
-    if (this.patient) {
-      this.vitals.PatientID = this.patient.ID || 0;
-      this.vitals.UserID = this.patient.UserID || 0;
-      this.vitals.RecordedBy = this.authService.getUser().ID || 0;
-        this.vitals.IsActive = 1;
-        this.vitals.CreatedDate = this.util.formatDateTime(new Date());
-        this.vitals.ModifiedDate = this.util.formatDateTime(new Date());
-        this.vitals.ModifiedBy = this.authService.getUser().ID || 0;
-        this.vitals.RecordedDate = this.util.formatDate(new Date(), 'yyyy-MM-dd');
-      if (!this.patient.PatientVitals) {
-        this.patient.PatientVitals = [];
-      }
-      else {
-        // Set default values from the last entry
-        const lastVitals = this.patient.PatientVitals[this.patient.PatientVitals.length - 1] as PatientVitals;
-        this.vitals.BloodType = lastVitals.BloodType;
-        this.vitals.Height = lastVitals.Height;
-        this.vitals.Weight = lastVitals.Weight;
- 
-      }
-      this.patient.PatientVitals.push(this.vitals);
-      this.cdRef.detectChanges();
-    }
+  /** Delete patient with confirmation */
+  override onDelete(): void {
+    super.onDelete();
   }
 }

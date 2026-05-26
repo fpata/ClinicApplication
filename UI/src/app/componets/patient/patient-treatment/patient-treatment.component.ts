@@ -69,7 +69,7 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
         }
         else {
           this.treatment = new PatientTreatment();
-          if(this.patient) this.patient.PatientTreatment = this.treatment;
+          if (this.patient) this.patient.PatientTreatment = this.treatment;
           console.log('New patient treatment initialized');
           this.cdr.markForCheck();
         }
@@ -101,7 +101,7 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     }
 
     this.newTreatmentDetail = new PatientTreatmentDetail();
-    
+
     // Calculate ID for new treatment detail (use negative IDs for unsaved records)
     const ids = this.treatment?.PatientTreatmentDetails?.map(x => x.ID) || [];
     if (ids.length > 0) {
@@ -111,7 +111,7 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     else {
       this.newTreatmentDetail.ID = 0;
     }
-    
+
     this.newTreatmentDetail.IsActive = 1;
     // Set PatientTreatmentID - will be 0 for new patients, updated after save
     this.newTreatmentDetail.PatientTreatmentID = this.treatment.ID || 0;
@@ -128,7 +128,7 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     this.newTreatmentDetail.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
     this.newTreatmentDetail.ProcedureTreatmentCost = 0;
     this.isEditOperation = false;
-    
+
     console.log('New treatment detail initialized:', this.newTreatmentDetail);
     this.cdr.markForCheck();
   }
@@ -210,27 +210,25 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
 
     // Update actual cost
     this.treatment.ActualCost = this.calculateTotalCost();
-    
+
     // Ensure patient reference is updated
     if (!this.patient) {
       console.error('Patient is null!');
       alert('Patient data is missing. Please reload and try again.');
       return;
     }
-    
+
     // Create a new patient object to ensure change detection
     const updatedPatient = JSON.parse(JSON.stringify(this.patient));
     updatedPatient.PatientTreatment = this.treatment;
-    
+
     console.log('Saving patient with treatment details:', updatedPatient.PatientTreatment);
-    
-   
+
+
     this.newTreatmentDetail = null;
     this.isEditOperation = false;
     this.cdr.markForCheck();
-    
-    // Show confirmation
-    alert('Treatment detail saved. Click the Save button in the main form to persist changes to the database.');
+
   }
 
   private calculateTotalCost(): number {
@@ -260,38 +258,17 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
       alert('No patient data to save');
       return;
     }
-
-    // If this is a new patient (ID is 0), save it first
-    if (this.isNewPatient && this.patientId === 0) {
-      this.patientService.createPatient(this.patient).subscribe({
-        next: (savedPatient: Patient) => {
-          console.log('New patient created successfully:', savedPatient);
-          this.messageService.success('New patient created successfully');
-
-          // Navigate to the new patient ID
-          this.router.navigate(['/patient', savedPatient.ID, 'treatment']);
-        },
-        error: (error) => {
-          console.error('Error saving new patient:', error);
-          alert('Failed to save patient. Please try again.');
-        }
-      });
-    } else {
-      // For existing patients, update
-      if (this.patient.ID && this.patient.ID > 0) {
-        this.patientService.updatePatient(this.patient.ID, this.patient).subscribe({
-          next: (updatedPatient: Patient) => {
-            console.log('Patient updated successfully:', updatedPatient);
-            this.messageService.success('Patient information saved successfully');
-            this.cdr.markForCheck();
-          },
-          error: (error) => {
-            console.error('Error updating patient:', error);
-            this.messageService.error('Failed to update patient. Please try again.');
-          }
-        });
+    this.patientService.savePatient(this.patient).subscribe({
+      next: (savedPatient: Patient) => {
+        this.messageService.success('Patient information saved successfully Patient ID :' + savedPatient.ID);
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('Error saving patient:', error);
+        this.messageService.error('Failed to save patient. Please try again.');
       }
-    }
+    });
   }
+
 }
 

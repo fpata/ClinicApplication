@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
 export class PatientService {
   private readonly apiUrl = `${environment.API_BASE_URL}/patient`;
 
-  constructor(private http: HttpClient, private dataService: DataService, private util: UtilityService, private authService:AuthService) {}
+  constructor(private http: HttpClient, private dataService: DataService, private util: UtilityService, private authService: AuthService) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -51,11 +51,11 @@ export class PatientService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
-   AddNewPatient(user:User) {
-   
+  AddNewPatient(user: User) {
+
     var patient: Patient = new Patient();
     patient.UserID = user.ID;
-    
+
     patient.ID = 0; // New patient, so ID is 0
     patient.CreatedBy = this.authService.getUser()?.ID || 0;
     patient.ModifiedBy = this.authService.getUser()?.ID || 0;
@@ -76,7 +76,24 @@ export class PatientService {
     patient.PatientReports = new Array<PatientReport>(new PatientReport());
     patient.PatientReports[0].PatientID = patient.ID;
     patient.PatientReports[0].UserID = patient.UserID;
-   // this.dataService.setPatient(patient);
-    // persist patientId for session fallback
+    if (user.Patients == null || user.Patients == undefined) {
+      user.Patients = new Array<Patient>();
+    }
+    user.Patients.push(patient);
+    this.dataService.setUser(user);
+  }
+
+  savePatient(patient: Patient): Observable<Patient> {
+    var user = this.dataService.getUser();
+    if (user != null) {
+      patient.ModifiedDate = this.util.formatDateTime(new Date(), 'yyyy-MM-ddTHH:mm:ss');
+      if (patient.ID == 0) {
+        return this.createPatient(patient);
+      }
+      else {
+        return this.updatePatient(patient.ID, patient);
+      }
+    }
+    return null;
   }
 }

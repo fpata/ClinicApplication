@@ -1,11 +1,13 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Patient } from '../../../models/patient.model';
 import { User } from '../../../models/user.model';
-import { Subscription } from 'rxjs';
 import { DataService } from '../../../services/data.service';
+import { MessageService } from '../../../services/message.service';
+import { PatientService } from '../../../services/patient.service';
 import { PatientHeaderComponent } from '../patient-header/patient-header.component';
+import { PatientBaseComponent } from '../patient-base.component';
 
 @Component({
   selector: 'app-patient-history',
@@ -15,50 +17,38 @@ import { PatientHeaderComponent } from '../patient-header/patient-header.compone
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientHistoryComponent implements OnInit, OnDestroy {
-  patient: Patient; // Assuming patient is defined and has the necessary properties
-  patientId: number | null = null;
-  isNewPatient = false;
-  user: User | null = null;
-  private patientSubscription: Subscription = new Subscription();
+export class PatientHistoryComponent extends PatientBaseComponent {
 
   constructor(
-    private dataService: DataService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
-
-  ngOnInit() {
-    // Get patient ID from route
-    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
-    
-    if (this.patientId === null) {
-      console.error('Patient ID is required');
-      this.router.navigate(['/patient/search']);
-      return;
-    }
-
-    this.isNewPatient = this.patientId === 0;
-
-    // Subscribe to patient changes from the data service
-    this.patientSubscription = this.dataService.user$.subscribe({
-      next: (user: User) => {
-        this.user = user;
-         this.patient = user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
-        this.cdr.markForCheck();
-      },
-      error: (error: any) => {
-        console.error('Error subscribing to patient changes:', error);
-      }
-    });
+    dataService: DataService,
+    patientService: PatientService,
+    messageService: MessageService,
+    router: Router,
+    cdr: ChangeDetectorRef
+  ) {
+    super(dataService, patientService, messageService, router, cdr);
   }
 
-  ngOnDestroy() {
-    // Clean up subscription to prevent memory leaks
-    if (this.patientSubscription) {
-      this.patientSubscription.unsubscribe();
-    }
+  ngOnInit(): void {
+    this.initPatientSubscription();
   }
 
+  protected applyUserData(user: User): void {
+    this.patient = user?.Patients?.[0] as Patient ?? null;
+  }
+
+  /** Clear form: reload latest data from server */
+  override onClear(): void {
+    super.onClear();
+  }
+
+  /** Delete patient with confirmation */
+  override onDelete(): void {
+    super.onDelete();
+  }
+
+  onSave(): void {
+    // TODO: Implement save logic for history
+    console.log('History Save clicked');
+  }
 }
