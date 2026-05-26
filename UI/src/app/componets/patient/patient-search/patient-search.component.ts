@@ -137,6 +137,10 @@ export class PatientSearchComponent {
     const confirmFn = (window as any).showConfirm || ((m: string) => Promise.resolve(confirm(m)));
     confirmFn(msg).then((confirmed: boolean) => {
       if (!confirmed) return;
+      if (result.PatientID === 0 || result.PatientID == null || result.PatientID == undefined) {
+        this.messageService.error('There is no OPD or Procedures for User.\nNo Patient Information available to delete.');
+        return;
+      }
       this.patientService.deletePatient(result.PatientID).subscribe({
         next: () => {
           this.messageService.success('Patient deleted successfully');

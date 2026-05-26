@@ -31,7 +31,7 @@ export abstract class PatientBaseComponent implements OnDestroy {
     protected messageService: MessageService,
     protected router: Router,
     protected cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   /**
    * Subscribe to user$ stream and delegate to applyUserData().
@@ -42,6 +42,10 @@ export abstract class PatientBaseComponent implements OnDestroy {
       next: (user: User) => {
         this.user = user;
         this.patient = user?.Patients?.[0] ?? null;
+        if (this.patient == null) { // If no patient is selected, redirect to patient search
+          this.messageService.warn('No patient is currently selected.');
+          this.router.navigate(['/patient/search']);
+        }
         this.applyUserData(user);
         this.cdr.markForCheck();
       },

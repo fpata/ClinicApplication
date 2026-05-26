@@ -1,5 +1,6 @@
 <div class="container-fluid py-4 bg-light min-vh-100">
   <!-- Header Section -->
+  @if (!isEmbedded) {
   <div class="row mb-4">
     <div class="col-12">
       <h1 class="fw-bold text-primary mb-1">
@@ -8,6 +9,7 @@
       <p class="text-muted">Manage patient appointments and schedules</p>
     </div>
   </div>
+  }
 
   <!-- Appointments Table Section -->
   <div class="card shadow-sm border-0 mb-4">
@@ -124,6 +126,7 @@
   </div>
 
   <!-- Search Results Info -->
+  @if (!isEmbedded) {
   <div class="row mb-4">
     <div class="col-12">
       <div class="alert alert-info border-0" role="alert">
@@ -132,8 +135,10 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Pagination -->
+  @if (!isEmbedded) {
   <div class="row mb-4">
     <div class="col-12">
       <app-paging [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="currentPage"
@@ -141,18 +146,25 @@
       </app-paging>
     </div>
   </div>
+  }
 
-  <!-- Scheduler Section -->
-  <div class="card shadow-sm border-0 mb-4">
-    <div class="card-header bg-success text-white py-3">
-      <h5 class="mb-0">
-        <i class="bi bi-calendar-week"></i> Calendar View
-      </h5>
-    </div>
-    <div class="card-body p-4">
-      <app-scheduler (onNavigationChange)="NavigationChange($event)"
-        (onTimeRangeSelectedEvent)="onTimeRangeSelectedEvent($event)">
-      </app-scheduler>
+  <!-- Scheduler Section (Accordion) -->
+  <div class="accordion accordion-modern mb-4" id="calendarAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingCalendar">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCalendar"
+          aria-expanded="true" aria-controls="collapseCalendar">
+          <i class="bi bi-calendar-week me-2"></i>
+          <span class="accordion-title">Calendar View</span>
+        </button>
+      </h2>
+      <div id="collapseCalendar" class="accordion-collapse collapse show" aria-labelledby="headingCalendar">
+        <div class="accordion-body p-4">
+          <app-scheduler (onNavigationChange)="NavigationChange($event)"
+            (onTimeRangeSelectedEvent)="onTimeRangeSelectedEvent($event)">
+          </app-scheduler>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -195,9 +207,13 @@
         <!-- Patient Name -->
         <div class="mb-3">
           <label for="txtApptPatientName" class="form-label fw-semibold">Patient Name</label>
-          <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients" [displayWith]="displayName"
-            [(ngModel)]="selectedPatient" (ngModelChange)="onPatientSelected($event)">
-          </app-typeahead>
+          @if (patientId) {
+            <input type="text" class="form-control form-control-lg" readonly [value]="newAppointment?.PatientName || ''">
+          } @else {
+            <app-typeahead [minLength]="2" [debounce]="300" [searchFn]="getPatients" [displayWith]="displayName"
+              [(ngModel)]="selectedPatient" (ngModelChange)="onPatientSelected($event)">
+            </app-typeahead>
+          }
         </div>
 
         <!-- Doctor Name -->

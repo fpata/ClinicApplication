@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
 import { SchedulerComponent } from "../../common/scheduler/scheduler";
 import { AppointmentSearchResponse, PatientAppointment } from '../../models/patient-appointment.model';
 import { PatientAppointmentService } from '../../services/patient-appointment.service';
@@ -15,6 +15,7 @@ import { map, Observable } from 'rxjs';
 import { TypeaheadComponent } from '../../common/typeahead/typeahead';
 import { LoginResponse } from '../../services/login.service';
 import { DatePipe } from '@angular/common';
+import { AppointmentHelper } from '../../common/appointment-helper';
 @Component({
    selector: 'app-dashboard',
    imports: [SchedulerComponent, PagingComponent, FormsModule, TypeaheadComponent, DatePipe],
@@ -26,7 +27,9 @@ import { DatePipe } from '@angular/common';
 })
 export class DashboardComponent implements OnInit {
 
-
+   @Input() patientId: number | null = null;
+   @Input() patientName: string | null = null;
+   @Input() isEmbedded: boolean = false;
 
    currentPage: number = 1;
    pageSize: number = 10;
@@ -37,7 +40,6 @@ export class DashboardComponent implements OnInit {
    selectedDoctor: any | null = null;
    doctors: SearchModel[] | null = null;
    newStartDateString: string = '';
-   private readonly eventColors = ['#88bddb', '#a0d4bd', '#8a6d69', '#70624c', '#bc9fc7', '#8295a8'];
 
    @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
 
@@ -62,46 +64,65 @@ export class DashboardComponent implements OnInit {
    }
 
    private loadAppointments(startDate: Date, endDate: Date): void {
-
-      this.patientAppointmentService.getAllAppointments(startDate, endDate, this.currentPage, this.pageSize)
-         .subscribe({
-            next: (results: AppointmentSearchResponse) => {
-               if (results == null || results.PatientAppointments == null || results.PatientAppointments.length === 0) {
-                  this.messageService.info('No appointments found.');
+      if (this.patientId) {
+         this.patientAppointmentService.getPatientAppointmentsByPatientId(this.patientId)
+            .subscribe({
+               next: (results: PatientAppointment[]) => {
+                  if (results == null || results.length === 0) {
+                     this.messageService.info('No appointments found.');
+                     this.appointments = [];
+                     this.totalItems = 0;
+                     this.cdr.detectChanges();
+                  }
+                  else {
+                     this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results);
+                     this.totalItems = results.length;
+                     this.addEventsToScheduler(this.appointments);
+                     this.cdr.detectChanges();
+                  }
+               },
+               error: (error) => {
+                  console.error('Error fetching appointments:', error);
+                  this.messageService.error('Error fetching appointments:', error);
                   this.appointments = [];
                   this.totalItems = 0;
                   this.cdr.detectChanges();
                }
-               else {
-                  // this.messageService.success('Appointments loaded successfully.');
-                  this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results.PatientAppointments);
-                  this.totalItems = results.TotalCount;
-                  this.addEventsToScheduler(this.appointments);
+            });
+      } else {
+         this.patientAppointmentService.getAllAppointments(startDate, endDate, this.currentPage, this.pageSize)
+            .subscribe({
+               next: (results: AppointmentSearchResponse) => {
+                  if (results == null || results.PatientAppointments == null || results.PatientAppointments.length === 0) {
+                     this.messageService.info('No appointments found.');
+                     this.appointments = [];
+                     this.totalItems = 0;
+                     this.cdr.detectChanges();
+                  }
+                  else {
+                     // this.messageService.success('Appointments loaded successfully.');
+                     this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results.PatientAppointments);
+                     this.totalItems = results.TotalCount;
+                     this.addEventsToScheduler(this.appointments);
+                     this.cdr.detectChanges();
+                  }
+               },
+               error: (error) => {
+                  console.error('Error fetching appointments:', error);
+                  this.messageService.error('Error fetching appointments:', error);
+                  this.appointments = [];
+                  this.totalItems = 0;
                   this.cdr.detectChanges();
                }
-            },
-            error: (error) => {
-               console.error('Error fetching appointments:', error);
-               this.messageService.error('Error fetching appointments:', error);
-               this.appointments = [];
-               this.totalItems = 0;
-               this.cdr.detectChanges();
-            }
-         });
+            });
+      }
    }
 
    private addEventsToScheduler(appointments: PatientAppointment[]): void {
       if (appointments == null || appointments === undefined || appointments.length === 0) {
          return;
       }
-      const events: DayPilot.EventData[] = appointments.map(appointment => ({
-         id: appointment.ID.toString(),
-         text: appointment.PatientName + " : " + appointment.TreatmentName|| 'Unknown Patient',
-         start: new DayPilot.Date(appointment.StartDateTime),
-         end: new DayPilot.Date(appointment.EndDateTime),
-         resource: appointment.DoctorName || 'General',
-         backColor: this.getRandomColor()
-      }));
+      const events = AppointmentHelper.mapAppointmentsToEvents(appointments, !this.patientId);
       if (this.scheduler) this.scheduler.addEvents(events);
    }
 
@@ -210,10 +231,7 @@ export class DashboardComponent implements OnInit {
 
 
    getDoctors = (name: string): Observable<SearchModel[]> => {
-      var searchModel: SearchModel = new SearchModel(this.util);
-      searchModel.UserType = UserType.Doctor;
-      searchModel.FirstName = name;
-      return this.searchService.SearchUser(searchModel).pipe(map(result => result.Results as SearchModel[]));
+      return AppointmentHelper.getDoctors(name, this.searchService, this.util);
    }
 
    onPatientSelected(patient: any | null) {
@@ -243,19 +261,12 @@ export class DashboardComponent implements OnInit {
    }
 
    getPatients = (name: string): Observable<SearchModel[]> => {
-      const searchModel: SearchModel = new SearchModel(this.util);
-      searchModel.UserType = UserType.Patient;
-      searchModel.FirstName = name;
-      return this.searchService.SearchPatient(searchModel).pipe(map(result => result.Results as SearchModel[]));
+      return AppointmentHelper.getPatients(name, this.searchService, this.util);
    }
 
 
    displayName(d: any): string {
-      if (!d) return 'Unknown Patient';
-      const first = d.FirstName || '';
-      const last = d.LastName || '';
-      const name = (first + ' ' + last).trim();
-      return name.length ? name : 'Unknown Patient';
+      return AppointmentHelper.displayName(d);
    }
 
    InitializeNewAppointment() {
@@ -282,8 +293,18 @@ export class DashboardComponent implements OnInit {
       this.newAppointment.StartTime = startTime;
       this.newAppointment.EndTime = endTime;
 
-
-      this.selectedPatient = null;
+      if (this.patientId) {
+         this.newAppointment.PatientID = this.patientId;
+         this.newAppointment.PatientName = this.patientName || 'Patient';
+         this.selectedPatient = {
+            PatientID: this.patientId,
+            FirstName: this.patientName?.split(' ')[0] || '',
+            LastName: this.patientName?.split(' ').slice(1).join(' ') || ''
+         };
+      } else {
+         this.selectedPatient = null;
+      }
+      
       this.selectedDoctor = null;
 
       if (loginUser?.user?.UserType === UserType.Doctor) {
@@ -419,10 +440,6 @@ export class DashboardComponent implements OnInit {
       this.cdr.detectChanges();
    }
 
-   private getRandomColor(): string {
-      return this.eventColors[Math.floor(Math.random() * this.eventColors.length)];
-   }
-
    EditAppointment(appointmentID: number) {
       const appointment = this.appointments.find(a => a.ID === appointmentID);
       if (appointment) {
@@ -461,6 +478,18 @@ export class DashboardComponent implements OnInit {
                   this.scheduler.removeEventById(appointmentID.toString());
                } catch (e) {
                   // ignore scheduler delete failures
+               }
+               try {
+                  const user: any = this.dataService.getUser();
+                  if (user && user.Patients && user.Patients.length) {
+                     const patient = user.Patients.find((p: any) => p.PatientAppointments?.some((a: any) => a.ID === appointmentID));
+                     if (patient && patient.PatientAppointments) {
+                        patient.PatientAppointments = patient.PatientAppointments.filter((a: any) => a.ID !== appointmentID);
+                        this.dataService.setUser(user);
+                     }
+                  }
+               } catch (e) {
+                  // ignore
                }
                this.messageService.success('Appointment deleted successfully.');
                this.cdr.detectChanges();

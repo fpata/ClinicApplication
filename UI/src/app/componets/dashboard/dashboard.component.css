@@ -432,3 +432,93 @@
     transform: translate(-50%, -50%) rotate(360deg);
   }
 }
+
+/* ==========================================
+   Accordion styling for Calendar View
+   ========================================== */
+.accordion-modern {
+  border: 1px solid #e5e7eb;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.accordion-modern:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.accordion-item {
+  border: none;
+  background-color: transparent;
+}
+
+.accordion-button {
+  background-color: white;
+  color: #1f2937;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 1.25rem 1.5rem;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.accordion-button i {
+  font-size: 1.25rem;
+  color: var(--success-color);
+  transition: color 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+  background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+  color: white;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.accordion-button:not(.collapsed) i {
+  color: white;
+}
+
+.accordion-button:hover {
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.accordion-button:not(.collapsed):hover {
+  background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+  opacity: 0.95;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.accordion-button::after {
+  transition: transform 0.3s ease;
+  background-size: 1.25rem;
+}
+
+.accordion-button:not(.collapsed)::after {
+  filter: brightness(0) invert(1);
+  transform: rotate(-180deg);
+}
+
+.accordion-title {
+  flex: 1;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.accordion-body {
+  padding: 0;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+

@@ -671,6 +671,11 @@ namespace ClinicManager.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            if(id==0)
+            {
+                _logger.LogWarning($"Invalid patient ID: {id}");
+                return BadRequest();
+            }
             var entity = await _context.Patients
                 .AsSplitQuery() // Use AsSplitQuery to optimize loading related entities
                 .Include(p => p.PatientAppointments)
