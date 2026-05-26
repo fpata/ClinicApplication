@@ -27,7 +27,7 @@ describe('SearchService', () => {
   });
 
   it('should include Authorization header on Search', () => {
-    service.Search({} as any).subscribe();
+    service.SearchPatient({} as any).subscribe();
     const req = httpMock.expectOne(() => true);
     expect(req.request.headers.get('Authorization')).toContain('Bearer');
     req.flush({ TotalCount: 0, HasMoreRecords: false, Message: '', Results: [] });

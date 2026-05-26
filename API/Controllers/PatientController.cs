@@ -672,6 +672,12 @@ namespace ClinicManager.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var entity = await _context.Patients
+                .AsSplitQuery() // Use AsSplitQuery to optimize loading related entities
+                .Include(p => p.PatientAppointments)
+                .Include(p => p.PatientReports)
+                .Include(p => p.PatientVitals)
+                .Include(p => p.PatientTreatment)
+                    .ThenInclude(pt => pt!.PatientTreatmentDetails)
                 .FirstOrDefaultAsync(p => p.ID == id);
                 
             if (entity == null)
@@ -683,7 +689,45 @@ namespace ClinicManager.Controllers
             // Soft delete instead of hard delete for better performance and data integrity
             entity.IsActive = 0;
             entity.ModifiedDate = DateTime.Now;
-            
+            if (entity.PatientTreatment != null)
+            {
+                entity.PatientTreatment.IsActive = 0;
+                entity.PatientTreatment.ModifiedDate = DateTime.Now;
+            }
+
+            if (entity.PatientVitals != null)
+            {
+                entity.PatientVitals.ToList().ForEach(pv =>
+                {
+                    pv.IsActive = 0;
+                    pv.ModifiedDate = DateTime.Now;
+                });
+            }
+            if(entity.PatientTreatment !=null && entity.PatientTreatment.PatientTreatmentDetails != null)
+            {
+                entity.PatientTreatment.PatientTreatmentDetails.ToList().ForEach(ptd =>
+                {
+                    ptd.IsActive = 0;
+                    ptd.ModifiedDate = DateTime.Now;
+                });
+            }
+            if(entity.PatientReports != null)
+            {
+                entity.PatientReports.ToList().ForEach(pr =>
+                {
+                    pr.IsActive = 0;
+                    pr.ModifiedDate = DateTime.Now;
+                });
+            }
+            if(entity.PatientAppointments != null)
+            {
+                entity.PatientAppointments.ToList().ForEach(pa =>
+                {
+                    pa.IsActive = 0;
+                    pa.ModifiedDate = DateTime.Now;
+                });
+            }
+
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Soft deleted patient with ID: {id}");
             return NoContent();

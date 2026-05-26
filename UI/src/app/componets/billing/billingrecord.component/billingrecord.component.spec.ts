@@ -31,8 +31,7 @@ describe('BillingrecordComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BillingrecordComponent ],
-      imports: [ FormsModule ] // Import FormsModule for ngModel
+      imports: [ BillingrecordComponent, FormsModule ] // Import standalone component and FormsModule
     })
     .compileComponents();
   });

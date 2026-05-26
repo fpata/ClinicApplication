@@ -100,12 +100,14 @@ describe('PatientSearchComponent', () => {
   };
 
   beforeEach(async () => {
-    const searchServiceSpy = jasmine.createSpyObj('SearchService', ['Search']);
+    const searchServiceSpy = jasmine.createSpyObj('SearchService', ['SearchPatient']);
     const patientServiceSpy = jasmine.createSpyObj('PatientService', ['getCompletePatient']);
-    const dataServiceSpy = jasmine.createSpyObj('DataService', ['setUser', 'setPatient']);
+    const dataServiceSpy = jasmine.createSpyObj('DataService', ['setUser', 'setPatient', 'getConfig', 'setQuickCreateMode', 'setUserId']);
     const userServiceSpy = jasmine.createSpyObj('UserService', ['getUser']);
     const utilityServiceSpy = jasmine.createSpyObj('UtilityService', ['formatDate']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
+    dataServiceSpy.getConfig.and.returnValue(null);
 
     utilityServiceSpy.formatDate.and.callFake((date: Date, format: string) => {
       return date.toISOString().split('T')[0]; // Simple date formatting
@@ -170,12 +172,13 @@ describe('PatientSearchComponent', () => {
   });
 
   it('should search patients successfully', () => {
-    searchService.Search.and.returnValue(of(mockSearchResult));
+    searchService.SearchPatient.and.returnValue(of(mockSearchResult));
+    component.searchPatient.FirstName = 'John';
     component.searchLengthConstraintError = false;
 
     component.SearchPatient();
 
-    expect(searchService.Search).toHaveBeenCalledWith(component.searchPatient);
+    expect(searchService.SearchPatient).toHaveBeenCalledWith(component.searchPatient);
     expect(component.searchResult).toEqual(mockSearchResult);
     expect(component.clearSearchClicked).toBeFalse();
   });
@@ -183,7 +186,8 @@ describe('PatientSearchComponent', () => {
   it('should handle search error', () => {
     spyOn(window, 'alert');
     spyOn(console, 'error');
-    searchService.Search.and.returnValue(throwError('Search failed'));
+    searchService.SearchPatient.and.returnValue(throwError('Search failed'));
+    component.searchPatient.FirstName = 'John';
     component.searchLengthConstraintError = false;
 
     component.SearchPatient();
@@ -199,7 +203,7 @@ describe('PatientSearchComponent', () => {
 
     component.SearchPatient();
 
-    expect(searchService.Search).not.toHaveBeenCalled();
+    expect(searchService.SearchPatient).not.toHaveBeenCalled();
   });
 
   it('should clear search fields and results', () => {

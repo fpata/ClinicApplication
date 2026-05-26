@@ -43,10 +43,11 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // Get patient ID from route
-    this.patientId = Number(this.route.snapshot.paramMap.get('patientId')) || null;
-    
-    if (this.patientId === null) {
+    // Get patient ID from route (preserve 0 for new-patient flow)
+    const patientIdParam = this.route.snapshot.paramMap.get('patientId');
+    this.patientId = patientIdParam !== null ? Number(patientIdParam) : null;
+
+    if (this.patientId === null || isNaN(this.patientId)) {
       console.error('Patient ID is required');
       this.router.navigate(['/patient/search']);
       return;
