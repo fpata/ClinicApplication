@@ -69,7 +69,7 @@ export abstract class PatientBaseComponent implements OnDestroy {
       return;
     }
 
-    this.patientService.getCompletePatient(this.patient.ID).subscribe({
+    this.patientService.getPatient(this.patient.ID).subscribe({
       next: (freshUser: User) => {
         this.dataService.setUser(freshUser);
         this.messageService.info('Form has been refreshed with the latest saved data.');
@@ -113,5 +113,16 @@ export abstract class PatientBaseComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.patientSubscription?.unsubscribe();
+  }
+
+  savePatient(): void {
+    this.patientService.savePatient(this.patient).subscribe({
+      next: () => {
+        this.messageService.success('Patient saved successfully.');
+      },
+      error: (error: any) => {
+        this.messageService.error('Failed to save patient: ' + (error?.message ?? error));
+      }
+    });
   }
 }

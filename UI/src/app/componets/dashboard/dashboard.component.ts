@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { SchedulerComponent } from "../../common/scheduler/scheduler";
 import { AppointmentSearchResponse, PatientAppointment } from '../../models/patient-appointment.model';
 import { PatientAppointmentService } from '../../services/patient-appointment.service';
@@ -11,6 +11,7 @@ import { SearchModel, SearchResultModel } from '../../models/search.model';
 import { MessageService } from '../../services/message.service';
 import { UtilityService } from '../../services/utility.service';
 import { UserType } from '../../models/user.model';
+import { Patient } from '../../models/patient.model';
 import { map, Observable } from 'rxjs';
 import { TypeaheadComponent } from '../../common/typeahead/typeahead';
 import { LoginResponse } from '../../services/login.service';
@@ -25,11 +26,14 @@ import { AppointmentHelper } from '../../common/appointment-helper';
    standalone: true,
    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnChanges {
 
+   @Input() patient: Patient | null = null;
    @Input() patientId: number | null = null;
    @Input() patientName: string | null = null;
    @Input() isEmbedded: boolean = false;
+
+   private isLocalUpdate = false;
 
    currentPage: number = 1;
    pageSize: number = 10;
@@ -58,13 +62,29 @@ export class DashboardComponent implements OnInit {
       this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
    }
 
+   ngOnChanges(changes: SimpleChanges): void {
+      if (changes['patient'] && !changes['patient'].firstChange) {
+         if (this.isLocalUpdate) {
+            this.isLocalUpdate = false;
+            return;
+         }
+         this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
+      }
+   }
+
    onPageChange($event: number) {
       this.currentPage = $event;
       this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
    }
 
    private loadAppointments(startDate: Date, endDate: Date): void {
-      if (this.patientId) {
+      if (this.isEmbedded && this.patient) {
+         const results = this.patient.PatientAppointments ? [...this.patient.PatientAppointments] : [];
+         this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results);
+         this.totalItems = this.appointments.length;
+         this.addEventsToScheduler(this.appointments);
+         this.cdr.detectChanges();
+      } else if (this.patientId) {
          this.patientAppointmentService.getPatientAppointmentsByPatientId(this.patientId)
             .subscribe({
                next: (results: PatientAppointment[]) => {
@@ -154,6 +174,46 @@ export class DashboardComponent implements OnInit {
 
       appointmentToSave.AppointmentStatus = 'Scheduled';
       appointmentToSave.IsActive = 1;
+
+      if (this.isEmbedded && this.patient) {
+         if (appointmentToSave.ID && appointmentToSave.ID !== 0) {
+            // Update existing appointment
+            const index = this.appointments.findIndex(a => a.ID === appointmentToSave.ID);
+            if (index > -1) {
+               this.appointments[index] = appointmentToSave;
+            }
+         } else {
+            // Create new appointment
+            const ids = this.appointments.map(a => a.ID).filter(id => id !== undefined);
+            const minId = ids.length > 0 ? Math.min(...ids) : 0;
+            appointmentToSave.ID = minId < 0 ? minId - 1 : -1;
+            appointmentToSave.PatientID = this.patientId ?? this.patient.ID ?? 0;
+            appointmentToSave.UserID = this.patient.UserID ?? 0;
+            this.appointments.push(appointmentToSave);
+         }
+
+         // Format times for display and copy back to patient
+         this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(this.appointments);
+         this.patient.PatientAppointments = [...this.appointments];
+         this.totalItems = this.appointments.length;
+
+         // Update user object in DataService
+         const user = this.dataService.getUser();
+         if (user && user.Patients && user.Patients.length > 0) {
+            const pIdx = user.Patients.findIndex((p: any) => p.ID === this.patient!.ID);
+            if (pIdx > -1) {
+               user.Patients[pIdx] = this.patient;
+               this.isLocalUpdate = true;
+               this.dataService.setUser(user);
+            }
+         }
+
+         this.messageService.success(appointmentToSave.ID > 0 ? 'Appointment updated locally.' : 'Appointment added locally.');
+         this.addEventsToScheduler(this.appointments);
+         this.cdr.detectChanges();
+         return;
+      }
+
       if (appointmentToSave.ID && appointmentToSave.ID > 0) {
          // Update existing appointment
          this.patientAppointmentService.updatePatientAppointment(appointmentToSave.ID, appointmentPayload)
@@ -467,6 +527,31 @@ export class DashboardComponent implements OnInit {
          const index = this.appointments.findIndex(x => x.ID === appointmentID);
          if (index === -1) {
             this.messageService.error('Appointment not found.');
+            return;
+         }
+
+         if (this.isEmbedded && this.patient) {
+            this.appointments.splice(index, 1);
+            this.patient.PatientAppointments = [...this.appointments];
+            this.totalItems = this.appointments.length;
+
+            // Update user object in DataService
+            const user = this.dataService.getUser();
+            if (user && user.Patients && user.Patients.length > 0) {
+               const pIdx = user.Patients.findIndex((p: any) => p.ID === this.patient!.ID);
+               if (pIdx > -1) {
+                  user.Patients[pIdx] = this.patient;
+                  this.isLocalUpdate = true;
+                  this.dataService.setUser(user);
+               }
+            }
+            try {
+               this.scheduler.removeEventById(appointmentID.toString());
+            } catch (e) {
+               // ignore scheduler delete failures
+            }
+            this.messageService.success('Appointment deleted locally.');
+            this.cdr.detectChanges();
             return;
          }
 

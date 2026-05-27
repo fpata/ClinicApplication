@@ -45,6 +45,15 @@ export class PatientAppointmentComponent extends PatientBaseComponent implements
     return AppointmentHelper.displayName(d);
   }
 
+  onSave(): void {
+    if (!this.patient) {
+      this.messageService.warn('No patient is currently selected.');
+      return;
+    }
+    super.savePatient();
+    this.cdr.markForCheck();
+  }
+
   /** Clear form: reload latest data from server */
   override onClear(): void {
     super.onClear();

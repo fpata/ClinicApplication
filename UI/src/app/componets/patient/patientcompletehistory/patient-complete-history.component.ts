@@ -6,14 +6,14 @@ import { DataService } from '../../../services/data.service';
 import { Patient } from '../../../models/patient.model';
 import { PatientService } from '../../../services/patient.service';
 import { User } from '../../../models/user.model';
-import { PatientHeaderComponent } from '../patient-header/patient-header.component';
+
 @Component({
   selector: 'app-patientcompletehistory',
-  imports: [FormsModule, PatientHeaderComponent],
+  imports: [FormsModule],
   templateUrl: './patient-complete-history.component.html',
   styleUrls: ['./patient-complete-history.component.css'],
   standalone: true,
-  changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class PatientCompleteHistoryComponent implements OnInit {
@@ -23,7 +23,7 @@ export class PatientCompleteHistoryComponent implements OnInit {
   constructor(private dataService: DataService,
     private patientTreatmentService: PatientTreatmentService, private patientService: PatientService,
     private cdr: ChangeDetectorRef
-) { }
+  ) { }
 
   ngOnInit() {
     this.dataService.user$.subscribe({
@@ -47,7 +47,7 @@ export class PatientCompleteHistoryComponent implements OnInit {
   OnPatientIdClick(patientID: number) {
     this.patientService.getPatient(patientID).subscribe({
       next: (_newPatient: Patient) => {
-       this.user = this.dataService.getUser();
+        this.user = this.dataService.getUser();
         this.user.Patients[0] = _newPatient;
         this.dataService.setUser(this.user);
         // Persist patientId as well for session fallback
@@ -60,7 +60,7 @@ export class PatientCompleteHistoryComponent implements OnInit {
   }
 
   GetAllTreatmentsForUser(userId: number) {
-    this.patientTreatments = [];  
+    this.patientTreatments = [];
     this.patientTreatmentService.getAllTreatmentsForUser(userId).subscribe({
       next: (result: any) => {
         this.patientTreatments = result;

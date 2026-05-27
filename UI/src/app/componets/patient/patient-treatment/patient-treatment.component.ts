@@ -5,85 +5,55 @@ import { DataService } from '../../../services/data.service';
 import { PatientService } from '../../../services/patient.service';
 import { UtilityService } from '../../../services/utility.service';
 import { Subscription } from 'rxjs';
-
 import { FormsModule } from '@angular/forms';
 import { PatientTreatmentDetail } from '../../../models/patient-treatment-detail.model';
 import { Patient } from '../../../models/patient.model';
-import { PatientHeaderComponent } from '../patient-header/patient-header.component';
+import { PatientBaseComponent } from '../patient-base.component';
 import { MessageService } from '../../../services/message.service';
 import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-patient-treatment',
-  imports: [FormsModule, PatientHeaderComponent],
+  imports: [FormsModule],
   templateUrl: './patient-treatment.component.html',
   styleUrls: ['./patient-treatment.component.css'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientTreatmentComponent implements OnInit, OnDestroy {
-  user: User | null = null;
-  patient: Patient | null = null;
+export class PatientTreatmentComponent extends PatientBaseComponent implements OnInit {
+
   treatment: PatientTreatment | null = null;
   patientId: number | null = null;
   isNewPatient = false;
   isEditOperation = false;
   newTreatmentDetail: PatientTreatmentDetail | null = null;
+  util: UtilityService;
   // Subscription to handle patient changes
-  private patientSubscription: Subscription = new Subscription();
 
   constructor(
-    private dataService: DataService,
-    private patientService: PatientService,
-    private util: UtilityService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private messageService: MessageService
-  ) { }
-
-  ngOnInit() {
-    // Get patient ID from route (preserve 0 for new-patient flow)
-    const patientIdParam = this.route.snapshot.paramMap.get('patientId');
-    this.patientId = patientIdParam !== null ? Number(patientIdParam) : null;
-
-    if (this.patientId === null || isNaN(this.patientId)) {
-      console.error('Patient ID is required');
-      this.router.navigate(['/patient/search']);
-      return;
-    }
-
-    this.isNewPatient = this.patientId === 0;
-
-    // Subscribe to patient changes from the data service
-    this.patientSubscription = this.dataService.user$.subscribe({
-      next: (_user: User) => {
-        this.user = _user;
-        this.patient = _user.Patients[0] as Patient; // Assuming the user has a Patient array and we want the first one
-        if (this.patient && this.patient.PatientTreatment) {
-          this.treatment = this.patient.PatientTreatment;
-          this.newTreatmentDetail = null;
-          console.log('Patient loaded with treatment:', this.treatment);
-          console.log('Treatment details count:', this.treatment.PatientTreatmentDetails?.length || 0);
-          this.cdr.markForCheck();
-        }
-        else {
-          this.treatment = new PatientTreatment();
-          if (this.patient) this.patient.PatientTreatment = this.treatment;
-          console.log('New patient treatment initialized');
-          this.cdr.markForCheck();
-        }
-      },
-      error: (error) => {
-        console.error('Error subscribing to patient changes:', error);
-      }
-    });
+    dataService: DataService,
+    patientService: PatientService,
+    router: Router,
+    cdr: ChangeDetectorRef,
+    messageService: MessageService,
+    util: UtilityService,
+    route: ActivatedRoute
+  ) {
+    super(dataService, patientService, messageService, router, cdr);
+    this.util = util;
   }
 
-  ngOnDestroy() {
-    // Clean up subscription to prevent memory leaks
-    if (this.patientSubscription) {
-      this.patientSubscription.unsubscribe();
+  ngOnInit() {
+    // Subscribe to patient changes from the data service
+    this.initPatientSubscription();
+
+    if (this.patient && this.patient.PatientTreatment) {
+      this.treatment = this.patient.PatientTreatment;
+      this.newTreatmentDetail = null;
+    } else {
+      this.treatment = new PatientTreatment();
+      if (this.patient) this.patient.PatientTreatment = this.treatment;
+      this.cdr.markForCheck();
     }
   }
 
@@ -221,10 +191,6 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
     // Create a new patient object to ensure change detection
     const updatedPatient = JSON.parse(JSON.stringify(this.patient));
     updatedPatient.PatientTreatment = this.treatment;
-
-    console.log('Saving patient with treatment details:', updatedPatient.PatientTreatment);
-
-
     this.newTreatmentDetail = null;
     this.isEditOperation = false;
     this.cdr.markForCheck();
@@ -258,17 +224,16 @@ export class PatientTreatmentComponent implements OnInit, OnDestroy {
       alert('No patient data to save');
       return;
     }
-    this.patientService.savePatient(this.patient).subscribe({
-      next: (savedPatient: Patient) => {
-        this.messageService.success('Patient information saved successfully Patient ID :' + savedPatient.ID);
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('Error saving patient:', error);
-        this.messageService.error('Failed to save patient. Please try again.');
-      }
-    });
+    super.savePatient();
+    this.cdr.markForCheck();
   }
 
+  protected applyUserData(user: User): void {
+    if (!user) { this.router.navigate(['/dashboard']); return; }
+    if (!user.Patients?.length) { this.router.navigate(['/patient/search']); return; }
+
+    this.patient = user.Patients[0] as Patient;
+    this.cdr.markForCheck();
+  }
 }
 

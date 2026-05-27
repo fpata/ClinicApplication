@@ -8,13 +8,12 @@ import { MessageService } from '../../../services/message.service';
 import { PatientService } from '../../../services/patient.service';
 import { UtilityService } from '../../../services/utility.service';
 import { AuthService } from '../../../services/auth.service';
-import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 import { User } from '../../../models/user.model';
 import { PatientBaseComponent } from '../patient-base.component';
 
 @Component({
   selector: 'app-patient-vitals',
-  imports: [FormsModule, PatientHeaderComponent],
+  imports: [FormsModule],
   templateUrl: './patient-vitals.component.html',
   styleUrls: ['./patient-vitals.component.css'],
   standalone: true,
@@ -87,24 +86,7 @@ export class PatientVitalsComponent extends PatientBaseComponent implements OnIn
   }
 
   onSave(): void {
-    // TODO: Implement save logic for vitals
-    this.patientService.savePatient(this.patient).subscribe({
-      next: (response) => {
-        this.messageService.success('Vitals saved successfully.');
-      },
-      error: (error) => {
-        this.messageService.error('Error saving vitals.');
-      }
-    });
-  }
-
-  /** Clear form: reload latest data from server */
-  override onClear(): void {
-    super.onClear();
-  }
-
-  /** Delete patient with confirmation */
-  override onDelete(): void {
-    super.onDelete();
+    super.savePatient();
+    this.cdr.markForCheck();
   }
 }

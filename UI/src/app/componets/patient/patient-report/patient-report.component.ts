@@ -9,7 +9,6 @@ import { Patient } from '../../../models/patient.model';
 import { FormsModule } from '@angular/forms';
 import { FileUploadComponent } from '../../../common/fileupload/fileupload.component';
 import { TypeaheadComponent } from '../../../common/typeahead/typeahead';
-import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 import { SearchModel } from '../../../models/search.model';
 import { SearchService } from '../../../services/search.service';
 import { MessageService } from '../../../services/message.service';
@@ -19,7 +18,7 @@ import { PatientBaseComponent } from '../patient-base.component';
 
 @Component({
   selector: 'app-patient-report',
-  imports: [FormsModule, FileUploadComponent, TypeaheadComponent, PatientHeaderComponent],
+  imports: [FormsModule, FileUploadComponent, TypeaheadComponent],
   templateUrl: './patient-report.component.html',
   styleUrls: ['./patient-report.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -94,6 +93,8 @@ export class PatientReportComponent extends PatientBaseComponent implements OnIn
     }
     this.newReport = null;
     this.patient.PatientReports = this.reports;
+    super.savePatient();
+    this.cdr.markForCheck();
   }
 
   getDoctors = (name: string): Observable<SearchModel[]> => {

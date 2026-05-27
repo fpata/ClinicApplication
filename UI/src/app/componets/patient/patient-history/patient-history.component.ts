@@ -6,12 +6,11 @@ import { User } from '../../../models/user.model';
 import { DataService } from '../../../services/data.service';
 import { MessageService } from '../../../services/message.service';
 import { PatientService } from '../../../services/patient.service';
-import { PatientHeaderComponent } from '../patient-header/patient-header.component';
 import { PatientBaseComponent } from '../patient-base.component';
 
 @Component({
   selector: 'app-patient-history',
-  imports: [FormsModule, PatientHeaderComponent],
+  imports: [FormsModule],
   templateUrl: './patient-history.component.html',
   styleUrls: ['./patient-history.component.css'],
   standalone: true,
@@ -48,7 +47,7 @@ export class PatientHistoryComponent extends PatientBaseComponent {
   }
 
   onSave(): void {
-    // TODO: Implement save logic for history
-    console.log('History Save clicked');
+    super.savePatient();
+    this.cdr.markForCheck();
   }
 }
