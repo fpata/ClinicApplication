@@ -73,8 +73,16 @@ export class Header implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    this.dataService.setLoginUser(null);
+    try {
+      localStorage.removeItem('token');
+    } catch (e) {
+      console.error('Error removing token from localStorage:', e);
+    }
+    try {
+      this.dataService.setLoginUser(null);
+    } catch (e) {
+      console.error('Error setting login user in dataService:', e);
+    }
     this.loginUser = null;
   }
 

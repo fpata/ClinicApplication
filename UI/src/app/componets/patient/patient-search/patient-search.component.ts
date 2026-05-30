@@ -185,19 +185,18 @@ export class PatientSearchComponent {
   }
 
   AddNewPatient(result: SearchModel, isQuickCreateMode: boolean) {
-    // Ensure navigation happens immediately for new-patient flow
     const userId = result?.UserID || 0;
     this.dataService.setQuickCreateMode(isQuickCreateMode);
     this.dataService.setUserId(userId);
-    this.router.navigate(['/patient', 0, 'treatment']);
 
-    // Fetch full user details asynchronously (if available) and store them when received
+    // Fetch full user details first and navigate after initialization
     this.userService.getUser(userId).subscribe({
       next: (user: User) => {
         if (user) {
           this.dataService.setUser(user);
           try {
             this.patientService.AddNewPatient(user);
+            this.router.navigate(['/patient', 0, 'treatment']);
           } catch (e) {
             console.error('Error adding new patient:', e);
           }

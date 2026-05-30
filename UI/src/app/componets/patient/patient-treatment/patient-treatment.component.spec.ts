@@ -113,13 +113,14 @@ describe('PatientTreatmentComponent', () => {
       value: userSubject.asObservable()
     });
 
-    patientServiceSpy = jasmine.createSpyObj('PatientService', ['createPatient', 'updatePatient', 'AddNewPatient']);
+    patientServiceSpy = jasmine.createSpyObj('PatientService', ['createPatient', 'updatePatient', 'AddNewPatient', 'savePatient']);
+    patientServiceSpy.savePatient.and.returnValue(of(mockPatient));
     
     utilityServiceSpy = jasmine.createSpyObj('UtilityService', ['formatDate', 'formatDateTime']);
     utilityServiceSpy.formatDate.and.returnValue('2026-05-26');
     utilityServiceSpy.formatDateTime.and.returnValue('2026-05-26T12:00:00');
 
-    messageServiceSpy = jasmine.createSpyObj('MessageService', ['success', 'error']);
+    messageServiceSpy = jasmine.createSpyObj('MessageService', ['success', 'error', 'warn', 'info']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     
     activatedRouteStub = {
@@ -155,8 +156,8 @@ describe('PatientTreatmentComponent', () => {
   });
 
   it('should redirect to patient search if patientId route param is missing', async () => {
-    activatedRouteStub.snapshot.paramMap.get.and.returnValue(null);
     await createComponent();
+    userSubject.next({ ...mockUser, Patients: [] });
     fixture.detectChanges();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient/search']);
   });
@@ -258,7 +259,7 @@ describe('PatientTreatmentComponent', () => {
     expect(component.treatment?.PatientTreatmentDetails?.length).toBe(1);
     expect(component.treatment?.PatientTreatmentDetails?.[0].ID).toBe(20);
     expect(component.treatment?.ActualCost).toBe(300); // 300 + 0 = 300
-    expect(window.alert).toHaveBeenCalledWith('Treatment detail deleted successfully.');
+    expect(window.alert).toHaveBeenCalledWith('Treatment detail deleted successfully. Click the Save Changes button to persist to the database.');
   }));
 
   it('should not delete treatment detail if not confirmed', fakeAsync(async () => {
@@ -313,7 +314,7 @@ describe('PatientTreatmentComponent', () => {
     expect(component.treatment?.ActualCost).toBe(650); // 150 + 300 + 200 = 650
     expect(dataServiceSpy.setPatient).toHaveBeenCalled();
     expect(component.newTreatmentDetail).toBeNull();
-    expect(window.alert).toHaveBeenCalledWith('Treatment detail saved. Click the Save button in the main form to persist changes to the database.');
+    expect(window.alert).toHaveBeenCalledWith('Treatment detail saved. Click the Save Changes button in the main form to persist changes to the database.');
   });
 
   it('should update an existing treatment detail successfully', async () => {
@@ -331,7 +332,7 @@ describe('PatientTreatmentComponent', () => {
     expect(component.treatment?.PatientTreatmentDetails?.[0].Procedure).toBe('Root Canal');
     expect(component.treatment?.ActualCost).toBe(800); // 500 + 300 = 800
     expect(dataServiceSpy.setPatient).toHaveBeenCalled();
-    expect(window.alert).toHaveBeenCalledWith('Treatment detail saved. Click the Save button in the main form to persist changes to the database.');
+    expect(window.alert).toHaveBeenCalledWith('Treatment detail saved. Click the Save Changes button in the main form to persist changes to the database.');
   });
 
   it('should sync treatment details with server', async () => {

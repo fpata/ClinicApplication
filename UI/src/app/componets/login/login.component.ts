@@ -44,8 +44,9 @@ export class LoginComponent {
       next: (res: LoginResponse) => {
         this.configService.getConfigs().subscribe(config => {
           this.dataService.setConfig(config);
-          this.dataService.setLoginUser(res.user as any)
+          this.dataService.setLoginUser(res.user as any);
           this.authService.setToken(res.token);
+          this.router.navigate(['/dashboard']);
         });
         this.error = '';
         this.cdRef.detectChanges();

@@ -146,6 +146,7 @@ describe('AuthService', () => {
     it('should handle localStorage errors gracefully', () => {
       // Mock localStorage to throw an error
       spyOn(localStorage, 'setItem').and.throwError('Storage full');
+      spyOn(console, 'error');
       
       expect(() => service.setToken(validToken)).not.toThrow();
     });

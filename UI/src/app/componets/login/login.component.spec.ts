@@ -1,4 +1,4 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { TestBed, ComponentFixture, fakeAsync, tick } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,6 +9,8 @@ import { of, throwError } from 'rxjs';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { UserType } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
+import { AppConfigService } from '../../services/config.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -16,6 +18,8 @@ describe('LoginComponent', () => {
   let loginService: jasmine.SpyObj<LoginService>;
   let dataService: jasmine.SpyObj<DataService>;
   let router: jasmine.SpyObj<Router>;
+  let authService: jasmine.SpyObj<AuthService>;
+  let configService: jasmine.SpyObj<AppConfigService>;
 
   const mockLoginResponse: LoginResponse = {
     token: 'mock-token',
@@ -32,15 +36,19 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     const loginServiceSpy = jasmine.createSpyObj('LoginService', ['login']);
-    const dataServiceSpy = jasmine.createSpyObj('DataService', ['setLoginUser']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const dataServiceSpy = jasmine.createSpyObj('DataService', ['setLoginUser', 'setConfig']);
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['setToken', 'getToken', 'getUser']);
+    const configServiceSpy = jasmine.createSpyObj('AppConfigService', ['getConfigs']);
+
+    configServiceSpy.getConfigs.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent, HttpClientTestingModule, RouterTestingModule],
       providers: [
         { provide: LoginService, useValue: loginServiceSpy },
         { provide: DataService, useValue: dataServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: AppConfigService, useValue: configServiceSpy }
       ]
     }).compileComponents();
 
@@ -48,7 +56,12 @@ describe('LoginComponent', () => {
     component = fixture.componentInstance;
     loginService = TestBed.inject(LoginService) as jasmine.SpyObj<LoginService>;
     dataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    configService = TestBed.inject(AppConfigService) as jasmine.SpyObj<AppConfigService>;
+    
+    const routerService = TestBed.inject(Router);
+    spyOn(routerService, 'navigate');
+    router = routerService as any;
   });
 
   it('should create', () => {
@@ -69,7 +82,7 @@ describe('LoginComponent', () => {
     component.login();
 
     expect(loginService.login).toHaveBeenCalledWith('testuser', 'testpass');
-    expect(dataService.setLoginUser).toHaveBeenCalledWith(mockLoginResponse);
+    expect(dataService.setLoginUser).toHaveBeenCalledWith(mockLoginResponse.user as any);
     expect(component.error).toBe('');
   });
 
@@ -77,6 +90,8 @@ describe('LoginComponent', () => {
     const error = { status: 401 };
     loginService.login.and.returnValue(throwError(error));
     
+    component.username = 'testuser';
+    component.password = 'testpass';
     component.login();
 
     expect(component.error).toBe('Invalid username or password');
@@ -86,6 +101,8 @@ describe('LoginComponent', () => {
     const error = { status: 0 };
     loginService.login.and.returnValue(throwError(error));
     
+    component.username = 'testuser';
+    component.password = 'testpass';
     component.login();
 
     expect(component.error).toBe('Network error. Please try again later.');
@@ -95,6 +112,8 @@ describe('LoginComponent', () => {
     const error = { status: 500 };
     loginService.login.and.returnValue(throwError(error));
     
+    component.username = 'testuser';
+    component.password = 'testpass';
     component.login();
 
     expect(component.error).toBe('Server error. Please try again later.');
@@ -104,6 +123,8 @@ describe('LoginComponent', () => {
     const error = { status: 403 };
     loginService.login.and.returnValue(throwError(error));
     
+    component.username = 'testuser';
+    component.password = 'testpass';
     component.login();
 
     expect(component.error).toBe('Access denied. You do not have permission to access this resource.');
@@ -113,31 +134,37 @@ describe('LoginComponent', () => {
     const error = { status: 418 };
     loginService.login.and.returnValue(throwError(error));
     
+    component.username = 'testuser';
+    component.password = 'testpass';
     component.login();
 
     expect(component.error).toBe('An unexpected error occurred. Please try again.');
   });
 
-  it('should update username when input changes', () => {
+  it('should update username when input changes', async () => {
     fixture.detectChanges();
+    await fixture.whenStable();
     const usernameInput = fixture.debugElement.query(By.css('input[name="username"]'));
     
     if (usernameInput) {
       usernameInput.nativeElement.value = 'newuser';
       usernameInput.nativeElement.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
       fixture.detectChanges();
       
       expect(component.username).toBe('newuser');
     }
   });
 
-  it('should update password when input changes', () => {
+  it('should update password when input changes', async () => {
     fixture.detectChanges();
+    await fixture.whenStable();
     const passwordInput = fixture.debugElement.query(By.css('input[type="password"]'));
     
     if (passwordInput) {
       passwordInput.nativeElement.value = 'newpass';
       passwordInput.nativeElement.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
       fixture.detectChanges();
       
       expect(component.password).toBe('newpass');

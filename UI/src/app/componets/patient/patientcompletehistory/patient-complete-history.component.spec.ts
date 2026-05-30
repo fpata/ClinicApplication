@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { of, throwError, BehaviorSubject } from 'rxjs';
 import { PatientCompleteHistoryComponent } from './patient-complete-history.component';
 import { DataService } from '../../../services/data.service';
 import { PatientService } from '../../../services/patient.service';
@@ -70,7 +70,10 @@ describe('PatientCompleteHistoryComponent', () => {
       }
     ];
 
-    dataServiceSpy = jasmine.createSpyObj('DataService', ['getUser', 'setUser']);
+    const userSubject = new BehaviorSubject<User | null>(mockUser);
+    dataServiceSpy = jasmine.createSpyObj('DataService', ['getUser', 'setUser'], {
+      user$: userSubject.asObservable()
+    });
     dataServiceSpy.getUser.and.returnValue(mockUser);
 
     patientServiceSpy = jasmine.createSpyObj('PatientService', ['getPatient']);

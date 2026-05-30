@@ -7,6 +7,7 @@ import { DashboardComponent } from './dashboard.component';
 import { PatientAppointmentService } from '../../services/patient-appointment.service';
 import { PatientAppointment, AppointmentSearchResponse } from '../../models/patient-appointment.model';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
+import { AppointmentHelper } from '../../common/appointment-helper';
 
 // Mock SchedulerComponent
 @Component({
@@ -117,23 +118,25 @@ describe('DashboardComponent', () => {
     const mockScheduler = jasmine.createSpyObj('SchedulerComponent', ['addEvents']);
     component.scheduler = mockScheduler;
 
+    spyOn(AppointmentHelper, 'getRandomColor').and.returnValue('#bc8f3cff');
+
     // Call the private method through bracket notation
     (component as any).addEventsToScheduler(mockAppointmentResponse.PatientAppointments);
 
     const expectedEvents: DayPilot.EventData[] = [
       {
         id: '1',
-        text: 'John Doe',
-        start: new DayPilot.Date('2023-08-19T09:00:00Z'),
-        end: new DayPilot.Date('2023-08-19T10:00:00Z'),
+        text: 'John Doe : Consultation',
+        start: DayPilot?.Date ? new DayPilot.Date('2023-08-19T09:00:00Z') : new Date('2023-08-19T09:00:00Z') as any,
+        end: DayPilot?.Date ? new DayPilot.Date('2023-08-19T10:00:00Z') : new Date('2023-08-19T10:00:00Z') as any,
         resource: 'Dr. Smith',
         backColor: '#bc8f3cff'
       },
       {
         id: '2',
-        text: 'Jane Smith',
-        start: new DayPilot.Date('2023-08-19T14:00:00Z'),
-        end: new DayPilot.Date('2023-08-19T15:00:00Z'),
+        text: 'Jane Smith : Follow-up',
+        start: DayPilot?.Date ? new DayPilot.Date('2023-08-19T14:00:00Z') : new Date('2023-08-19T14:00:00Z') as any,
+        end: DayPilot?.Date ? new DayPilot.Date('2023-08-19T15:00:00Z') : new Date('2023-08-19T15:00:00Z') as any,
         resource: 'Dr. Smith',
         backColor: '#bc8f3cff'
       }
@@ -143,7 +146,11 @@ describe('DashboardComponent', () => {
   });
 
   it('should handle appointment with unknown patient name', () => {
-    const appointmentWithoutName: any = { ...mockAppointmentResponse.PatientAppointments[0], PatientName: undefined };
+    const appointmentWithoutName: any = { 
+      ...mockAppointmentResponse.PatientAppointments[0], 
+      PatientName: undefined,
+      TreatmentName: undefined
+    };
     const mockScheduler = jasmine.createSpyObj('SchedulerComponent', ['addEvents']);
     component.scheduler = mockScheduler;
 

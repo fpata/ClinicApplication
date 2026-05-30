@@ -116,9 +116,22 @@ export abstract class PatientBaseComponent implements OnDestroy {
   }
 
   savePatient(): void {
+    if (!this.patient) return;
     this.patientService.savePatient(this.patient).subscribe({
-      next: () => {
+      next: (savedPatient: Patient) => {
         this.messageService.success('Patient saved successfully.');
+        if (this.user) {
+          const updatedUser = JSON.parse(JSON.stringify(this.user));
+          if (!updatedUser.Patients) {
+            updatedUser.Patients = [];
+          }
+          if (updatedUser.Patients.length > 0) {
+            updatedUser.Patients[0] = savedPatient;
+          } else {
+            updatedUser.Patients.push(savedPatient);
+          }
+          this.dataService.setUser(updatedUser);
+        }
       },
       error: (error: any) => {
         this.messageService.error('Failed to save patient: ' + (error?.message ?? error));

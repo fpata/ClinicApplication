@@ -28,9 +28,10 @@ describe('PatientMasterComponent', () => {
 
   beforeEach(async () => {
     userSubject = new BehaviorSubject<User | null>(null);
-    const dataServiceSpy = jasmine.createSpyObj('DataService', [], {
+    const dataServiceSpy = jasmine.createSpyObj('DataService', ['getConfig', 'setQuickCreateMode', 'setUserId'], {
       user$: userSubject.asObservable()
     });
+    dataServiceSpy.getConfig.and.returnValue(null);
 
     await TestBed.configureTestingModule({
       imports: [PatientMasterComponent, HttpClientTestingModule],

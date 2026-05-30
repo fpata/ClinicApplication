@@ -46,15 +46,6 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
   ngOnInit() {
     // Subscribe to patient changes from the data service
     this.initPatientSubscription();
-
-    if (this.patient && this.patient.PatientTreatment) {
-      this.treatment = this.patient.PatientTreatment;
-      this.newTreatmentDetail = null;
-    } else {
-      this.treatment = new PatientTreatment();
-      if (this.patient) this.patient.PatientTreatment = this.treatment;
-      this.cdr.markForCheck();
-    }
   }
 
   ClearTreatmentForm() {
@@ -124,10 +115,26 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
       if (!confirmed) return;
       var index = this.treatment.PatientTreatmentDetails.findIndex(x => x.ID === treatmentdetailID);
       if (index > -1) {
+        const deletedDetail = this.treatment.PatientTreatmentDetails[index];
         this.treatment.PatientTreatmentDetails.splice(index, 1);
-        alert('Treatment detail deleted successfully.');
         this.treatment.ActualCost = this.calculateTotalCost();
-        if (this.patient) this.patient.PatientTreatment = this.treatment;
+        
+        if (this.patient) {
+          const updatedPatient = JSON.parse(JSON.stringify(this.patient));
+          updatedPatient.PatientTreatment = this.treatment;
+          
+          this.dataService.setPatient(updatedPatient);
+          if (this.user) {
+            const updatedUser = JSON.parse(JSON.stringify(this.user));
+            if (updatedUser.Patients && updatedUser.Patients.length > 0) {
+              updatedUser.Patients[0] = updatedPatient;
+            }
+            this.dataService.setUser(updatedUser);
+          }
+        }
+        
+        console.log('Deleted treatment detail:', deletedDetail);
+        alert('Treatment detail deleted successfully. Click the Save Changes button to persist to the database.');
         this.cdr.markForCheck();
       } else {
         alert('Treatment detail not found.');
@@ -191,10 +198,20 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
     // Create a new patient object to ensure change detection
     const updatedPatient = JSON.parse(JSON.stringify(this.patient));
     updatedPatient.PatientTreatment = this.treatment;
+    
+    this.dataService.setPatient(updatedPatient);
+    if (this.user) {
+      const updatedUser = JSON.parse(JSON.stringify(this.user));
+      if (updatedUser.Patients && updatedUser.Patients.length > 0) {
+        updatedUser.Patients[0] = updatedPatient;
+      }
+      this.dataService.setUser(updatedUser);
+    }
+    
     this.newTreatmentDetail = null;
     this.isEditOperation = false;
+    alert('Treatment detail saved. Click the Save Changes button in the main form to persist changes to the database.');
     this.cdr.markForCheck();
-
   }
 
   private calculateTotalCost(): number {
@@ -224,7 +241,48 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
       alert('No patient data to save');
       return;
     }
-    super.savePatient();
+    if (this.isNewPatient) {
+      this.patientService.createPatient(this.patient).subscribe({
+        next: (savedPatient: Patient) => {
+          this.messageService.success('New patient created successfully');
+          if (this.user) {
+            const updatedUser = JSON.parse(JSON.stringify(this.user));
+            if (!updatedUser.Patients) updatedUser.Patients = [];
+            if (updatedUser.Patients.length > 0) {
+              updatedUser.Patients[0] = savedPatient;
+            } else {
+              updatedUser.Patients.push(savedPatient);
+            }
+            this.dataService.setUser(updatedUser);
+          }
+          this.router.navigate(['/patient', savedPatient.ID, 'treatment']);
+        },
+        error: (error) => {
+          console.error('Error creating patient:', error);
+          this.messageService.error('Failed to create patient');
+        }
+      });
+    } else {
+      this.patientService.updatePatient(this.patient.ID, this.patient).subscribe({
+        next: (savedPatient: Patient) => {
+          this.messageService.success('Patient information saved successfully');
+          if (this.user) {
+            const updatedUser = JSON.parse(JSON.stringify(this.user));
+            if (!updatedUser.Patients) updatedUser.Patients = [];
+            if (updatedUser.Patients.length > 0) {
+              updatedUser.Patients[0] = savedPatient;
+            } else {
+              updatedUser.Patients.push(savedPatient);
+            }
+            this.dataService.setUser(updatedUser);
+          }
+        },
+        error: (error) => {
+          console.error('Error updating patient:', error);
+          this.messageService.error('Failed to update patient');
+        }
+      });
+    }
     this.cdr.markForCheck();
   }
 
@@ -233,6 +291,12 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
     if (!user.Patients?.length) { this.router.navigate(['/patient/search']); return; }
 
     this.patient = user.Patients[0] as Patient;
+    if (this.patient && this.patient.PatientTreatment) {
+      this.treatment = this.patient.PatientTreatment;
+    } else {
+      this.treatment = new PatientTreatment();
+      if (this.patient) this.patient.PatientTreatment = this.treatment;
+    }
     this.cdr.markForCheck();
   }
 }

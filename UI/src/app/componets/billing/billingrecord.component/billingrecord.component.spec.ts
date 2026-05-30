@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { BillingrecordComponent } from './billingrecord.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BillingRecord, BillingStatus } from '../../../models/billing.model';
 
 describe('BillingrecordComponent', () => {
@@ -31,7 +32,7 @@ describe('BillingrecordComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ BillingrecordComponent, FormsModule ] // Import standalone component and FormsModule
+      imports: [ BillingrecordComponent, FormsModule, HttpClientTestingModule ]
     })
     .compileComponents();
   });
@@ -39,7 +40,6 @@ describe('BillingrecordComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BillingrecordComponent);
     component = fixture.componentInstance;
-    // Set the input property before the first change detection
     component.billingRecord = { ...mockBillingRecord };
     fixture.detectChanges();
   });
@@ -48,14 +48,16 @@ describe('BillingrecordComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display billing record data in form fields', () => {
+  it('should display billing record data in form fields', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
     const patientNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtPatientName')).nativeElement;
     const doctorNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtDoctorName')).nativeElement;
-    const totalInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtTotal')).nativeElement;
+    const treatmentNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtTreatmentName')).nativeElement;
 
-    expect(patientNameInput.value).toBe(mockBillingRecord.PatientName);
-    expect(doctorNameInput.value).toBe(mockBillingRecord.DoctorName);
-    expect(Number(totalInput.value)).toBe(mockBillingRecord.Total);
+    expect(patientNameInput.value).toBe(mockBillingRecord.PatientName || '');
+    expect(doctorNameInput.value).toBe(mockBillingRecord.DoctorName || '');
+    expect(treatmentNameInput.value).toBe(mockBillingRecord.TreatmentName || '');
   });
 
   it('should update the component model when patient name is changed', async () => {
@@ -65,32 +67,32 @@ describe('BillingrecordComponent', () => {
     patientNameInput.value = newPatientName;
     patientNameInput.dispatchEvent(new Event('input'));
     
-    await fixture.whenStable(); // Wait for async data binding to complete
+    await fixture.whenStable();
 
     expect(component.billingRecord.PatientName).toBe(newPatientName);
   });
 
-  it('should update the component model when total is changed', async () => {
-    const totalInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtTotal')).nativeElement;
-    const newTotal = 150;
+  it('should update the component model when doctor name is changed', async () => {
+    const doctorNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtDoctorName')).nativeElement;
+    const newDoctorName = 'Dr. House';
 
-    totalInput.value = newTotal.toString();
-    totalInput.dispatchEvent(new Event('input'));
+    doctorNameInput.value = newDoctorName;
+    doctorNameInput.dispatchEvent(new Event('input'));
 
     await fixture.whenStable();
 
-    expect(component.billingRecord.Total).toBe(newTotal);
+    expect(component.billingRecord.DoctorName).toBe(newDoctorName);
   });
 
-  it('should update the component model when notes are changed', async () => {
-    const notesTextarea: HTMLTextAreaElement = fixture.debugElement.query(By.css('#txtNotes')).nativeElement;
-    const newNotes = 'Follow-up required.';
+  it('should update the component model when treatment name is changed', async () => {
+    const treatmentNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtTreatmentName')).nativeElement;
+    const newTreatmentName = 'Root Canal';
 
-    notesTextarea.value = newNotes;
-    notesTextarea.dispatchEvent(new Event('input'));
+    treatmentNameInput.value = newTreatmentName;
+    treatmentNameInput.dispatchEvent(new Event('input'));
 
     await fixture.whenStable();
 
-    expect(component.billingRecord.Notes).toBe(newNotes);
+    expect(component.billingRecord.TreatmentName).toBe(newTreatmentName);
   });
 });

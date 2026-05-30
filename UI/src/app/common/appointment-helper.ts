@@ -48,8 +48,8 @@ export class AppointmentHelper {
       return {
         id: appt.ID.toString(),
         text: text,
-        start: new DayPilot.Date(appt.StartDateTime),
-        end: new DayPilot.Date(appt.EndDateTime),
+        start: DayPilot?.Date ? new DayPilot.Date(appt.StartDateTime) : appt.StartDateTime as any,
+        end: DayPilot?.Date ? new DayPilot.Date(appt.EndDateTime) : appt.EndDateTime as any,
         resource: appt.DoctorName || 'General',
         backColor: colors ? this.getRandomColor() : '#3c8dbc'
       };

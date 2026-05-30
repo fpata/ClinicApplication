@@ -13,45 +13,46 @@ describe('MessagesComponent', () => {
   let router: jasmine.SpyObj<Router>;
   let messageSubject: Subject<Message>;
   let routerEventsSubject: Subject<any>;
-
-  const mockMessages: Message[] = [
-    {
-      id: 1,
-      message: 'Success message',
-      type: MessageType.Success,
-      autoClose: false,
-      keepAfterRouteChange: false,
-      fade: false
-    },
-    {
-      id: 2,
-      message: 'Error message',
-      type: MessageType.Error,
-      autoClose: true,
-      autoCloseTimeout: 3000,
-      keepAfterRouteChange: false,
-      fade: false
-    },
-    {
-      id: 3,
-      message: 'Warning message',
-      type: MessageType.Warning,
-      autoClose: false,
-      keepAfterRouteChange: true,
-      fade: false
-    },
-    {
-      id: 4,
-      message: 'Info message',
-      type: MessageType.Info,
-      autoClose: true,
-      autoCloseTimeout: 5000,
-      keepAfterRouteChange: false,
-      fade: false
-    }
-  ];
+  let mockMessages: Message[];
 
   beforeEach(async () => {
+    mockMessages = [
+      {
+        id: 1,
+        message: 'Success message',
+        type: MessageType.Success,
+        autoClose: false,
+        keepAfterRouteChange: false,
+        fade: false
+      },
+      {
+        id: 1,
+        message: 'Error message',
+        type: MessageType.Error,
+        autoClose: true,
+        autoCloseTimeout: 3000,
+        keepAfterRouteChange: false,
+        fade: false
+      },
+      {
+        id: 1,
+        message: 'Warning message',
+        type: MessageType.Warning,
+        autoClose: false,
+        keepAfterRouteChange: true,
+        fade: false
+      },
+      {
+        id: 1,
+        message: 'Info message',
+        type: MessageType.Info,
+        autoClose: true,
+        autoCloseTimeout: 5000,
+        keepAfterRouteChange: false,
+        fade: false
+      }
+    ];
+
     messageSubject = new Subject<Message>();
     routerEventsSubject = new Subject<any>();
 
@@ -129,7 +130,9 @@ describe('MessagesComponent', () => {
       messageSubject.next({ message: '' } as Message);
       
       expect(component.messages.length).toBe(1);
-      expect(component.messages[0]).toEqual({ ...mockMessages[2], keepAfterRouteChange: undefined });
+      const expectedMessage = { ...mockMessages[2] };
+      delete expectedMessage.keepAfterRouteChange;
+      expect(component.messages[0]).toEqual(expectedMessage);
     });
   });
 

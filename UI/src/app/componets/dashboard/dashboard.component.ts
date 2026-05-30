@@ -59,7 +59,7 @@ export class DashboardComponent implements OnInit, OnChanges {
 
    ngOnInit(): void {
       this.pageSize = this.dataService.getConfig()?.pageSize || 10;
-      this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
+      this.loadDefaultAppointments();
    }
 
    ngOnChanges(changes: SimpleChanges): void {
@@ -68,13 +68,38 @@ export class DashboardComponent implements OnInit, OnChanges {
             this.isLocalUpdate = false;
             return;
          }
-         this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
+         this.loadDefaultAppointments();
       }
    }
 
    onPageChange($event: number) {
       this.currentPage = $event;
-      this.loadAppointments(DayPilot?.Date?.today()?.firstDayOfWeek(1).toDate(), DayPilot?.Date?.today()?.firstDayOfWeek(1).addDays(6).toDate());
+      this.loadDefaultAppointments();
+   }
+
+   private loadDefaultAppointments(): void {
+      let start: Date;
+      let end: Date;
+      try {
+         start = DayPilot?.Date?.today()?.firstDayOfWeek(1)?.toDate() || this.getDefaultStartDate();
+         end = DayPilot?.Date?.today()?.firstDayOfWeek(1)?.addDays(6)?.toDate() || this.getDefaultEndDate();
+      } catch (e) {
+         start = this.getDefaultStartDate();
+         end = this.getDefaultEndDate();
+      }
+      this.loadAppointments(start, end);
+   }
+
+   private getDefaultStartDate(): Date {
+      const today = new Date();
+      const day = today.getDay();
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(today.setDate(diff));
+   }
+
+   private getDefaultEndDate(): Date {
+      const start = this.getDefaultStartDate();
+      return new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000);
    }
 
    private loadAppointments(startDate: Date, endDate: Date): void {
@@ -354,12 +379,15 @@ export class DashboardComponent implements OnInit, OnChanges {
       this.newAppointment.EndTime = endTime;
 
       if (this.patientId) {
+         const resolvedName = (this.patientName && this.patientName !== 'Unknown Patient')
+            ? this.patientName
+            : '';
          this.newAppointment.PatientID = this.patientId;
-         this.newAppointment.PatientName = this.patientName || 'Patient';
+         this.newAppointment.PatientName = resolvedName;
          this.selectedPatient = {
             PatientID: this.patientId,
-            FirstName: this.patientName?.split(' ')[0] || '',
-            LastName: this.patientName?.split(' ').slice(1).join(' ') || ''
+            FirstName: resolvedName.split(' ')[0] || '',
+            LastName: resolvedName.split(' ').slice(1).join(' ') || ''
          };
       } else {
          this.selectedPatient = null;

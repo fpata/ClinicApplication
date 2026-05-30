@@ -45,6 +45,31 @@ export class PatientAppointmentComponent extends PatientBaseComponent implements
     return AppointmentHelper.displayName(d);
   }
 
+  /**
+   * Resolves the patient's display name using the richest available source:
+   * 1. patient.user (nested User object returned by the API)
+   * 2. the top-level user loaded from the data service
+   * Falls back to an empty string so the typeahead in the modal stays blank
+   * instead of showing 'Unknown Patient'.
+   */
+  get resolvedPatientName(): string {
+    // Prefer the nested user object on the patient record
+    if (this.patient?.user) {
+      const first = this.patient.user.FirstName || '';
+      const last  = this.patient.user.LastName  || '';
+      const name  = (first + ' ' + last).trim();
+      if (name) return name;
+    }
+    // Fall back to the top-level user loaded into the base component
+    if (this.user) {
+      const first = this.user.FirstName || '';
+      const last  = this.user.LastName  || '';
+      const name  = (first + ' ' + last).trim();
+      if (name) return name;
+    }
+    return '';
+  }
+
   onSave(): void {
     if (!this.patient) {
       this.messageService.warn('No patient is currently selected.');

@@ -64,9 +64,11 @@ export class PatientAppointmentService {
   }
 
   getAllAppointments(startDate: Date, endDate: Date, currentPage: number, pageSize: number) {
+    const sDate = startDate ? (startDate instanceof Date ? startDate : new Date(startDate)) : new Date();
+    const eDate = endDate ? (endDate instanceof Date ? endDate : new Date(endDate)) : new Date();
     const params = {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+      startDate: sDate.toISOString(),
+      endDate: eDate.toISOString(),
       pageNumber: currentPage,
       pageSize: pageSize
     };

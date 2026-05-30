@@ -28,8 +28,10 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     loginUserSubject = new BehaviorSubject<LoginResponse | null>(null);
+    const userSubject = new BehaviorSubject<any>(null);
     const dataServiceSpy = jasmine.createSpyObj('DataService', ['setLoginUser'], {
-      loginUser$: loginUserSubject.asObservable()
+      loginUser$: loginUserSubject.asObservable(),
+      user$: userSubject.asObservable()
     });
 
     await TestBed.configureTestingModule({

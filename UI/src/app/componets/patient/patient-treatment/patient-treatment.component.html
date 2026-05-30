@@ -226,10 +226,11 @@
               <i class="bi bi-check-circle me-2"></i>Save Changes
             </button>
             <button type="button" id="btnTreatmentClear" class="btn btn-lg btn-outline-secondary flex-grow-1"
-              (click)="ClearTreatmentForm()">
+              (click)="onClear()">
               <i class="bi bi-arrow-counterclockwise me-2"></i>Clear Form
             </button>
-            <button type="button" id="btnTreatmentDelete" class="btn btn-lg btn-outline-danger flex-grow-1">
+            <button type="button" id="btnTreatmentDelete" class="btn btn-lg btn-outline-danger flex-grow-1"
+              (click)="onDelete()">
               <i class="bi bi-trash me-2"></i>Delete Patient
             </button>
           </div>
