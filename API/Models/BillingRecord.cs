@@ -30,7 +30,7 @@ namespace ClinicManager.Models
         public float? AmountPaid { get; set; }
         public float? BalanceDue { get; set; }
 
-        public InsuranceSegment? Insurance { get; set; }
+        //public InsuranceSegment? Insurance { get; set; } //TO DO 
         public Payment[] Payments { get; set; } = [];
         public string? Notes { get; set; }
         [NotMapped]

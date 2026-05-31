@@ -183,7 +183,7 @@ namespace ClinicManager.Controllers
            
             var appointments = await _context.PatientAppointments
                 .AsNoTracking()
-                .Where(a => a.DoctorID == doctorID)
+                .Where(a => a.DoctorID == doctorID && a.IsActive == 1)
                 .OrderByDescending(a => a.StartDateTime)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize) // Limit results for performance

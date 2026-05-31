@@ -93,8 +93,6 @@ export class PatientReportComponent extends PatientBaseComponent implements OnIn
     }
     this.newReport = null;
     this.patient.PatientReports = this.reports;
-    super.savePatient();
-    this.cdr.markForCheck();
   }
 
   getDoctors = (name: string): Observable<SearchModel[]> => {
@@ -138,5 +136,10 @@ export class PatientReportComponent extends PatientBaseComponent implements OnIn
   /** Delete patient with confirmation */
   override onDelete(): void {
     super.onDelete();
+  }
+
+  onSave(): void {
+    this.SaveReport();
+    super.savePatient();
   }
 }

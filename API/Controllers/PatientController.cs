@@ -355,8 +355,8 @@ namespace ClinicManager.Controllers
                 existingPatient.FatherMedicalHistory = patient.FatherMedicalHistory;
                 existingPatient.MotherMedicalHistory = patient.MotherMedicalHistory;
                 existingPatient.PersonalMedicalHistory = patient.PersonalMedicalHistory;
-                existingPatient.InsuranceProvider = patient.InsuranceProvider;
-                existingPatient.InsurancePolicyNumber = patient.InsurancePolicyNumber;
+                //existingPatient.InsuranceProvider = patient?.InsuranceProvider || null;
+                //xistingPatient.InsurancePolicyNumber = patient?.InsurancePolicyNumber;
                 existingPatient.ModifiedDate = DateTime.Now;
                 existingPatient.ModifiedBy = patient.ModifiedBy ?? 1;
 

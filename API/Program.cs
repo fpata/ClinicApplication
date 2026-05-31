@@ -108,7 +108,7 @@ app.Use(async (context, next) =>
     try
     {
         await next();
-    }
+    }   
     catch (Exception ex)
     {
         logger.LogError(ex, "An unhandled exception occurred while processing the request.");

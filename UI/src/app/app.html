@@ -1,7 +1,8 @@
-<div class="container-fluid">
-<app-header></app-header>
-<app-messages></app-messages>
-<router-outlet></router-outlet>
-<div class="card-container">
-<app-footer></app-footer>
+<div class="d-flex flex-column min-vh-100">
+  <app-header></app-header>
+  <div class="container-fluid flex-grow-1 py-3 px-4">
+    <app-messages></app-messages>
+    <router-outlet></router-outlet>
+  </div>
+  <app-footer></app-footer>
 </div>
