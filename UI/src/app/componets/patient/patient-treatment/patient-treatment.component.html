@@ -6,12 +6,12 @@
       </h1>
       <p class="page-subtitle">View and manage patient treatments</p>
     </div>
-    <div class="header-actions text-end">
+    <div class="header-actions text-end text-white">
       <div class="fw-medium">
         {{ patient?.user?.FirstName ? (patient.user.FirstName + ' ' + (patient.user.LastName || '')) : (user?.FullName
         || (user?.FirstName + ' ' + user?.LastName)) }}
       </div>
-      <div class="text-muted small">ID: {{ patient?.ID || user?.ID || '-' }}</div>
+      <div class="text-white-50 small">ID: {{ patient?.ID || user?.ID || '-' }}</div>
     </div>
   </div>
 

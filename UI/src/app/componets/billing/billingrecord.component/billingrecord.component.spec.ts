@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { BillingrecordComponent } from './billingrecord.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BillingRecord, BillingStatus } from '../../../models/billing.model';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 describe('BillingrecordComponent', () => {
   let component: BillingrecordComponent;
@@ -34,6 +35,9 @@ describe('BillingrecordComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ BillingrecordComponent, FormsModule, HttpClientTestingModule ]
     })
+    .overrideComponent(BillingrecordComponent, {
+      set: { changeDetection: ChangeDetectionStrategy.Default }
+    })
     .compileComponents();
   });
 
@@ -61,6 +65,9 @@ describe('BillingrecordComponent', () => {
   });
 
   it('should update the component model when patient name is changed', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     const patientNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtPatientName')).nativeElement;
     const newPatientName = 'Jane Doe';
 
@@ -68,11 +75,15 @@ describe('BillingrecordComponent', () => {
     patientNameInput.dispatchEvent(new Event('input'));
     
     await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.billingRecord.PatientName).toBe(newPatientName);
   });
 
   it('should update the component model when doctor name is changed', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     const doctorNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtDoctorName')).nativeElement;
     const newDoctorName = 'Dr. House';
 
@@ -80,11 +91,15 @@ describe('BillingrecordComponent', () => {
     doctorNameInput.dispatchEvent(new Event('input'));
 
     await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.billingRecord.DoctorName).toBe(newDoctorName);
   });
 
   it('should update the component model when treatment name is changed', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     const treatmentNameInput: HTMLInputElement = fixture.debugElement.query(By.css('#txtTreatmentName')).nativeElement;
     const newTreatmentName = 'Root Canal';
 
@@ -92,6 +107,7 @@ describe('BillingrecordComponent', () => {
     treatmentNameInput.dispatchEvent(new Event('input'));
 
     await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.billingRecord.TreatmentName).toBe(newTreatmentName);
   });

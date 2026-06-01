@@ -6,7 +6,7 @@ import { DashboardComponent } from './componets/dashboard/dashboard.component';
 import { DoctorAppointmentsComponent } from './componets/doctor/doctorappointments/doctorappointments.component';
 import { PatientCompleteHistoryComponent } from './componets/patient/patientcompletehistory/patient-complete-history.component';
 import { UserMasterComponent } from './componets/user/user-master/user-master.component';
-import { BillingrecordComponent } from './componets/billing/billingrecord.component/billingrecord.component'; 
+import { BillingmasterComponent } from './componets/billing/billingmaster.component/billingmaster.component'; 
 import { authGuard } from './guards/auth.guard';
 import { PatientIdGuard } from './guards/patient-id.guard';
 import { AppconfigComponent } from './componets/appconfig/appconfig.component';
@@ -55,7 +55,7 @@ export const routes: Routes = [
   { path: 'user-search', component : UserSearch, canActivate: [authGuard] },
   { path: 'user-create', component: UserInfoComponent, canActivate: [authGuard] },
   { path: 'user-quick-create', component: UserQuickCreateComponent, canActivate: [authGuard] },
-  { path: 'billing', component: BillingrecordComponent, canActivate: [authGuard] },
+  { path: 'billing', component: BillingmasterComponent, canActivate: [authGuard] },
   { path: 'appconfig', component: AppconfigComponent, canActivate: [authGuard] },
   // Add other routes here
 ];

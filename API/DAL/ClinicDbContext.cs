@@ -61,6 +61,13 @@ namespace ClinicManager.DAL
                 .WithOne()
                 .HasForeignKey<PatientTreatment>(pt => pt.PatientID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure BillingRecord -> Payment relationship
+            modelBuilder.Entity<BillingRecord>()
+                .HasMany(br => br.Payments)
+                .WithOne()
+                .HasForeignKey(p => p.BillingID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

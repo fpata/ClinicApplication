@@ -49,53 +49,81 @@ namespace ClinicManager.Controllers
         public async Task<ActionResult<PatientTreatment>> Post(PatientTreatment treatment)
         {
             _context.PatientTreatments.Add(treatment);
-            int ID = await _context.SaveChangesAsync();
-            SaveBillingRecord(ID, treatment, true);         
+            await _context.SaveChangesAsync();
+            await SaveBillingRecordAsync(treatment.ID, treatment, true);         
             _logger.LogInformation($"Created new patient treatment with ID: {treatment.ID}");
             return CreatedAtAction(nameof(Get), new { id = treatment.ID }, treatment);
         }
 
-        private void SaveBillingRecord(int ID, PatientTreatment treatment, bool IsCreate)
+        private async Task SaveBillingRecordAsync(int treatmentId, PatientTreatment treatment, bool IsCreate)
         {
-            var billingRecord = new BillingRecord
+            string patientName = "";
+            if (treatment.PatientID.HasValue)
             {
-                TreatmentID = ID,
-                PatientID = treatment.PatientID,
-                DoctorID = treatment.DoctorID,
-                PatientName = "", // You might want to fetch and set the actual patient name
-                DoctorName = "",  // You might want to fetch and set the actual doctor name
-                TreatmentName = treatment.TreatmentPlan,
-                ServiceDate = DateTime.Now,
-                PostedDate = DateTime.Now,
-                BalanceDue = treatment.EstimatedCost ?? 0,
-                CreatedBy = treatment.CreatedBy,
-                CreatedDate = DateTime.Now,
-                DiscountTotal = 0,
-                Subtotal = treatment.EstimatedCost ?? 0,
-                TaxTotal = 0,
-                Total = treatment.EstimatedCost ?? 0,
-                IsActive = 1,
-                ModifiedBy = treatment.CreatedBy,
-                ModifiedDate = DateTime.Now,
-                Status = Models.Enums.BillingStatus.Submitted,
-                AmountPaid = 0
-            };
+                var patient = await _context.Patients.FindAsync(treatment.PatientID.Value);
+                if (patient != null)
+                {
+                    var user = await _context.Users.FindAsync(patient.UserID);
+                    if (user != null)
+                    {
+                        patientName = user.FullName;
+                    }
+                }
+            }
+
+            string doctorName = "";
+            if (treatment.DoctorID.HasValue)
+            {
+                var doctor = await _context.Users.FindAsync(treatment.DoctorID.Value);
+                if (doctor != null)
+                {
+                    doctorName = doctor.FullName;
+                }
+            }
+
             if (IsCreate)
             {
-                _context.Entry(billingRecord).State = EntityState.Added;
+                var billingRecord = new BillingRecord
+                {
+                    TreatmentID = treatmentId,
+                    PatientID = treatment.PatientID,
+                    DoctorID = treatment.DoctorID,
+                    PatientName = patientName,
+                    DoctorName = doctorName,
+                    TreatmentName = treatment.TreatmentPlan,
+                    ServiceDate = DateTime.Now,
+                    PostedDate = DateTime.Now,
+                    BalanceDue = treatment.EstimatedCost ?? 0,
+                    CreatedBy = treatment.CreatedBy,
+                    CreatedDate = DateTime.Now,
+                    DiscountTotal = 0,
+                    Subtotal = treatment.EstimatedCost ?? 0,
+                    TaxTotal = 0,
+                    Total = treatment.EstimatedCost ?? 0,
+                    IsActive = 1,
+                    ModifiedBy = treatment.CreatedBy,
+                    ModifiedDate = DateTime.Now,
+                    Status = Models.Enums.BillingStatus.Submitted,
+                    AmountPaid = 0
+                };
                 _context.BillingRecords.Add(billingRecord);
+                await _context.SaveChangesAsync();
             }
             else
             {
-                BillingRecord? bilrec = _context.BillingRecords
-                .Where(br => br.TreatmentID == ID && br.PatientID == treatment.PatientID)
-                .FirstOrDefault();
+                BillingRecord? bilrec = await _context.BillingRecords
+                    .FirstOrDefaultAsync(br => br.TreatmentID == treatmentId && br.PatientID == treatment.PatientID);
                 if (bilrec != null)
                 {
-                    if (treatment.EstimatedCost != 0 && treatment.EstimatedCost != bilrec.Total)
+                    if (treatment.EstimatedCost.HasValue && treatment.EstimatedCost.Value != bilrec.Total)
                     {
-                        _context.Entry(billingRecord).State = EntityState.Modified;
-                        _context.BillingRecords.Update(billingRecord);
+                        bilrec.Subtotal = treatment.EstimatedCost.Value;
+                        bilrec.Total = treatment.EstimatedCost.Value - (bilrec.DiscountTotal ?? 0) + (bilrec.TaxTotal ?? 0);
+                        bilrec.BalanceDue = bilrec.Total - (bilrec.AmountPaid ?? 0);
+                        bilrec.ModifiedBy = treatment.ModifiedBy;
+                        bilrec.ModifiedDate = DateTime.Now;
+                        _context.BillingRecords.Update(bilrec);
+                        await _context.SaveChangesAsync();
                     }
                 }
             }
@@ -111,6 +139,7 @@ namespace ClinicManager.Controllers
             }
             _context.Entry(treatment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            await SaveBillingRecordAsync(treatment.ID, treatment, false);
             _logger.LogInformation($"Updated patient treatment with ID: {id}");
             return NoContent();
         }
@@ -126,6 +155,7 @@ namespace ClinicManager.Controllers
             }
             patchDoc.ApplyTo(entity);
             await _context.SaveChangesAsync();
+            await SaveBillingRecordAsync(entity.ID, entity, false);
             _logger.LogInformation($"Patched patient treatment with ID: {id}");
             return NoContent();
         }

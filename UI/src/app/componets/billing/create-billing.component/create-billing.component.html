@@ -1,0 +1,209 @@
+<div class="page-container">
+  <div class="container-fluid">
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="card-header bg-transparent border-0 pt-4 px-4">
+        <h5 class="fw-bold mb-0 text-dark">
+          <i class="bi bi-file-earmark-plus me-2 text-primary"></i>Create New Billing Record
+        </h5>
+        <p class="text-muted small mt-1">Generate a new invoice for services, treatments, or procedures.</p>
+      </div>
+
+      <div class="card-body px-4 pb-4">
+        <form #billingForm="ngForm" [ngClass]="{'was-validated': formSubmitted}" novalidate 
+          (ngSubmit)="CreateBilling(billingForm)" class="app-form bg-transparent p-0 border-0">
+          
+          <!-- Section 1: Patient & Doctor References -->
+          <div class="form-section mb-4 p-3 bg-light rounded-3">
+            <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-people me-2"></i>Entity Information</h6>
+            <div class="row g-3">
+              <!-- Patient Name -->
+              <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                  <label for="txtPatName" class="form-label">
+                    <i class="bi bi-person me-1"></i>Patient Name
+                    <span class="required-star">*</span>
+                  </label>
+                  <input type="text" id="txtPatName" name="PatientName" class="form-control"
+                    [(ngModel)]="newBilling.PatientName" required placeholder="Enter patient name">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a patient name.
+                  </div>
+                </div>
+              </div>
+              <!-- Patient ID -->
+              <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                  <label for="txtPatId" class="form-label">
+                    <i class="bi bi-hash me-1"></i>Patient ID
+                  </label>
+                  <input type="number" id="txtPatId" name="PatientID" class="form-control"
+                    [(ngModel)]="newBilling.PatientID" placeholder="e.g. 1042 (optional)">
+                </div>
+              </div>
+              
+              <!-- Doctor Name -->
+              <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                  <label for="txtDocName" class="form-label">
+                    <i class="bi bi-person-badge me-1"></i>Doctor Name
+                    <span class="required-star">*</span>
+                  </label>
+                  <input type="text" id="txtDocName" name="DoctorName" class="form-control"
+                    [(ngModel)]="newBilling.DoctorName" required placeholder="Enter doctor name">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a doctor name.
+                  </div>
+                </div>
+              </div>
+              <!-- Doctor ID -->
+              <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                  <label for="txtDocId" class="form-label">
+                    <i class="bi bi-hash me-1"></i>Doctor ID
+                  </label>
+                  <input type="number" id="txtDocId" name="DoctorID" class="form-control"
+                    [(ngModel)]="newBilling.DoctorID" placeholder="e.g. 23 (optional)">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Treatment & Service Details -->
+          <div class="form-section mb-4 p-3 bg-light rounded-3">
+            <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-activity me-2"></i>Service Details</h6>
+            <div class="row g-3">
+              <!-- Treatment Name -->
+              <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                  <label for="txtTreatName" class="form-label">
+                    <i class="bi bi-bandaid me-1"></i>Treatment Name
+                    <span class="required-star">*</span>
+                  </label>
+                  <input type="text" id="txtTreatName" name="TreatmentName" class="form-control"
+                    [(ngModel)]="newBilling.TreatmentName" required placeholder="e.g. Tooth Extraction">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter a treatment name.
+                  </div>
+                </div>
+              </div>
+              <!-- Treatment ID -->
+              <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                  <label for="txtTreatId" class="form-label">
+                    <i class="bi bi-hash me-1"></i>Treatment ID
+                  </label>
+                  <input type="number" id="txtTreatId" name="TreatmentID" class="form-control"
+                    [(ngModel)]="newBilling.TreatmentID" placeholder="e.g. 506 (optional)">
+                </div>
+              </div>
+              <!-- Service Date -->
+              <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                  <label for="txtSvcDate" class="form-label">
+                    <i class="bi bi-calendar-event me-1"></i>Service Date
+                    <span class="required-star">*</span>
+                  </label>
+                  <input type="date" id="txtSvcDate" name="ServiceDate" class="form-control"
+                    [(ngModel)]="newBilling.ServiceDate" required>
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please select a service date.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Pricing & Status -->
+          <div class="form-section mb-4 p-3 bg-light rounded-3">
+            <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-cash-stack me-2"></i>Pricing & Status</h6>
+            <div class="row g-3">
+              <!-- Subtotal -->
+              <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                  <label for="txtSubtotal" class="form-label">
+                    Subtotal ($) <span class="required-star">*</span>
+                  </label>
+                  <input type="number" id="txtSubtotal" name="Subtotal" class="form-control"
+                    [(ngModel)]="newBilling.Subtotal" required min="0.01" step="0.01"
+                    (ngModelChange)="calculateTotal()" placeholder="0.00">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Subtotal must be > 0.
+                  </div>
+                </div>
+              </div>
+              <!-- Tax -->
+              <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                  <label for="txtTax" class="form-label">Tax Total ($)</label>
+                  <input type="number" id="txtTax" name="TaxTotal" class="form-control"
+                    [(ngModel)]="newBilling.TaxTotal" min="0" step="0.01"
+                    (ngModelChange)="calculateTotal()" placeholder="0.00">
+                </div>
+              </div>
+              <!-- Discount -->
+              <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                  <label for="txtDiscount" class="form-label">Discount ($)</label>
+                  <input type="number" id="txtDiscount" name="DiscountTotal" class="form-control"
+                    [(ngModel)]="newBilling.DiscountTotal" min="0" step="0.01"
+                    (ngModelChange)="calculateTotal()" placeholder="0.00">
+                </div>
+              </div>
+              <!-- Adjustment -->
+              <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                  <label for="txtAdjustment" class="form-label">Adjustment ($)</label>
+                  <input type="number" id="txtAdjustment" name="AdjustmentTotal" class="form-control"
+                    [(ngModel)]="newBilling.AdjustmentTotal" step="0.01"
+                    (ngModelChange)="calculateTotal()" placeholder="0.00">
+                </div>
+              </div>
+
+              <!-- Status -->
+              <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                  <label for="cbStatus" class="form-label">
+                    <i class="bi bi-info-circle me-1"></i>Billing Status
+                    <span class="required-star">*</span>
+                  </label>
+                  <select id="cbStatus" name="Status" class="form-select" [(ngModel)]="newBilling.Status" required>
+                    @for (status of billingStatuses; track status) {
+                      <option [value]="status">{{ status }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <!-- Calculated Grand Total Display -->
+              <div class="col-md-6 col-sm-12 d-flex align-items-center justify-content-end bg-white border rounded-3 p-3">
+                <div class="text-end">
+                  <small class="text-uppercase text-muted fw-bold d-block">Grand Total</small>
+                  <span class="fs-3 fw-bold text-primary">{{ newBilling.Total | currency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group mb-4">
+            <label for="txtNotes" class="form-label">
+              <i class="bi bi-sticky me-1"></i>Notes
+            </label>
+            <textarea id="txtNotes" name="Notes" class="form-control" rows="3"
+              [(ngModel)]="newBilling.Notes" placeholder="Enter optional notes or remarks"></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="button-group d-flex gap-3 justify-content-end pt-3 border-top">
+            <button type="button" class="btn btn-outline-secondary" (click)="resetForm(billingForm)">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Form
+            </button>
+            <button type="submit" class="btn btn-primary px-5">
+              <i class="bi bi-check-circle me-1"></i>Save Billing & Record Payment
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

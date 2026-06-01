@@ -18,6 +18,7 @@ builder.Services.AddControllers()
          options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
          // Optionally increase max depth if your object graph is deep
          options.JsonSerializerOptions.MaxDepth = 8;
+         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
      });
 
 //builder.Services.AddMemoryCache();

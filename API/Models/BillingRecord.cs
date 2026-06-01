@@ -1,4 +1,4 @@
-﻿using ClinicManager.Models.Enums;
+using ClinicManager.Models.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicManager.Models
@@ -31,7 +31,7 @@ namespace ClinicManager.Models
         public float? BalanceDue { get; set; }
 
         //public InsuranceSegment? Insurance { get; set; } //TO DO 
-        public Payment[] Payments { get; set; } = [];
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
         public string? Notes { get; set; }
         [NotMapped]
         public int PageNumber   { get; set; }=1;

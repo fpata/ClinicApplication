@@ -35,8 +35,7 @@
                         <i class="bi bi-person me-1"></i>Patient Name
                       </label>
                       <input type="text" id="txtPatientName" class="form-control form-control-lg" name="txtPatientName"
-                        [ngModel]="billingRecord?.PatientName"
-                        (ngModelChange)="billingRecord.PatientName = $event"
+                        [(ngModel)]="billingRecord.PatientName"
                         placeholder="Enter patient name">
                     </div>
                   </div>
@@ -46,8 +45,7 @@
                         <i class="bi bi-person-badge me-1"></i>Doctor Name
                       </label>
                       <input type="text" id="txtDoctorName" class="form-control form-control-lg" name="txtDoctorName"
-                        [ngModel]="billingRecord?.DoctorName"
-                        (ngModelChange)="billingRecord.DoctorName = $event"
+                        [(ngModel)]="billingRecord.DoctorName"
                         placeholder="Enter doctor name">
                     </div>
                   </div>
@@ -61,8 +59,7 @@
                         <i class="bi bi-activity me-1"></i>Treatment Name
                       </label>
                       <input type="text" id="txtTreatmentName" class="form-control form-control-lg" name="txtTreatmentName"
-                        [ngModel]="billingRecord?.TreatmentName"
-                        (ngModelChange)="billingRecord.TreatmentName = $event"
+                        [(ngModel)]="billingRecord.TreatmentName"
                         placeholder="Enter treatment name">
                     </div>
                   </div>
@@ -72,8 +69,7 @@
                         <i class="bi bi-calendar me-1"></i>Service Date
                       </label>
                       <input type="date" id="txtServiceDate" class="form-control form-control-lg" name="txtServiceDate"
-                        [ngModel]="billingRecord?.ServiceDate"
-                        (ngModelChange)="billingRecord.ServiceDate = $event">
+                        [(ngModel)]="billingRecord.ServiceDate">
                     </div>
                   </div>
                 </div>
@@ -86,8 +82,7 @@
                         <i class="bi bi-hash me-1"></i>Patient ID
                       </label>
                       <input type="number" id="txtPatientId" class="form-control form-control-lg" name="txtPatientId"
-                        [ngModel]="billingRecord?.PatientID"
-                        (ngModelChange)="billingRecord.PatientID = $event"
+                        [(ngModel)]="billingRecord.PatientID"
                         placeholder="Enter patient ID">
                     </div>
                   </div>
@@ -97,8 +92,7 @@
                         <i class="bi bi-hash me-1"></i>Doctor ID
                       </label>
                       <input type="number" id="txtDoctorId" class="form-control form-control-lg" name="txtDoctorId"
-                        [ngModel]="billingRecord?.DoctorID"
-                        (ngModelChange)="billingRecord.DoctorID = $event"
+                        [(ngModel)]="billingRecord.DoctorID"
                         placeholder="Enter doctor ID">
                     </div>
                   </div>
@@ -148,6 +142,7 @@
                 <th>Paid</th>
                 <th>Balance</th>
                 <th><i class="bi bi-sticky me-1"></i>Notes</th>
+                <th class="text-center"><i class="bi bi-lightning-charge me-1"></i>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -174,11 +169,16 @@
                 <td class="text-success fw-medium">{{ record.AmountPaid | currency }}</td>
                 <td class="fw-bold" [class.text-danger]="record.BalanceDue > 0">{{ record.BalanceDue | currency }}</td>
                 <td class="text-muted small">{{ record.Notes }}</td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="selectRecord(record)">
+                    <i class="bi bi-wallet2 me-1"></i>Pay
+                  </button>
+                </td>
               </tr>
               }
               @if (searchResult === undefined || searchResult?.billingRecords === null || searchResult?.billingRecords?.length == 0) {
               <tr>
-                <td colspan="12" class="text-center py-5">
+                <td colspan="13" class="text-center py-5">
                   <div class="empty-state">
                     <i class="bi bi-inbox"></i>
                     <p class="mt-3">No records found matching your search criteria</p>
@@ -240,6 +240,11 @@
               <span class="info-value text-muted small">{{record.Notes}}</span>
             </div>
             }
+            <div class="info-row border-0 pt-2 mb-0">
+              <button type="button" class="btn btn-sm btn-primary w-100" (click)="selectRecord(record)">
+                <i class="bi bi-wallet2 me-1"></i>Pay / Record Payment
+              </button>
+            </div>
           </div>
         </div>
         }

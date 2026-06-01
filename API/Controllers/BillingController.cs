@@ -107,7 +107,7 @@ namespace ClinicManager.Controllers
             _logger.LogInformation("Searching billing records with provided criteria");
             IQueryable<BillingRecord> query = _context.BillingRecords;
 
-            if (searchCriteria.PatientID != 0 & searchCriteria.PatientID != null)
+            if (searchCriteria.PatientID != 0 && searchCriteria.PatientID != null)
             {
                 query = query.Where(br => br.PatientID == searchCriteria.PatientID);
             }

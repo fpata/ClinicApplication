@@ -1,1 +1,55 @@
-<p>billingmaster.component works!</p>
+<div class="container-fluid py-4">
+  <!-- Desktop Tabs (Visible on MD and up) -->
+  <div class="d-none d-md-block mb-4">
+    <ul class="nav nav-tabs nav-justified modern-tabs" id="tbBilling" role="tablist">
+      <li class="nav-item" role="presentation" id="navBillingSearch">
+        <button class="nav-link active" id="tbBillingSearch-tab" data-bs-toggle="tab" data-bs-target="#tbBillingSearch"
+          type="button" role="tab" aria-controls="tbBillingSearch" aria-selected="true"
+          (click)="tabSelectedEvent($event)">
+          <i class="bi bi-search me-2"></i>Billing Search
+        </button>
+      </li>
+      <li class="nav-item" role="presentation" id="navPayment">
+        <button class="nav-link" id="tbPayment-tab" data-bs-toggle="tab" data-bs-target="#tbPayment"
+          type="button" role="tab" aria-controls="tbPayment" aria-selected="false"
+          (click)="tabSelectedEvent($event)">
+          <i class="bi bi-wallet2 me-2"></i>Payment & Settlement
+        </button>
+      </li>
+      <li class="nav-item" role="presentation" id="navCreateBilling">
+        <button class="nav-link" id="tbCreateBilling-tab" data-bs-toggle="tab" data-bs-target="#tbCreateBilling"
+          type="button" role="tab" aria-controls="tbCreateBilling" aria-selected="false"
+          (click)="tabSelectedEvent($event)">
+          <i class="bi bi-file-earmark-plus me-2"></i>Create Billing
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Mobile Select Dropdown (Visible on SM and below) -->
+  <div class="d-block d-md-none mb-4">
+    <div class="form-group">
+      <label class="form-label mb-2"><i class="bi bi-layers me-1"></i>Select Tab</label>
+      <select class="form-select form-select-lg" aria-label="Billing Tabs" (change)="mobileTabSelectedEvent($event)" [value]="selectedTab">
+        <option value="tbBillingSearch">Billing Search</option>
+        <option value="tbPayment">Payment & Settlement</option>
+        <option value="tbCreateBilling">Create Billing</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tab Contents -->
+  <div class="tab-content" id="billingTabContent">
+    <div class="tab-pane fade show active" id="tbBillingSearch" role="tabpanel" aria-labelledby="tbBillingSearch-tab">
+      <app-billingrecord (onRecordSelected)="onRecordSelected()"></app-billingrecord>
+    </div>
+
+    <div class="tab-pane fade" id="tbPayment" role="tabpanel" aria-labelledby="tbPayment-tab">
+      <app-payment></app-payment>
+    </div>
+
+    <div class="tab-pane fade" id="tbCreateBilling" role="tabpanel" aria-labelledby="tbCreateBilling-tab">
+      <app-create-billing (onBillingCreated)="onRecordSelected()"></app-create-billing>
+    </div>
+  </div>
+</div>
