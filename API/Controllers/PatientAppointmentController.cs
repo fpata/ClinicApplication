@@ -24,13 +24,38 @@ namespace ClinicManager.Controllers
             _logger = logger;
         }
 
+        private bool IsAuthorizedForPatient(int? patientUserId)
+        {
+            var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            if (roleClaim == "Administrator" || roleClaim == "Doctor" || roleClaim == "Nurse" || roleClaim == "Accountant")
+            {
+                return true;
+            }
+
+            var userIdClaim = User.FindFirst("userid")?.Value;
+            if (roleClaim == "Patient" && userIdClaim != null && patientUserId != null && userIdClaim == patientUserId.ToString())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientAppointment>>> Get(int patientID, int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Fetching patient appointments page {pageNumber} with size {pageSize}");
             
-            var cacheKey = $"appointments_patient_{patientID}_page_{pageNumber}_size_{pageSize}";
-           
+            var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            var userIdClaim = User.FindFirst("userid")?.Value;
+            if (roleClaim == "Patient")
+            {
+                var patient = await _context.Patients.AsNoTracking().FirstOrDefaultAsync(p => p.ID == patientID);
+                if (patient == null || patient.UserID.ToString() != userIdClaim)
+                {
+                    return Forbid();
+                }
+            }
 
             var appointments = await _context.PatientAppointments
                 .AsNoTracking()
@@ -40,7 +65,6 @@ namespace ClinicManager.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-         
             return appointments;
         }
 
@@ -51,16 +75,30 @@ namespace ClinicManager.Controllers
         {
             _logger.LogInformation($"Fetching patient appointments page {pageNumber} with size {pageSize}");
 
+            var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            var userIdClaim = User.FindFirst("userid")?.Value;
+
             var query = _context.PatientAppointments
                 .AsNoTracking()
                 .Where(a => a.StartDateTime >= startDate)
                 .Where(a => a.EndDateTime <= endDate);
 
+            if (roleClaim == "Patient")
+            {
+                if (int.TryParse(userIdClaim, out int loggedInUserId))
+                {
+                    query = query.Where(a => a.UserID == loggedInUserId);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+
             // Get total count before pagination
             var totalCount = await query.CountAsync();
 
             var results = await query
-                    .AsNoTracking()
                     .OrderByDescending(a => a.StartDateTime)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
@@ -84,9 +122,6 @@ namespace ClinicManager.Controllers
         {
             _logger.LogInformation($"Fetching patient appointment with ID: {id}");
             
-            var cacheKey = $"appointment_{id}";
-
-
             var entity = await _context.PatientAppointments
                 .AsNoTracking()
                 .FirstOrDefaultAsync(a => a.ID == id)
@@ -97,13 +132,22 @@ namespace ClinicManager.Controllers
                 return NotFound();
             }
 
-      
+            if (!IsAuthorizedForPatient(entity.UserID))
+            {
+                return Forbid();
+            }
+
             return entity;
         }
 
         [HttpPost]
         public async Task<ActionResult<PatientAppointment>> Post(PatientAppointment appointment)
         {
+            if (!IsAuthorizedForPatient(appointment.UserID))
+            {
+                return Forbid();
+            }
+
             appointment.CreatedDate = DateTime.Now;
             appointment.ModifiedDate = DateTime.Now;
             appointment.IsActive = 1;
@@ -124,6 +168,11 @@ namespace ClinicManager.Controllers
             {
                 _logger.LogWarning($"Patient appointment ID mismatch: {id} != {appointment.ID}");
                 return BadRequest();
+            }
+
+            if (!IsAuthorizedForPatient(appointment.UserID))
+            {
+                return Forbid();
             }
 
             appointment.ModifiedDate = DateTime.Now;
@@ -147,6 +196,11 @@ namespace ClinicManager.Controllers
                 return NotFound();
             }
 
+            if (!IsAuthorizedForPatient(entity.UserID))
+            {
+                return Forbid();
+            }
+
             patchDoc.ApplyTo(entity);
             entity.ModifiedDate = DateTime.Now;
             await _context.SaveChangesAsync();
@@ -158,6 +212,12 @@ namespace ClinicManager.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            if (roleClaim == "Patient")
+            {
+                return Forbid();
+            }
+
             var entity = await _context.PatientAppointments
                 .FirstOrDefaultAsync(a => a.ID == id);
                 
@@ -177,6 +237,12 @@ namespace ClinicManager.Controllers
         [HttpGet("doctor/{doctorId}")]
         public async Task<IActionResult> GetByDoctor(int doctorID, int pageNumber = 1, int pageSize = 10)
         {
+            var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            if (roleClaim == "Patient")
+            {
+                return Forbid();
+            }
+
             _logger.LogInformation($"Get all appointments for Doctor ID: {doctorID}");
             
             var cacheKey = $"appointments_doctor_{doctorID}";
@@ -202,8 +268,19 @@ namespace ClinicManager.Controllers
         {
             _logger.LogInformation($"Get all appointments for Patient ID: {patientID}");
             
+            var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            var userIdClaim = User.FindFirst("userid")?.Value;
+            if (roleClaim == "Patient")
+            {
+                var patient = await _context.Patients.AsNoTracking().FirstOrDefaultAsync(p => p.ID == patientID);
+                if (patient == null || patient.UserID.ToString() != userIdClaim)
+                {
+                    return Forbid();
+                }
+            }
+
             var cacheKey = $"appointments_patient_{patientID}_all";
-         
+          
             var appointments = await _context.PatientAppointments
                 .AsNoTracking()
                 .Where(a => a.PatientID == patientID)
@@ -228,6 +305,9 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Searching appointments with criteria");
             try
             {
+                var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+                var userIdClaim = User.FindFirst("userid")?.Value;
+
                 var query = from appointment in _context.PatientAppointments
                             join user in _context.Users on appointment.UserID equals user.ID
                             join address in _context.Addresses on user.ID equals address.UserID into addressGroup
@@ -238,6 +318,18 @@ namespace ClinicManager.Controllers
                                   (address == null || address.IsActive == 1) &&
                                   (contact == null || contact.IsActive == 1)
                             select new { appointment, user, address, contact };
+
+                if (roleClaim == "Patient")
+                {
+                    if (int.TryParse(userIdClaim, out int loggedInUserId))
+                    {
+                        query = query.Where(x => x.appointment.UserID == loggedInUserId);
+                    }
+                    else
+                    {
+                        return Forbid();
+                    }
+                }
 
                 // Apply filters
                 if (!string.IsNullOrWhiteSpace(model.FirstName))

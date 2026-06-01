@@ -20,6 +20,7 @@ namespace ClinicManager.DAL
         public DbSet<Payment> Payments { get; set; }
 
         public DbSet<AppConfig> AppConfigs { get; set; }
+        public DbSet<RoleAccess> RoleAccesses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

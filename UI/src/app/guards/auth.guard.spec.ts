@@ -6,6 +6,16 @@ import { AuthService } from '../services/auth.service';
 class MockAuthService {
   isLoggedIn = false;
   redirectToLogin() {}
+  getUserRole() { return 'Doctor'; }
+  getDefaultRouteForRole(role: string) { return '/dashboard'; }
+  getAllowedAccess() {
+    return {
+      canAccessPatient: true,
+      canAccessDashboard: true,
+      canAccessBilling: true,
+      canAccessConfig: true
+    };
+  }
 }
 
 describe('authGuard', () => {

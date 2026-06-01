@@ -148,16 +148,16 @@ namespace ClinicManager.Controllers
                 // Build a List<int> of non-null UserID values
                 var userIds = users
                     .Where(u => u.UserID.HasValue)
-                    .Select(u => u.UserID.Value)
+                    .Select(u => (int)u.UserID!)
                     .ToList();
 
-                // Select latest PatientTreatment per user (by max Id) for users in the list and active treatments
+                //Select latest PatientTreatment per user (by max Id) for users in the list and active treatments
                 var latestPerUser = await _context.PatientTreatments
-                    .Where(t => t.UserID.HasValue && userIds.Contains(t.UserID.Value) && t.IsActive == 1)
+                    .Where(t => t.UserID.HasValue && userIds.Contains((int)t.UserID!))
                     .GroupBy(t => t.UserID)
                     .Select(g => new
                     {
-                        UserID = g.Key.Value,
+                        UserID = g.Key!.Value,
                         MaxId = g.Max(x => x.ID)
                     })
                     .ToListAsync()

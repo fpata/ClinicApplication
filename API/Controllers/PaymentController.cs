@@ -15,7 +15,7 @@ namespace ClinicManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Administrator,Doctor,Accountant")]
     public class PaymentController : ControllerBase
     {
         private readonly ClinicDbContext _context;

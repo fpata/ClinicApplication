@@ -5,6 +5,7 @@ import { LoginResponse } from '../../services/login.service';
 import { Router, RouterModule, NavigationStart } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Patient } from '../../models/patient.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -26,7 +27,7 @@ export class Header implements OnInit, OnDestroy {
   isLoginURL: boolean = false;
   showPatientSubnav = false;
   showUserSubnav = false;
-  constructor(private dataService: DataService, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private dataService: DataService, private router: Router, private cdr: ChangeDetectorRef, private authService: AuthService) {}
 
   ngOnInit(): void {
     if (this.router.url.match('login.*')) {
@@ -37,21 +38,27 @@ export class Header implements OnInit, OnDestroy {
     }
     this.subscription = this.dataService.loginUser$.subscribe(user => {
       this.loginUser = user;
+      this.cdr.markForCheck();
     });
     // subscribe to patient changes so header links can include patientId
     this.patientSub = this.dataService.user$.subscribe(p => {
       this.patient = p?.Patients[0] ?? null;
       this.patientId = this.patient?.ID ?? null;
+      // If patientId is null and this is a Patient role, fallback to their stored ID
+      if (this.patientId === null && this.isPatientRole) {
+        this.patientId = this.authService.getLoggedInPatientId();
+      }
       this.isNewPatient = (this.patientId === 0);
       this.cdr.markForCheck();
     });
 
-    // Previously subnavs were hidden on every route change which caused
-    // the patient submenu to disappear when navigating within patient pages.
-    // Keep subnav visibility until another parent menu is explicitly clicked.
     this.routerSub = this.router.events.subscribe(e => {
       if (e instanceof NavigationStart) {
-        // Do not auto-hide subnavs on navigation. Keep current state.
+        this.cdr.markForCheck();
+      }
+      const match = this.router.url.match(/\/patient\/(\d+)/);
+      if (match && match[1]) {
+        this.patientId = Number(match[1]);
         this.cdr.markForCheck();
       }
     });
@@ -64,6 +71,10 @@ export class Header implements OnInit, OnDestroy {
     } catch (e) {
       this.isDarkTheme = false;
     }
+
+    if (this.isPatientRole) {
+      this.showPatientSubnav = true;
+    }
   }
 
   ngOnDestroy(): void {
@@ -72,11 +83,79 @@ export class Header implements OnInit, OnDestroy {
     this.routerSub?.unsubscribe();
   }
 
+  get userRole(): string | null {
+    return this.authService.getUserRole();
+  }
+
+  get showDashboardLink(): boolean {
+    const access = this.authService.getAllowedAccess();
+    if (access) return access.canAccessDashboard;
+
+    const role = this.userRole;
+    if (!role) return false;
+    const r = role.toString().toLowerCase();
+    return r === 'admin' || r === 'administrator' || r === '5' || r === 'doctor' || r === '2' || r === 'nurse' || r === '3';
+  }
+
+  get showUserMenu(): boolean {
+    const access = this.authService.getAllowedAccess();
+    if (access) return access.canAccessConfig;
+
+    const role = this.userRole;
+    if (!role) return false;
+    const r = role.toString().toLowerCase();
+    return r === 'admin' || r === 'administrator' || r === '5' || r === 'doctor' || r === '2';
+  }
+
+  get showPatientMenu(): boolean {
+    const access = this.authService.getAllowedAccess();
+    if (access) return access.canAccessPatient;
+
+    return !!this.userRole;
+  }
+
+  get showSchedulerLink(): boolean {
+    const access = this.authService.getAllowedAccess();
+    if (access) return access.canAccessConfig || access.canAccessDashboard;
+
+    const role = this.userRole;
+    if (!role) return false;
+    const r = role.toString().toLowerCase();
+    return r === 'admin' || r === 'administrator' || r === '5' || r === 'doctor' || r === '2';
+  }
+
+  get showBillingLink(): boolean {
+    const access = this.authService.getAllowedAccess();
+    if (access) return access.canAccessBilling;
+
+    const role = this.userRole;
+    if (!role) return false;
+    const r = role.toString().toLowerCase();
+    return r === 'admin' || r === 'administrator' || r === '5' || r === 'doctor' || r === '2' || r === 'accountant';
+  }
+
+  get showConfigLink(): boolean {
+    const access = this.authService.getAllowedAccess();
+    if (access) return access.canAccessConfig;
+
+    const role = this.userRole;
+    if (!role) return false;
+    const r = role.toString().toLowerCase();
+    return r === 'admin' || r === 'administrator' || r === '5' || r === 'doctor' || r === '2';
+  }
+
+  get isPatientRole(): boolean {
+    const role = this.userRole;
+    if (!role) return false;
+    const r = role.toString().toLowerCase();
+    return r === 'patient' || r === '1';
+  }
+
   logout(): void {
     try {
-      localStorage.removeItem('token');
+      this.authService.logout();
     } catch (e) {
-      console.error('Error removing token from localStorage:', e);
+      console.error('Error logging out via authService:', e);
     }
     try {
       this.dataService.setLoginUser(null);

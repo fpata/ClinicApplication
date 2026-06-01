@@ -253,5 +253,34 @@ namespace ClinicManager.Controllers
             _logger.LogInformation($"Soft deleted user with ID: {id}");
             return NoContent();
         }
+
+        [HttpGet("access")]
+        public async Task<IActionResult> GetAccess()
+        {
+            var userIdClaim = User.FindFirst("userid")?.Value;
+            var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+
+            if (string.IsNullOrEmpty(roleClaim))
+            {
+                return Unauthorized();
+            }
+
+            var roleAccess = await _context.RoleAccesses.AsNoTracking().FirstOrDefaultAsync(ra => ra.RoleName == roleClaim);
+
+            var permissions = new Dictionary<string, bool>
+            {
+                { "Patient", roleAccess?.CanAccessPatient ?? (roleClaim == "Administrator" || roleClaim == "Doctor" || roleClaim == "Nurse" || roleClaim == "Accountant" || roleClaim == "Patient") },
+                { "Dashboard", roleAccess?.CanAccessDashboard ?? (roleClaim == "Administrator" || roleClaim == "Doctor" || roleClaim == "Nurse") },
+                { "Billing", roleAccess?.CanAccessBilling ?? (roleClaim == "Administrator" || roleClaim == "Doctor" || roleClaim == "Accountant") },
+                { "Config", roleAccess?.CanAccessConfig ?? (roleClaim == "Administrator" || roleClaim == "Doctor") }
+            };
+
+            return Ok(new
+            {
+                userId = userIdClaim,
+                role = roleClaim,
+                permissions = permissions
+            });
+        }
     }
 }

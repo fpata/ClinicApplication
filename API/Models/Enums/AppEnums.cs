@@ -1,4 +1,4 @@
-﻿namespace ClinicManager.Models.Enums
+namespace ClinicManager.Models.Enums
 {
     public enum AppointmentStatus
     {
@@ -18,7 +18,8 @@
         Nurse = 3,
         Receptionist = 4,
         Administrator = 5,
-        Technician = 6
+        Technician = 6,
+        Accountant = 7
     }
 
     public enum Gender

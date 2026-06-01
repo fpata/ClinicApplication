@@ -54,6 +54,14 @@ namespace ClinicManager.Controllers
 
             _logger.LogInformation("Login successful for user: {UserName}", request.UserName);
 
+            var userRole = user?.UserType?.ToString() ?? UserType.Patient.ToString();
+            var roleAccess = await _context.RoleAccesses.AsNoTracking().FirstOrDefaultAsync(ra => ra.RoleName == userRole);
+            
+            bool canAccessPatient = roleAccess?.CanAccessPatient ?? (userRole == "Administrator" || userRole == "Doctor" || userRole == "Nurse" || userRole == "Accountant" || userRole == "Patient");
+            bool canAccessDashboard = roleAccess?.CanAccessDashboard ?? (userRole == "Administrator" || userRole == "Doctor" || userRole == "Nurse");
+            bool canAccessBilling = roleAccess?.CanAccessBilling ?? (userRole == "Administrator" || userRole == "Doctor" || userRole == "Accountant");
+            bool canAccessConfig = roleAccess?.CanAccessConfig ?? (userRole == "Administrator" || userRole == "Doctor");
+
             var configuration = HttpContext.RequestServices.GetService<IConfiguration>();
             var jwtKey = configuration?["Jwt:Key"] ?? "ClinicManagerJwtTokenForEncryption";
             var jwtIssuer = configuration?["Jwt:Issuer"] ?? "ClinicManagerIssuer";
@@ -63,9 +71,14 @@ namespace ClinicManager.Controllers
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName!), // userName validated above
+                new Claim(JwtRegisteredClaimNames.Sub, user!.UserName!), // userName validated above
                 new Claim("userid", user.ID.ToString()),
-                new Claim("usertype", user?.UserType?.ToString() ?? UserType.Patient.ToString()),
+                new Claim("usertype", userRole),
+                new Claim(ClaimTypes.Role, userRole),
+                new Claim("canAccessPatient", canAccessPatient.ToString().ToLower()),
+                new Claim("canAccessDashboard", canAccessDashboard.ToString().ToLower()),
+                new Claim("canAccessBilling", canAccessBilling.ToString().ToLower()),
+                new Claim("canAccessConfig", canAccessConfig.ToString().ToLower()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -84,14 +97,21 @@ namespace ClinicManager.Controllers
                 token = tokenString,
                 user = new
                 {
-                    user.ID,
-                    user.UserName,
-                    user.UserType,
-                    user.FirstName,
-                    user.LastName,
-                    user.Gender,
-                    user.Age,
-                    user.LastLoginDate
+                    ID=user?.ID,
+                    UserName=user?.UserName,
+                    UserType=user?.UserType,
+                    FirstName=user?.FirstName,
+                    LastName=user?.LastName,
+                    Gender=user?.Gender,
+                    Age=user?.Age,
+                    LastLoginDate=user?.LastLoginDate
+                },
+                allowedAccess = new
+                {
+                    canAccessPatient = canAccessPatient,
+                    canAccessDashboard = canAccessDashboard,
+                    canAccessBilling = canAccessBilling,
+                    canAccessConfig = canAccessConfig
                 }
             });
         }

@@ -37,10 +37,12 @@ describe('LoginComponent', () => {
   beforeEach(async () => {
     const loginServiceSpy = jasmine.createSpyObj('LoginService', ['login']);
     const dataServiceSpy = jasmine.createSpyObj('DataService', ['setLoginUser', 'setConfig']);
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['setToken', 'getToken', 'getUser']);
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['setToken', 'getToken', 'getUser', 'getUserRole', 'getDefaultRouteForRole', 'setAllowedAccess', 'getAllowedAccess']);
     const configServiceSpy = jasmine.createSpyObj('AppConfigService', ['getConfigs']);
 
     configServiceSpy.getConfigs.and.returnValue(of({}));
+    authServiceSpy.getUserRole.and.returnValue('Doctor');
+    authServiceSpy.getDefaultRouteForRole.and.returnValue('/dashboard');
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent, HttpClientTestingModule, RouterTestingModule],

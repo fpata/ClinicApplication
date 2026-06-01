@@ -6,6 +6,7 @@ import { Header } from './header.component';
 import { DataService } from '../../services/data.service';
 import { LoginResponse } from '../../services/login.service';
 import { UserType } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
 
 describe('HeaderComponent', () => {
   let component: Header;
@@ -33,11 +34,24 @@ describe('HeaderComponent', () => {
       loginUser$: loginUserSubject.asObservable(),
       user$: userSubject.asObservable()
     });
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getUserRole', 'getLoggedInPatientId', 'getDefaultRouteForRole', 'logout', 'getAllowedAccess']);
+    authServiceSpy.getUserRole.and.returnValue('Doctor');
+    authServiceSpy.getDefaultRouteForRole.and.returnValue('/dashboard');
+    authServiceSpy.getAllowedAccess.and.returnValue({
+      canAccessPatient: true,
+      canAccessDashboard: true,
+      canAccessBilling: true,
+      canAccessConfig: true
+    });
+    authServiceSpy.logout.and.callFake(() => {
+      localStorage.removeItem('token');
+    });
 
     await TestBed.configureTestingModule({
       imports: [Header, RouterTestingModule],
       providers: [
-        { provide: DataService, useValue: dataServiceSpy }
+        { provide: DataService, useValue: dataServiceSpy },
+        { provide: AuthService, useValue: authServiceSpy }
       ]
     }).compileComponents();
 

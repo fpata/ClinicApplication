@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace ClinicManager.Controllers
 {
@@ -15,17 +16,53 @@ namespace ClinicManager.Controllers
     {
         private readonly ClinicDbContext _context;
         private readonly ILogger<PatientTreatmentDetailController> _logger;
+
         public PatientTreatmentDetailController(ClinicDbContext context, ILogger<PatientTreatmentDetailController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
+        private bool IsAuthorizedForPatient(int? patientUserId)
+        {
+            var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            if (roleClaim == "Administrator" || roleClaim == "Doctor" || roleClaim == "Nurse" || roleClaim == "Accountant")
+            {
+                return true;
+            }
+
+            var userIdClaim = User.FindFirst("userid")?.Value;
+            if (roleClaim == "Patient" && userIdClaim != null && patientUserId != null && userIdClaim == patientUserId.ToString())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientTreatmentDetail>>> Get(int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Fetching patient treatment details page {pageNumber} with size {pageSize}");
-            var details = await _context.PatientTreatmentDetails
+            
+            var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            var userIdClaim = User.FindFirst("userid")?.Value;
+            
+            var query = _context.PatientTreatmentDetails.AsNoTracking();
+
+            if (roleClaim == "Patient")
+            {
+                if (int.TryParse(userIdClaim, out int loggedInUserId))
+                {
+                    query = query.Where(d => d.UserID == loggedInUserId);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+
+            var details = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -42,12 +79,23 @@ namespace ClinicManager.Controllers
                 _logger.LogWarning($"Patient treatment detail with ID: {id} not found");
                 return NotFound();
             }
+
+            if (!IsAuthorizedForPatient(entity.UserID))
+            {
+                return Forbid();
+            }
+
             return entity;
         }
 
         [HttpPost]
         public async Task<ActionResult<PatientTreatmentDetail>> Post(PatientTreatmentDetail detail)
         {
+            if (!IsAuthorizedForPatient(detail.UserID))
+            {
+                return Forbid();
+            }
+
             _context.PatientTreatmentDetails.Add(detail);
             await _context.SaveChangesAsync();
             await UpdateBillingSubtotalAsync(detail.PatientTreatmentID);
@@ -63,6 +111,12 @@ namespace ClinicManager.Controllers
                 _logger.LogWarning($"Patient treatment detail ID mismatch: {id} != {detail.ID}");
                 return BadRequest();
             }
+
+            if (!IsAuthorizedForPatient(detail.UserID))
+            {
+                return Forbid();
+            }
+
             _context.Entry(detail).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             await UpdateBillingSubtotalAsync(detail.PatientTreatmentID);
@@ -79,6 +133,12 @@ namespace ClinicManager.Controllers
                 _logger.LogWarning($"Patient treatment detail with ID: {id} not found for patch");
                 return NotFound();
             }
+
+            if (!IsAuthorizedForPatient(entity.UserID))
+            {
+                return Forbid();
+            }
+
             patchDoc.ApplyTo(entity);
             await _context.SaveChangesAsync();
             await UpdateBillingSubtotalAsync(entity.PatientTreatmentID);
@@ -89,12 +149,19 @@ namespace ClinicManager.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value ?? User.FindFirst("usertype")?.Value;
+            if (roleClaim == "Patient")
+            {
+                return Forbid();
+            }
+
             var entity = await _context.PatientTreatmentDetails.FindAsync(id);
             if (entity == null)
             {
                 _logger.LogWarning($"Patient treatment detail with ID: {id} not found for deletion");
                 return NotFound();
             }
+
             var patientTreatmentId = entity.PatientTreatmentID;
             _context.PatientTreatmentDetails.Remove(entity);
             await _context.SaveChangesAsync();

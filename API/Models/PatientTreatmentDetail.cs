@@ -24,8 +24,6 @@ namespace ClinicManager.Models
 
         public string? FollowUpInstructions { get; set; }
 
-        public int IsActive { get; set; } = 1;
-
         public string? FollowUpDate { get; set; }
 
         public float? ProcedureTreatmentCost { get; set; } = 0;

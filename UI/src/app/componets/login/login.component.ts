@@ -46,7 +46,9 @@ export class LoginComponent {
           this.dataService.setConfig(config);
           this.dataService.setLoginUser(res.user as any);
           this.authService.setToken(res.token);
-          this.router.navigate(['/dashboard']);
+          const userRole = this.authService.getUserRole();
+          const nextRoute = this.authService.getDefaultRouteForRole(userRole);
+          this.router.navigate([nextRoute]);
         });
         this.error = '';
         this.cdRef.detectChanges();

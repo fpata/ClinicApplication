@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, tap, switchMap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
@@ -18,6 +18,12 @@ export class LoginResponse {
     DOB?: string;
     LastLoginDate?: string;
   };
+  allowedAccess?: {
+    canAccessPatient: boolean;
+    canAccessDashboard: boolean;
+    canAccessBilling: boolean;
+    canAccessConfig: boolean;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -33,12 +39,41 @@ export class LoginService {
   login(UserName: string, Password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.apiUrl, { UserName, Password })
       .pipe(
-        tap(response => {
+        switchMap(response => {
           if (response.token) {
             this.authService.setToken(response.token);
             this.authService.setUser(response.user);
-            this.router.navigate(['/dashboard']);
+            this.authService.setAllowedAccess(response.allowedAccess);
+
+            const userRole = this.authService.getUserRole();
+            const isPatient = userRole && (userRole.toString().toLowerCase() === 'patient' || userRole.toString() === '1');
+
+            if (isPatient) {
+              const headers = new HttpHeaders({ Authorization: `Bearer ${response.token}` });
+              return this.http.get<any>(`${environment.API_BASE_URL}/patient/Latest/${response.user.ID}`, { headers }).pipe(
+                tap(patient => {
+                  if (patient && patient.ID) {
+                    this.authService.setLoggedInPatientId(patient.ID);
+                    const mockUser = { ...response.user, Patients: [patient] };
+                    this.dataService.setUser(mockUser as any);
+                  }
+                  const nextRoute = this.authService.getDefaultRouteForRole(userRole);
+                  this.router.navigate([nextRoute]);
+                }),
+                switchMap(() => of(response)),
+                catchError(err => {
+                  console.error('Failed to get patient details for login user:', err);
+                  const nextRoute = this.authService.getDefaultRouteForRole(userRole);
+                  this.router.navigate([nextRoute]);
+                  return of(response);
+                })
+              );
+            } else {
+              const nextRoute = this.authService.getDefaultRouteForRole(userRole);
+              this.router.navigate([nextRoute]);
+            }
           }
+          return of(response);
         })
       );
   }
