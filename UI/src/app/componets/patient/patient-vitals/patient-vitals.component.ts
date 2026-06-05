@@ -10,6 +10,7 @@ import { UtilityService } from '../../../services/utility.service';
 import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../models/user.model';
 import { PatientBaseComponent } from '../patient-base.component';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-patient-vitals',
@@ -25,6 +26,7 @@ export class PatientVitalsComponent extends PatientBaseComponent implements OnIn
 
   constructor(
     dataService: DataService,
+    userService: UserService,
     patientService: PatientService,
     messageService: MessageService,
     router: Router,
@@ -32,7 +34,7 @@ export class PatientVitalsComponent extends PatientBaseComponent implements OnIn
     private util: UtilityService,
     private authService: AuthService
   ) {
-    super(dataService, patientService, messageService, router, cdr);
+    super(dataService, userService, patientService, messageService, router, cdr);
   }
 
   ngOnInit(): void {

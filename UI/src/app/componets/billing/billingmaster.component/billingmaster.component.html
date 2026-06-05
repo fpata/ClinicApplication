@@ -10,9 +10,8 @@
         </button>
       </li>
       <li class="nav-item" role="presentation" id="navPayment">
-        <button class="nav-link" id="tbPayment-tab" data-bs-toggle="tab" data-bs-target="#tbPayment"
-          type="button" role="tab" aria-controls="tbPayment" aria-selected="false"
-          (click)="tabSelectedEvent($event)">
+        <button class="nav-link" id="tbPayment-tab" data-bs-toggle="tab" data-bs-target="#tbPayment" type="button"
+          role="tab" aria-controls="tbPayment" aria-selected="false" (click)="tabSelectedEvent($event)">
           <i class="bi bi-wallet2 me-2"></i>Payment & Settlement
         </button>
       </li>
@@ -30,7 +29,8 @@
   <div class="d-block d-md-none mb-4">
     <div class="form-group">
       <label class="form-label mb-2"><i class="bi bi-layers me-1"></i>Select Tab</label>
-      <select class="form-select form-select-lg" aria-label="Billing Tabs" (change)="mobileTabSelectedEvent($event)" [value]="selectedTab">
+      <select class="form-select form-select-lg" aria-label="Billing Tabs" (change)="mobileTabSelectedEvent($event)"
+        [value]="selectedTab">
         <option value="tbBillingSearch">Billing Search</option>
         <option value="tbPayment">Payment & Settlement</option>
         <option value="tbCreateBilling">Create Billing</option>

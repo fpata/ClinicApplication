@@ -24,18 +24,20 @@ export class Header implements OnInit, OnDestroy {
   patient: Patient | null = null;
   patientId: number | null = null;
   isNewPatient = false;
-  isLoginURL: boolean = false;
   showPatientSubnav = false;
   showUserSubnav = false;
+  showBillingSubnav = false;
   constructor(private dataService: DataService, private router: Router, private cdr: ChangeDetectorRef, private authService: AuthService) {}
 
+  get isLoginURL(): boolean {
+    return this.router.url.includes('login');
+  }
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn;
+  }
+
   ngOnInit(): void {
-    if (this.router.url.match('login.*')) {
-      this.loginUser = null;
-      this.isLoginURL = true;
-    } else {
-      this.isLoginURL = false;
-    }
     this.subscription = this.dataService.loginUser$.subscribe(user => {
       this.loginUser = user;
       this.cdr.markForCheck();
@@ -108,6 +110,7 @@ export class Header implements OnInit, OnDestroy {
   }
 
   get showPatientMenu(): boolean {
+    if (this.isLoginURL) return false;
     const access = this.authService.getAllowedAccess();
     if (access) return access.canAccessPatient;
 
@@ -168,14 +171,30 @@ export class Header implements OnInit, OnDestroy {
   togglePatientSubnav(event: Event): void {
     event.preventDefault();
     this.showPatientSubnav = !this.showPatientSubnav;
-    if (this.showPatientSubnav) this.showUserSubnav = false;
+    if (this.showPatientSubnav) {
+      this.showUserSubnav = false;
+      this.showBillingSubnav = false;
+    }
     this.cdr.markForCheck();
   }
 
   toggleUserSubnav(event: Event): void {
     event.preventDefault();
     this.showUserSubnav = !this.showUserSubnav;
-    if (this.showUserSubnav) this.showPatientSubnav = false;
+    if (this.showUserSubnav) {
+      this.showPatientSubnav = false;
+      this.showBillingSubnav = false;
+    }
+    this.cdr.markForCheck();
+  }
+
+  toggleBillingSubnav(event: Event): void {
+    event.preventDefault();
+    this.showBillingSubnav = !this.showBillingSubnav;
+    if (this.showBillingSubnav) {
+      this.showPatientSubnav = false;
+      this.showUserSubnav = false;
+    }
     this.cdr.markForCheck();
   }
 

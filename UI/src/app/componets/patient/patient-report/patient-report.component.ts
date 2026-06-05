@@ -15,6 +15,7 @@ import { MessageService } from '../../../services/message.service';
 import { PatientReportService } from '../../../services/patient-report.service';
 import { PatientService } from '../../../services/patient.service';
 import { PatientBaseComponent } from '../patient-base.component';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-patient-report',
@@ -31,6 +32,7 @@ export class PatientReportComponent extends PatientBaseComponent implements OnIn
 
   constructor(
     dataService: DataService,
+    userService: UserService,
     patientService: PatientService,
     messageService: MessageService,
     router: Router,
@@ -39,7 +41,7 @@ export class PatientReportComponent extends PatientBaseComponent implements OnIn
     private searchService: SearchService,
     private reportService: PatientReportService
   ) {
-    super(dataService, patientService, messageService, router, cdr);
+    super(dataService, userService, patientService, messageService, router, cdr);
   }
 
   ngOnInit(): void {

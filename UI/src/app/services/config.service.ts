@@ -3,11 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppConfig } from '../models/appconfig.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AppConfigService {
-  private apiUrl = '/api/config'; // Adjust API endpoint as needed
+  private apiUrl = `${environment.API_BASE_URL}/appconfig`;
 
   constructor(private http: HttpClient) {}
 

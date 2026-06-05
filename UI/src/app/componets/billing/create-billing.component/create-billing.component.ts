@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BillingRecord, BillingStatus } from '../../../models/billing.model';
 import { BillingService } from '../../../services/blling.service';
 import { MessageService } from '../../../services/message.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-billing',
@@ -18,12 +19,11 @@ export class CreateBillingComponent {
   billingStatuses = Object.values(BillingStatus);
   formSubmitted = false;
 
-  @Output() onBillingCreated = new EventEmitter<void>();
-
   constructor(
     private billingService: BillingService,
     private messageService: MessageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   private initBillingRecord(): BillingRecord {
@@ -81,9 +81,9 @@ export class CreateBillingComponent {
       next: (createdRecord: BillingRecord) => {
         this.messageService.success('Billing record created successfully');
         this.formSubmitted = false;
-        // Select the newly created record and emit event
+        // Select the newly created record and navigate
         this.billingService.setSelectedBillingRecord(createdRecord);
-        this.onBillingCreated.emit();
+        this.router.navigate(['/billing/payment']);
         this.newBilling = this.initBillingRecord();
         form.resetForm(this.newBilling);
         this.cdr.markForCheck();

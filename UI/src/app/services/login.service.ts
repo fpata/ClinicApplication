@@ -46,7 +46,8 @@ export class LoginService {
             this.authService.setAllowedAccess(response.allowedAccess);
 
             const userRole = this.authService.getUserRole();
-            const isPatient = userRole && (userRole.toString().toLowerCase() === 'patient' || userRole.toString() === '1');
+            const isAdmin = userRole && (userRole.toString().toLowerCase() === 'admin' || userRole.toString().toLowerCase() === 'administrator' || userRole.toString() === '5');
+            const isPatient = !isAdmin && userRole && (userRole.toString().toLowerCase() === 'patient' || userRole.toString() === '1');
 
             if (isPatient) {
               const headers = new HttpHeaders({ Authorization: `Bearer ${response.token}` });
@@ -69,7 +70,7 @@ export class LoginService {
                 })
               );
             } else {
-              const nextRoute = this.authService.getDefaultRouteForRole(userRole);
+              const nextRoute = isAdmin ? '/dashboard' : this.authService.getDefaultRouteForRole(userRole);
               this.router.navigate([nextRoute]);
             }
           }

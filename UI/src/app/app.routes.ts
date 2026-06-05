@@ -6,9 +6,11 @@ import { DashboardComponent } from './componets/dashboard/dashboard.component';
 import { DoctorAppointmentsComponent } from './componets/doctor/doctorappointments/doctorappointments.component';
 import { PatientCompleteHistoryComponent } from './componets/patient/patientcompletehistory/patient-complete-history.component';
 import { UserMasterComponent } from './componets/user/user-master/user-master.component';
-import { BillingmasterComponent } from './componets/billing/billingmaster.component/billingmaster.component'; 
 import { authGuard } from './guards/auth.guard';
 import { PatientIdGuard } from './guards/patient-id.guard';
+import { BillingrecordComponent } from './componets/billing/billingrecord.component/billingrecord.component';
+import { CreateBillingComponent } from './componets/billing/create-billing.component/create-billing.component';
+import { PaymentComponent } from './componets/billing/payment.component/payment.component';
 import { AppconfigComponent } from './componets/appconfig/appconfig.component';
 import { ForgotPasswordComponent } from './componets/login/forgotpassword/forgotpassword.component';
 import { UserSearch } from './componets/user/user-search/user-search.component';
@@ -56,7 +58,16 @@ export const routes: Routes = [
   { path: 'user-search', component : UserSearch, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
   { path: 'user-create', component: UserInfoComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
   { path: 'user-quick-create', component: UserQuickCreateComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
-  { path: 'billing', component: BillingmasterComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Accountant'] } },
+  { path: 'billing',
+    canActivate: [authGuard],
+    data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Accountant'] },
+    children: [
+      { path: 'records', component: BillingrecordComponent },
+      { path: 'create', component: CreateBillingComponent },
+      { path: 'payment', component: PaymentComponent },
+      { path: '', redirectTo: 'records', pathMatch: 'full' }
+    ]
+  },
   { path: 'appconfig', component: AppconfigComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
   // Add other routes here
 ];

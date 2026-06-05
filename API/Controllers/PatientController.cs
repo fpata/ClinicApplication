@@ -118,10 +118,14 @@ namespace ClinicManager.Controllers
             }
             
             var patient = await _context.Patients
-                .AsNoTracking()
-                .Where(p => p.UserID == userId && p.IsActive == 1)
-                .OrderByDescending(p => p.ID)
-                .FirstOrDefaultAsync()
+                  .AsNoTracking()
+                .AsSplitQuery() // Use AsSplitQuery to optimize loading related entities
+                .Include(p => p.PatientAppointments)
+                .Include(p => p.PatientReports)
+                .Include(p => p.PatientVitals)
+                .Include(p => p.PatientTreatment)
+                    .ThenInclude(pt => pt!.PatientTreatmentDetails)
+                .FirstOrDefaultAsync(p => p.UserID == userId && p.IsActive == 1)
                 .ConfigureAwait(false);
             
             if (patient == null)

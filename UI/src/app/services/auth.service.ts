@@ -158,6 +158,9 @@ export class AuthService {
   getDefaultRouteForRole(role: string | null): string {
     if (!role) return '/login';
     const r = role.toString().toLowerCase();
+    if (r === 'admin' || r === 'administrator' || r === '5' || r === 'doctor' || r === '2' || r === 'nurse' || r === '3') {
+      return '/dashboard';
+    }
     if (r === 'patient' || r === '1') {
       const patientId = this.getLoggedInPatientId();
       return patientId ? `/patient/${patientId}/treatment` : '/patient';

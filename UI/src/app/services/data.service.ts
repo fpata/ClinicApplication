@@ -34,7 +34,7 @@ export class DataService {
   private userKey = 'user';
   private patientKey = 'patientId';
 
- 
+
 
   setUser(newUser: User): void {
     this.userSource.next(newUser);

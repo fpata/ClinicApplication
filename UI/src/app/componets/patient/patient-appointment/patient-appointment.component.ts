@@ -8,7 +8,7 @@ import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { AppointmentHelper } from '../../../common/appointment-helper';
 import { Patient } from '../../../models/patient.model';
 import { User } from '../../../models/user.model';
-
+import { UserService } from '../../../services/user.service';
 @Component({
   selector: 'app-patient-appointment',
   imports: [DashboardComponent],
@@ -21,12 +21,13 @@ export class PatientAppointmentComponent extends PatientBaseComponent implements
 
   constructor(
     dataService: DataService,
+    userService: UserService,
     patientService: PatientService,
     messageService: MessageService,
     router: Router,
     cdr: ChangeDetectorRef
   ) {
-    super(dataService, patientService, messageService, router, cdr);
+    super(dataService, userService, patientService, messageService, router, cdr);
   }
 
   ngOnInit(): void {
@@ -56,15 +57,15 @@ export class PatientAppointmentComponent extends PatientBaseComponent implements
     // Prefer the nested user object on the patient record
     if (this.patient?.user) {
       const first = this.patient.user.FirstName || '';
-      const last  = this.patient.user.LastName  || '';
-      const name  = (first + ' ' + last).trim();
+      const last = this.patient.user.LastName || '';
+      const name = (first + ' ' + last).trim();
       if (name) return name;
     }
     // Fall back to the top-level user loaded into the base component
     if (this.user) {
       const first = this.user.FirstName || '';
-      const last  = this.user.LastName  || '';
-      const name  = (first + ' ' + last).trim();
+      const last = this.user.LastName || '';
+      const name = (first + ' ' + last).trim();
       if (name) return name;
     }
     return '';

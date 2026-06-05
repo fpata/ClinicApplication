@@ -11,6 +11,7 @@ import { Patient } from '../../../models/patient.model';
 import { PatientBaseComponent } from '../patient-base.component';
 import { MessageService } from '../../../services/message.service';
 import { User } from '../../../models/user.model';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-patient-treatment',
@@ -32,6 +33,7 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
 
   constructor(
     dataService: DataService,
+    userService: UserService,
     patientService: PatientService,
     router: Router,
     cdr: ChangeDetectorRef,
@@ -39,13 +41,14 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
     util: UtilityService,
     route: ActivatedRoute
   ) {
-    super(dataService, patientService, messageService, router, cdr);
+    super(dataService, userService, patientService, messageService, router, cdr);
     this.util = util;
   }
 
   ngOnInit() {
     // Subscribe to patient changes from the data service
     this.initPatientSubscription();
+    this.loadPatientInformation();
   }
 
   ClearTreatmentForm() {
@@ -118,11 +121,11 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
         const deletedDetail = this.treatment.PatientTreatmentDetails[index];
         this.treatment.PatientTreatmentDetails.splice(index, 1);
         this.treatment.ActualCost = this.calculateTotalCost();
-        
+
         if (this.patient) {
           const updatedPatient = JSON.parse(JSON.stringify(this.patient));
           updatedPatient.PatientTreatment = this.treatment;
-          
+
           this.dataService.setPatient(updatedPatient);
           if (this.user) {
             const updatedUser = JSON.parse(JSON.stringify(this.user));
@@ -132,7 +135,7 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
             this.dataService.setUser(updatedUser);
           }
         }
-        
+
         console.log('Deleted treatment detail:', deletedDetail);
         alert('Treatment detail deleted successfully. Click the Save Changes button to persist to the database.');
         this.cdr.markForCheck();
@@ -198,7 +201,7 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
     // Create a new patient object to ensure change detection
     const updatedPatient = JSON.parse(JSON.stringify(this.patient));
     updatedPatient.PatientTreatment = this.treatment;
-    
+
     this.dataService.setPatient(updatedPatient);
     if (this.user) {
       const updatedUser = JSON.parse(JSON.stringify(this.user));
@@ -207,7 +210,7 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
       }
       this.dataService.setUser(updatedUser);
     }
-    
+
     this.newTreatmentDetail = null;
     this.isEditOperation = false;
     alert('Treatment detail saved. Click the Save Changes button in the main form to persist changes to the database.');

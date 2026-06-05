@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { BillingRecord, SearchResultBillingRecord } from '../../../models/billing.model';
 import { FormsModule } from '@angular/forms';
 import { BillingService } from '../../../services/blling.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-billingrecord',
@@ -16,11 +17,10 @@ export class BillingrecordComponent {
   billingRecord: BillingRecord = new BillingRecord();
   searchResult: SearchResultBillingRecord = new SearchResultBillingRecord();
 
-  @Output() onRecordSelected = new EventEmitter<void>();
-
   constructor(
     private billingService: BillingService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   Search(): void {
@@ -38,6 +38,6 @@ export class BillingrecordComponent {
 
   selectRecord(record: BillingRecord): void {
     this.billingService.setSelectedBillingRecord(record);
-    this.onRecordSelected.emit();
+    this.router.navigate(['/billing/payment']);
   }
 }

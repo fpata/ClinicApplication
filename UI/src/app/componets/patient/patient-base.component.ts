@@ -2,10 +2,11 @@ import { ChangeDetectorRef, Directive, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Patient } from '../../models/patient.model';
-import { User } from '../../models/user.model';
+import { User, UserType } from '../../models/user.model';
 import { DataService } from '../../services/data.service';
 import { MessageService } from '../../services/message.service';
 import { PatientService } from '../../services/patient.service';
+import { UserService } from '../../services/user.service';
 
 /**
  * Abstract base class for all patient detail components.
@@ -27,6 +28,7 @@ export abstract class PatientBaseComponent implements OnDestroy {
 
   constructor(
     protected dataService: DataService,
+    protected userService: UserService,
     protected patientService: PatientService,
     protected messageService: MessageService,
     protected router: Router,
@@ -137,5 +139,33 @@ export abstract class PatientBaseComponent implements OnDestroy {
         this.messageService.error('Failed to save patient: ' + (error?.message ?? error));
       }
     });
+  }
+
+  protected loadPatientInformation(): void {
+    const loginUser = this.dataService.getLoginUser();
+    const userType = loginUser?.user?.UserType as any;
+    const isPatient = userType === UserType.Patient || userType === 'Patient' || userType === 1 || userType === '1';
+    if (this.user == null && loginUser?.user && isPatient) {
+      this.userService.getUser(loginUser.user.ID).subscribe({
+        next: (user: User) => {
+          this.user = user;
+          this.patientService.getLatestPatientbyUserId(user.ID).subscribe({
+            next: (patient: Patient) => {
+              this.patient = patient;
+              this.dataService.setPatient(patient);
+              this.user!.Patients = [patient];
+              this.dataService.setUser(this.user!);
+            },
+            error: (error: any) => {
+              this.messageService.error('Failed to load patient information: ' + (error?.message ?? error));
+            }
+          });
+        },
+        error: (error: any) => {
+          this.messageService.error('Failed to load user information: ' + (error?.message ?? error));
+        }
+      });
+      this.cdr.detectChanges();
+    }
   }
 }

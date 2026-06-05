@@ -7,6 +7,7 @@ import { DataService } from '../../../services/data.service';
 import { MessageService } from '../../../services/message.service';
 import { PatientService } from '../../../services/patient.service';
 import { PatientBaseComponent } from '../patient-base.component';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-patient-history',
@@ -20,12 +21,13 @@ export class PatientHistoryComponent extends PatientBaseComponent {
 
   constructor(
     dataService: DataService,
+    userService: UserService,
     patientService: PatientService,
     messageService: MessageService,
     router: Router,
     cdr: ChangeDetectorRef
   ) {
-    super(dataService, patientService, messageService, router, cdr);
+    super(dataService, userService, patientService, messageService, router, cdr);
   }
 
   ngOnInit(): void {
