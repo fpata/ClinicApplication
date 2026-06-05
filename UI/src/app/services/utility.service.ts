@@ -16,7 +16,17 @@ import { Injectable } from '@angular/core';
  */
 @Injectable({ providedIn: 'root' })
 export class UtilityService {
+  public getDefaultStartDate(): Date {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(today.setDate(diff));
+  }
 
+  public getDefaultEndDate(): Date {
+    const start = this.getDefaultStartDate();
+    return new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000);
+  }
 
   format(dateInput: Date | string | number, pattern: string = 'yyyy-MM-dd'): string {
     const date = this.coerce(dateInput);
@@ -136,42 +146,42 @@ export class UtilityService {
   createAppointmentDateTime(date: Date, timeString: string): Date {
     const [hours, minutes] = timeString.split(':').map(Number);
     const appointmentDate = new Date(date);
-    
+
     // Create date using local timezone components
     // Note: new Date(year, month, day, hours, minutes) creates a local time Date object.
     // No timezone adjustment needed.
     return new Date(
-        appointmentDate.getFullYear(),
-        appointmentDate.getMonth(),
-        appointmentDate.getDate(),
-        hours,
-        minutes,
-        0,
-        0
+      appointmentDate.getFullYear(),
+      appointmentDate.getMonth(),
+      appointmentDate.getDate(),
+      hours,
+      minutes,
+      0,
+      0
     );
   }
 
-/**
-   * Handles appointment date/time conversion with timezone consideration
-   * @param date Base date
-   * @param timeString Time in HH:mm format
-   * @returns Date object with correct local time
-   */
+  /**
+     * Handles appointment date/time conversion with timezone consideration
+     * @param date Base date
+     * @param timeString Time in HH:mm format
+     * @returns Date object with correct local time
+     */
   createAppointmentDateTimeFromString(stringDate: string, timeString: string): Date {
     const [hours, minutes] = timeString.split(':').map(Number);
     const appointmentDate = new Date(stringDate);
-    
+
     // Create date using local timezone components
     // Note: new Date(year, month, day, hours, minutes) creates a local time Date object.
     // No timezone adjustment needed.
     return new Date(
-        appointmentDate.getFullYear(),
-        appointmentDate.getMonth(),
-        appointmentDate.getDate(),
-        hours,
-        minutes,
-        0,
-        0
+      appointmentDate.getFullYear(),
+      appointmentDate.getMonth(),
+      appointmentDate.getDate(),
+      hours,
+      minutes,
+      0,
+      0
     );
   }
 
@@ -187,8 +197,8 @@ export class UtilityService {
     const thirtyMinutesLater = new Date(localNow.getTime() + 30 * 60000);
 
     return {
-        startTime: localNow.toLocaleTimeString('en-GB').slice(0, 5),
-        endTime: thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5)
+      startTime: localNow.toLocaleTimeString('en-GB').slice(0, 5),
+      endTime: thirtyMinutesLater.toLocaleTimeString('en-GB').slice(0, 5)
     };
   }
 
@@ -201,12 +211,12 @@ export class UtilityService {
     // Create a new date object adjusted for local timezone
     const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
     return localDate.toLocaleString('en-GB', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
     });
   }
 
@@ -243,7 +253,7 @@ export class UtilityService {
     return roundedDate;
   }
 
-    getFileNameFromPath(filePath: string): string {
+  getFileNameFromPath(filePath: string): string {
     return filePath.split('/').pop() || '';
   }
 }

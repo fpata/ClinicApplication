@@ -45,33 +45,39 @@ export class LoginService {
             this.authService.setUser(response.user);
             this.authService.setAllowedAccess(response.allowedAccess);
 
-            const userRole = this.authService.getUserRole();
-            const isAdmin = userRole && (userRole.toString().toLowerCase() === 'admin' || userRole.toString().toLowerCase() === 'administrator' || userRole.toString() === '5');
-            const isPatient = !isAdmin && userRole && (userRole.toString().toLowerCase() === 'patient' || userRole.toString() === '1');
+            // Read UserType directly from the API response (arrives as string due to
+            // JsonStringEnumConverter, e.g. "Patient", "Administrator", etc.)
+            const rawUserType = response.user?.UserType?.toString() ?? '';
+            const isPatient = rawUserType === '1'
+              || rawUserType.toLowerCase() === 'patient';
 
             if (isPatient) {
+              // Patient role: fetch their latest patient record then navigate
               const headers = new HttpHeaders({ Authorization: `Bearer ${response.token}` });
-              return this.http.get<any>(`${environment.API_BASE_URL}/patient/Latest/${response.user.ID}`, { headers }).pipe(
+              return this.http.get<any>(
+                `${environment.API_BASE_URL}/patient/Latest/${response.user.ID}`,
+                { headers }
+              ).pipe(
                 tap(patient => {
                   if (patient && patient.ID) {
                     this.authService.setLoggedInPatientId(patient.ID);
-                    const mockUser = { ...response.user, Patients: [patient] };
-                    this.dataService.setUser(mockUser as any);
+                    this.dataService.setUser({ ...response.user, Patients: [patient] } as any);
                   }
-                  const nextRoute = this.authService.getDefaultRouteForRole(userRole);
-                  this.router.navigate([nextRoute]);
+                  this.router.navigate([`/patient/${patient?.ID ?? ''}/treatment`]);
                 }),
                 switchMap(() => of(response)),
                 catchError(err => {
-                  console.error('Failed to get patient details for login user:', err);
-                  const nextRoute = this.authService.getDefaultRouteForRole(userRole);
-                  this.router.navigate([nextRoute]);
+                  console.error('Failed to load patient details:', err);
+                  this.router.navigate(['/patient']);
                   return of(response);
                 })
               );
             } else {
-              const nextRoute = isAdmin ? '/dashboard' : this.authService.getDefaultRouteForRole(userRole);
+              // All other roles (Admin, Doctor, Nurse, etc.) — navigate immediately
+              const userRole = this.authService.getUserRole();
+              const nextRoute = this.authService.getDefaultRouteForRole(userRole);
               this.router.navigate([nextRoute]);
+              return of(response);
             }
           }
           return of(response);

@@ -36,7 +36,7 @@ export class LoaderService {
     this.timeoutId = setTimeout(() => {
       this.activeRequests = 0;
       this.isLoadingSubject.next(false);
-    }, 10000); // 10 seconds timeout
+    }, 5000); // 10 seconds timeout
   }
 
   private clearTimer(): void {

@@ -56,11 +56,10 @@ export class Header implements OnInit, OnDestroy {
 
     this.routerSub = this.router.events.subscribe(e => {
       if (e instanceof NavigationStart) {
-        this.cdr.markForCheck();
-      }
-      const match = this.router.url.match(/\/patient\/(\d+)/);
-      if (match && match[1]) {
-        this.patientId = Number(match[1]);
+        const match = e.url.match(/\/patient\/(\d+)/);
+        if (match && match[1]) {
+          this.patientId = Number(match[1]);
+        }
         this.cdr.markForCheck();
       }
     });

@@ -47,8 +47,8 @@ export class DoctorAppointmentsComponent {
     private configService: AppConfigService,
     private cdrRef: ChangeDetectorRef
   ) {
-    if(this.dataService.getConfig() == null) {
-     this.configService.getConfigs().subscribe(config => {
+    if (this.dataService.getConfig() == null) {
+      this.configService.getConfigs().subscribe(config => {
         this.dataService.setConfig(config);
         this.pageSize = config.pageSize || 10;
       });
@@ -77,38 +77,41 @@ export class DoctorAppointmentsComponent {
     }
     this.searchPatient.pageSize = this.pageSize;
     this.searchPatient.pageNumber = this.currentPage;
-    this.patientAppointmentService.searchAppointmentsForDoctor(this.searchPatient).subscribe({
-      next: (result: AppointmentSearchResponse) => {
-        this.searchResult = result;
-        this.clearSearchClicked = false;
-        if (!this.searchResult.PatientAppointments || this.searchResult.PatientAppointments.length === 0) {
-          this.messageService.info('No appointments found.');
-          this.totalItems = 0;
-        } else {
-          this.totalItems = this.searchResult.TotalCount || 0;  
-          this.AddEventsToScheduler(this.searchResult.PatientAppointments);
+    const startDate = this.util.getDefaultStartDate();
+    const endDate = this.util.getDefaultEndDate();
+    this.patientAppointmentService.getAppointments(this.dataService.getLoginUser().user.ID, this.dataService.getLoginUser().user.UserType, startDate, endDate,
+      this.currentPage, this.pageSize).subscribe({
+        next: (result: AppointmentSearchResponse) => {
+          this.searchResult = result;
+          this.clearSearchClicked = false;
+          if (!this.searchResult.PatientAppointments || this.searchResult.PatientAppointments.length === 0) {
+            this.messageService.info('No appointments found.');
+            this.totalItems = 0;
+          } else {
+            this.totalItems = this.searchResult.TotalCount || 0;
+            this.AddEventsToScheduler(this.searchResult.PatientAppointments);
+          }
+          this.cdrRef.detectChanges();
+        },
+        error: (err: any) => {
+          // Optionally handle error
+          this.messageService.error('Error occurred while searching for patients.');
+          console.error(err);
+          this.searchResult = null;
+          this.clearSearchClicked = false;
+          this.cdrRef.detectChanges();
         }
-        this.cdrRef.detectChanges();
-      },
-      error: (err: any) => {
-        // Optionally handle error
-        this.messageService.error('Error occurred while searching for patients.');
-        console.error(err);
-        this.searchResult = null;
-        this.clearSearchClicked = false;
-        this.cdrRef.detectChanges();
-      }
-    });
+      });
   }
 
- getDoctors = (name: string): Observable<SearchModel[]> => {
-        var searchModel: SearchModel = new  SearchModel(this.util);
-        searchModel.UserType = UserType.Doctor;
-        searchModel.FirstName = name;
-        this.cdrRef.detectChanges();
-        return this.searchService.SearchUser(searchModel).pipe(map(result => result.Results as SearchModel[]));
+  getDoctors = (name: string): Observable<SearchModel[]> => {
+    var searchModel: SearchModel = new SearchModel(this.util);
+    searchModel.UserType = UserType.Doctor;
+    searchModel.FirstName = name;
+    this.cdrRef.detectChanges();
+    return this.searchService.SearchUser(searchModel).pipe(map(result => result.Results as SearchModel[]));
 
-     }
+  }
 
   getPatients = (name: string): Observable<SearchModel[]> => {
     const searchModel: SearchModel = new SearchModel(this.util);
@@ -120,14 +123,14 @@ export class DoctorAppointmentsComponent {
     this.cdrRef.detectChanges();
   }
 
-   displayName(d: any): string {
-      if (!d) return 'Unknown Patient';
-      const first = d.FirstName || '';
-      const last = d.LastName || '';
-      const name = (first + ' ' + last).trim();
-      return name.length ? name : 'Unknown Patient';
-   }
-   
+  displayName(d: any): string {
+    if (!d) return 'Unknown Patient';
+    const first = d.FirstName || '';
+    const last = d.LastName || '';
+    const name = (first + ' ' + last).trim();
+    return name.length ? name : 'Unknown Patient';
+  }
+
   clearSearch() {
     this.searchPatient = new SearchModel(this.util);
     this.clearSearchClicked = true;
@@ -152,7 +155,7 @@ export class DoctorAppointmentsComponent {
     this.newAppointment = Object.assign({}, this.searchResult.PatientAppointments?.find(a => a.ID === ID));
     this.appointmentDateString = this.util.formatDate(this.newAppointment.StartDateTime, 'yyyy-MM-dd');
     this.newAppointment.StartTime = this.util.formatDate(this.newAppointment.StartDateTime, 'HH:mm');
-    this.newAppointment.EndTime = this.util.formatDate(this.newAppointment.EndDateTime, 'HH:mm'); 
+    this.newAppointment.EndTime = this.util.formatDate(this.newAppointment.EndDateTime, 'HH:mm');
     this.newAppointment.PatientName = this.newAppointment.PatientName || 'Unknown Patient';
     this.newAppointment.PatientID = this.newAppointment.PatientID || 0;
     this.newAppointment.DoctorName = this.newAppointment.DoctorName || 'General';
@@ -187,12 +190,12 @@ export class DoctorAppointmentsComponent {
       });
     });
   }
-  
+
   SaveAppointment() {
     // Implement save logic here
     const appointmentToSave = { ...this.newAppointment };
-    appointmentToSave.StartDateTime = this.util.createAppointmentDateTimeFromString(this.appointmentDateString , appointmentToSave.StartTime + ':00');
-    appointmentToSave.EndDateTime = this.util.createAppointmentDateTimeFromString(this.appointmentDateString , appointmentToSave.EndTime + ':00');
+    appointmentToSave.StartDateTime = this.util.createAppointmentDateTimeFromString(this.appointmentDateString, appointmentToSave.StartTime + ':00');
+    appointmentToSave.EndDateTime = this.util.createAppointmentDateTimeFromString(this.appointmentDateString, appointmentToSave.EndTime + ':00');
     if (appointmentToSave.ID === 0) {
       this.patientAppointmentService.createPatientAppointment(appointmentToSave).subscribe({
         next: (result: PatientAppointment) => {
@@ -227,28 +230,28 @@ export class DoctorAppointmentsComponent {
       });
     }
     else {
-      this.patientAppointmentService.updatePatientAppointment(appointmentToSave.ID,appointmentToSave).subscribe({
+      this.patientAppointmentService.updatePatientAppointment(appointmentToSave.ID, appointmentToSave).subscribe({
         next: (result: PatientAppointment) => {
           this.messageService.success('Appointment updated successfully.');
           // Call API with the populated appointment BEFORE clearing the form
           const index = this.searchResult.PatientAppointments?.findIndex(a => a.ID === appointmentToSave.ID);
           if (index !== undefined && index >= 0 && this.searchResult.PatientAppointments) {
             this.searchResult.PatientAppointments[index] = appointmentToSave;
-              try {
-                const appt: any = appointmentToSave;
-                const ev: DayPilot.EventData = {
-                  id: appt.ID.toString(),
-                  text: appt.PatientName || 'Unknown Patient',
-                  start: new DayPilot.Date(appt.StartDateTime),
-                  end: new DayPilot.Date(appt.EndDateTime),
-                  resource: appt.DoctorName || 'General',
-                  backColor: '#3c8dbc'
-                };
-                this.scheduler.updateEvent(ev);
-              } catch (e) {
-                this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
-              }
-              this.cdrRef.detectChanges();
+            try {
+              const appt: any = appointmentToSave;
+              const ev: DayPilot.EventData = {
+                id: appt.ID.toString(),
+                text: appt.PatientName || 'Unknown Patient',
+                start: new DayPilot.Date(appt.StartDateTime),
+                end: new DayPilot.Date(appt.EndDateTime),
+                resource: appt.DoctorName || 'General',
+                backColor: '#3c8dbc'
+              };
+              this.scheduler.updateEvent(ev);
+            } catch (e) {
+              this.AddEventsToScheduler(this.searchResult.PatientAppointments || []);
+            }
+            this.cdrRef.detectChanges();
           }
         },
         error: (err: any) => {
@@ -261,40 +264,40 @@ export class DoctorAppointmentsComponent {
   }
 
 
-    AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
-      var events: DayPilot.EventData[] = [];
-      if (appointments == null || appointments.length == 0) {
-        this.scheduler.clearEvents();
-        return;
-      }
-      appointments.forEach(appointment => {
-        events.push({
-          id: appointment.ID.toString(),
-          text: appointment.PatientName || 'Unknown Patient',
-          start: new DayPilot.Date(appointment.StartDateTime),
-          end: new DayPilot.Date(appointment.EndDateTime),
-          resource: appointment.DoctorName || 'General',
-          backColor: '#3c8dbc',
-        });
+  AddEventsToScheduler(this: any, appointments: PatientAppointment[]) {
+    var events: DayPilot.EventData[] = [];
+    if (appointments == null || appointments.length == 0) {
+      this.scheduler.clearEvents();
+      return;
+    }
+    appointments.forEach(appointment => {
+      events.push({
+        id: appointment.ID.toString(),
+        text: appointment.PatientName || 'Unknown Patient',
+        start: new DayPilot.Date(appointment.StartDateTime),
+        end: new DayPilot.Date(appointment.EndDateTime),
+        resource: appointment.DoctorName || 'General',
+        backColor: '#3c8dbc',
       });
-      this.scheduler.addEvents(events);
-    }
-
-    ngOnInit() {
-      this.clearSearch();
-    }
-
-    displayPatientName(d: any): string {
-      if (!d) return 'Unknown Patient';
-      const first = d.FirstName || '';
-      const last = d.LastName || '';
-      const name = (first + ' ' + last).trim();
-      return name.length ? name : 'Unknown Patient';
-    }
-
-       onPageChanged($event: number) {
-        this.currentPage = $event;
-        this.searchPatient.pageNumber = this.currentPage;
-        this.SearchAppointments();
-     }
+    });
+    this.scheduler.addEvents(events);
   }
+
+  ngOnInit() {
+    this.clearSearch();
+  }
+
+  displayPatientName(d: any): string {
+    if (!d) return 'Unknown Patient';
+    const first = d.FirstName || '';
+    const last = d.LastName || '';
+    const name = (first + ' ' + last).trim();
+    return name.length ? name : 'Unknown Patient';
+  }
+
+  onPageChanged($event: number) {
+    this.currentPage = $event;
+    this.searchPatient.pageNumber = this.currentPage;
+    this.SearchAppointments();
+  }
+}

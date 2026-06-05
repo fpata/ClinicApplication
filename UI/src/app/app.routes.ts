@@ -25,18 +25,21 @@ import { PatientReportComponent } from './componets/patient/patient-report/patie
 
 
 export const routes: Routes = [
-{ path: 'login',
+  {
+    path: 'login',
     children: [
       { path: 'forgotpassword', component: ForgotPasswordComponent },
       { path: '', component: LoginComponent }
     ]
   },
-  { path: 'patient',
+  {
+    path: 'patient',
     canActivate: [authGuard],
     data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Nurse', 'Patient', 'Accountant'] },
     children: [
       { path: 'search', component: PatientSearchComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Nurse', 'Accountant'] } },
-      { path: ':patientId', canActivate: [PatientIdGuard],
+      {
+        path: ':patientId', canActivate: [PatientIdGuard],
         children: [
           { path: 'vitals', component: PatientVitalsComponent },
           { path: 'history', component: PatientHistoryComponent },
@@ -44,7 +47,7 @@ export const routes: Routes = [
           { path: 'appointment', component: PatientAppointmentComponent },
           { path: 'reports', component: PatientReportComponent },
           { path: 'previous-treatments', component: PatientCompleteHistoryComponent },
-          { path: '', redirectTo: 'treatment', pathMatch: 'full' }
+          { path: '', redirectTo: 'search', pathMatch: 'full' }
         ]
       },
       { path: '', redirectTo: 'search', pathMatch: 'full' }
@@ -54,11 +57,12 @@ export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Nurse'] } },
   { path: 'doctorAppointments', component: DoctorAppointmentsComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
-  { path : 'patienthistory', component: PatientCompleteHistoryComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Nurse', 'Patient', 'Accountant'] } },
-  { path: 'user-search', component : UserSearch, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
+  { path: 'patienthistory', component: PatientCompleteHistoryComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Nurse', 'Patient', 'Accountant'] } },
+  { path: 'user-search', component: UserSearch, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
   { path: 'user-create', component: UserInfoComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
   { path: 'user-quick-create', component: UserQuickCreateComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
-  { path: 'billing',
+  {
+    path: 'billing',
     canActivate: [authGuard],
     data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Accountant'] },
     children: [

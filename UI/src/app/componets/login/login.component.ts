@@ -42,13 +42,11 @@ export class LoginComponent {
     }
     this.loginService.login(this.username, this.password).subscribe({
       next: (res: LoginResponse) => {
+        // loginService.login() already handles role-based navigation internally.
+        // Here we only load app config and update the shared login user state.
         this.configService.getConfigs().subscribe(config => {
           this.dataService.setConfig(config);
           this.dataService.setLoginUser(res.user as any);
-          this.authService.setToken(res.token);
-          const userRole = this.authService.getUserRole();
-          const nextRoute = this.authService.getDefaultRouteForRole(userRole);
-          this.router.navigate([nextRoute]);
         });
         this.error = '';
         this.cdRef.detectChanges();

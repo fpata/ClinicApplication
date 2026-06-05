@@ -1,85 +1,121 @@
-<div class="container-fluid">
-    <br>
-    <h3>Application Configuration</h3>
-    <fieldset class="rounded" style="border:0.5px solid lightblue;padding: 40px;">
-        <div class="row">
-            <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtClinicName" class="form-label">Clinic Name</label>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtClinicName" class="form-control" placeholder="Clinic Name"
-                    [ngModel]="config?.ClinicName" (ngModelChange)="config && (config.ClinicName = $event)"
-                    minlength="3" maxlength="50" required="">
-                <div class="invalid-feedback">Please fill out this field.</div>
-            </div>
-            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-            <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtClinicProp" class="form-label">Clinic Prop Name</label>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="text" id="txtClinicProp" class="form-control" placeholder="Clinic Prop"
-                    [ngModel]="config?.ClinicProp" (ngModelChange)="config && (config.ClinicProp = $event)"
-                    minlength="3" maxlength="50" required="">
-                <div class="invalid-feedback">Please fill out this field.</div>
-            </div>
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtClinicOpenTime" class="form-label">Clinic Open Time</label>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="time" id="txtClinicOpenTime" class="form-control" placeholder="Clinic Open Time"
-                    [ngModel]="config?.ClinicOpenTime" (ngModelChange)="config && (config.ClinicOpenTime = $event)"
-                    minlength="3" maxlength="50" required="">
-                <div class="invalid-feedback">Please fill out this field.</div>
-            </div>
-            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-            <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtClinicEndTime" class="form-label">Clinic End Time</label>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="time" id="txtClinicEndTime" class="form-control" placeholder="Clinic End Time"
-                    [ngModel]="config?.ClinicEndTime" (ngModelChange)="config && (config.ClinicEndTime = $event)"
-                    minlength="3" maxlength="50" required="">
-                <div class="invalid-feedback">Please fill out this field.</div>
-            </div>
-        </div>
-        <br>
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="header-content">
+      <h1 class="page-title mb-1">
+        <i class="bi bi-gear-fill me-2"></i>Application Configuration
+      </h1>
+      <p class="page-subtitle">Manage clinic settings and preferences</p>
+    </div>
+  </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtPerPatientSlot" class="form-label">Per Patient Slot (Minutes)</label>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="time" id="txtPerPatientSlot" class="form-control" placeholder="Per Patient Slot"
-                    [ngModel]="config?.PerPatientSlotInMinutes"
-                    (ngModelChange)="config && (config.PerPatientSlotInMinutes = $event)" minlength="1" maxlength="3"
-                    required="">
-                <div class="invalid-feedback">Please fill out this field.</div>
-            </div>
-            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-            <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtLunchTime" class="form-label">Lunch Time</label>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-3">
-                <input type="time" id="txtLunchTime" class="form-control" placeholder="Lunch Time"
-                    [ngModel]="config?.LunchTime" (ngModelChange)="config && (config.LunchTime = $event)" required="">
-                <div class="invalid-feedback">Please fill out this field.</div>
-            </div>
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-xs-12 col-sm-5 col-md-2">
-                <label for="txtAddress" class="form-label">Address</label>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-3">
-                <button class="btn btn-primary" style="width: 100px;" (click)="saveConfig()">Save</button>
+  <!-- Main Content -->
+  <div class="container-fluid">
+    <div class="accordion accordion-modern mb-3" id="appConfigAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#configAccordion"
+            aria-expanded="true" aria-controls="configAccordion">
+            <i class="bi bi-sliders2 me-2"></i>
+            <span class="accordion-title">Clinic Settings</span>
+          </button>
+        </h2>
+        <div id="configAccordion" class="accordion-collapse collapse show">
+          <div class="accordion-body">
+            <div class="search-form-container">
+              <form class="search-form">
+                <!-- Row 1: Clinic Name & Clinic Prop Name -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtClinicName" class="form-label">
+                        <i class="bi bi-building me-1"></i>Clinic Name
+                      </label>
+                      <input type="text" id="txtClinicName" class="form-control form-control-lg" placeholder="Clinic Name"
+                        [ngModel]="config?.ClinicName" (ngModelChange)="config && (config.ClinicName = $event)"
+                        name="clinicName" minlength="3" maxlength="50" required>
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtClinicProp" class="form-label">
+                        <i class="bi bi-person-badge me-1"></i>Clinic Prop Name
+                      </label>
+                      <input type="text" id="txtClinicProp" class="form-control form-control-lg" placeholder="Clinic Prop Name"
+                        [ngModel]="config?.ClinicProp" (ngModelChange)="config && (config.ClinicProp = $event)"
+                        name="clinicProp" minlength="3" maxlength="50" required>
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                  </div>
                 </div>
-            <div class="col-xs-12 col-sm-2 col-md-1">&nbsp;</div>
-            <div class="col-xs-12 col-sm-5 col-md-2">
-               <button class="btn btn-secondary" style="width: 100px;" (click)="resetForm()">Reset</button>
+
+                <!-- Row 2: Clinic Open Time & Clinic End Time -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtClinicOpenTime" class="form-label">
+                        <i class="bi bi-clock me-1"></i>Clinic Open Time
+                      </label>
+                      <input type="time" id="txtClinicOpenTime" class="form-control form-control-lg" placeholder="Clinic Open Time"
+                        [ngModel]="config?.ClinicOpenTime" (ngModelChange)="config && (config.ClinicOpenTime = $event)"
+                        name="clinicOpenTime" minlength="3" maxlength="50" required>
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtClinicEndTime" class="form-label">
+                        <i class="bi bi-clock-fill me-1"></i>Clinic End Time
+                      </label>
+                      <input type="time" id="txtClinicEndTime" class="form-control form-control-lg" placeholder="Clinic End Time"
+                        [ngModel]="config?.ClinicEndTime" (ngModelChange)="config && (config.ClinicEndTime = $event)"
+                        name="clinicEndTime" minlength="3" maxlength="50" required>
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 3: Per Patient Slot & Lunch Time -->
+                <div class="row g-3 mb-4">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtPerPatientSlot" class="form-label">
+                        <i class="bi bi-hourglass-split me-1"></i>Per Patient Slot (Minutes)
+                      </label>
+                      <input type="time" id="txtPerPatientSlot" class="form-control form-control-lg" placeholder="Per Patient Slot"
+                        [ngModel]="config?.PerPatientSlotInMinutes" (ngModelChange)="config && (config.PerPatientSlotInMinutes = $event)"
+                        name="perPatientSlot" minlength="1" maxlength="3" required>
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtLunchTime" class="form-label">
+                        <i class="bi bi-cup-hot me-1"></i>Lunch Time
+                      </label>
+                      <input type="time" id="txtLunchTime" class="form-control form-control-lg" placeholder="Lunch Time"
+                        [ngModel]="config?.LunchTime" (ngModelChange)="config && (config.LunchTime = $event)"
+                        name="lunchTime" required>
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-group d-flex gap-2 flex-wrap">
+                  <button type="button" class="btn btn-lg btn-primary flex-grow-1" (click)="saveConfig()">
+                    <i class="bi bi-save me-2"></i>Save Configuration
+                  </button>
+                  <button type="button" class="btn btn-lg btn-outline-secondary flex-grow-1" (click)="resetForm()">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i>Reset
+                  </button>
+                </div>
+              </form>
             </div>
+          </div>
         </div>
-    </fieldset>
+      </div>
+    </div>
+  </div>
 </div>

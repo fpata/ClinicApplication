@@ -5,6 +5,7 @@ import { AppointmentSearchResponse, PatientAppointment } from '../models/patient
 import { SearchModel } from '../models/search.model';
 import { environment } from '../../environments/environment';
 import { UtilityService } from './utility.service';
+import { UserType } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class PatientAppointmentService {
@@ -16,14 +17,6 @@ export class PatientAppointmentService {
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
-  }
-
-  getPatientAppointments(): Observable<AppointmentSearchResponse> {
-    return this.http.get<AppointmentSearchResponse>(this.apiUrl, { headers: this.getAuthHeaders() });
-  }
-
-  getPatientAppointment(id: number): Observable<PatientAppointment> {
-    return this.http.get<PatientAppointment>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
   private prepareAppointmentPayload(appt: PatientAppointment): any {
@@ -51,22 +44,13 @@ export class PatientAppointmentService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
-  getPatientAppointmentsByPatientId(patientId: number): Observable<PatientAppointment[]> {
-    return this.http.get<PatientAppointment[]>(`${this.apiUrl}/patient/${patientId}`, { headers: this.getAuthHeaders() });
-  }
 
-  getPatientAppointmentsByDoctorId(doctorId: number): Observable<AppointmentSearchResponse> {
-    return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}/doctor/${doctorId}?pageNumber=1&pageSize=1`, { headers: this.getAuthHeaders() });
-  }
-
-  searchAppointmentsForDoctor(searchPatient: SearchModel): Observable<AppointmentSearchResponse> {
-    return this.http.post<AppointmentSearchResponse>(`${this.apiUrl}/doctor/search`, searchPatient, { headers: this.getAuthHeaders() });
-  }
-
-  getAllAppointments(startDate: Date, endDate: Date, currentPage: number, pageSize: number) {
+  getAppointments(userId: number, userType: UserType, startDate: Date, endDate: Date, currentPage: number, pageSize: number) {
     const sDate = startDate ? (startDate instanceof Date ? startDate : new Date(startDate)) : new Date();
     const eDate = endDate ? (endDate instanceof Date ? endDate : new Date(endDate)) : new Date();
     const params = {
+      userId: userId,
+      userType: userType,
       startDate: sDate.toISOString(),
       endDate: eDate.toISOString(),
       pageNumber: currentPage,

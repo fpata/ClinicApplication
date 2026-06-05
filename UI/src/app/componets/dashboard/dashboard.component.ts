@@ -78,90 +78,43 @@ export class DashboardComponent implements OnInit, OnChanges {
    }
 
    private loadDefaultAppointments(): void {
-      let start: Date;
-      let end: Date;
-      try {
-         start = DayPilot?.Date?.today()?.firstDayOfWeek(1)?.toDate() || this.getDefaultStartDate();
-         end = DayPilot?.Date?.today()?.firstDayOfWeek(1)?.addDays(6)?.toDate() || this.getDefaultEndDate();
-      } catch (e) {
-         start = this.getDefaultStartDate();
-         end = this.getDefaultEndDate();
-      }
-      this.loadAppointments(start, end);
+
+      this.loadAppointments(this.util.getDefaultStartDate(), this.util.getDefaultEndDate());
    }
 
-   private getDefaultStartDate(): Date {
-      const today = new Date();
-      const day = today.getDay();
-      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-      return new Date(today.setDate(diff));
-   }
 
-   private getDefaultEndDate(): Date {
-      const start = this.getDefaultStartDate();
-      return new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000);
-   }
 
    private loadAppointments(startDate: Date, endDate: Date): void {
-      if (this.isEmbedded && this.patient) {
-         const results = this.patient.PatientAppointments ? [...this.patient.PatientAppointments] : [];
-         this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results);
-         this.totalItems = this.appointments.length;
-         this.addEventsToScheduler(this.appointments);
-         this.cdr.detectChanges();
-      } else if (this.patientId) {
-         this.patientAppointmentService.getPatientAppointmentsByPatientId(this.patientId)
-            .subscribe({
-               next: (results: PatientAppointment[]) => {
-                  if (results == null || results.length === 0) {
-                     this.messageService.info('No appointments found.');
-                     this.appointments = [];
-                     this.totalItems = 0;
-                     this.cdr.detectChanges();
-                  }
-                  else {
-                     this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results);
-                     this.totalItems = results.length;
-                     this.addEventsToScheduler(this.appointments);
-                     this.cdr.detectChanges();
-                  }
-               },
-               error: (error) => {
-                  console.error('Error fetching appointments:', error);
-                  this.messageService.error('Error fetching appointments:', error);
+      startDate = this.util.getDefaultStartDate();
+      endDate = this.util.getDefaultEndDate();
+      this.patientAppointmentService.getAppointments(this.dataService.getLoginUser().user.ID, this.dataService.getLoginUser().user.UserType, startDate, endDate, this.currentPage, this.pageSize)
+         .subscribe({
+            next: (results: AppointmentSearchResponse) => {
+               if (results == null || results.PatientAppointments == null || results.PatientAppointments.length === 0) {
+                  this.messageService.info('No appointments found.');
                   this.appointments = [];
                   this.totalItems = 0;
                   this.cdr.detectChanges();
                }
-            });
-      } else {
-         this.patientAppointmentService.getAllAppointments(startDate, endDate, this.currentPage, this.pageSize)
-            .subscribe({
-               next: (results: AppointmentSearchResponse) => {
-                  if (results == null || results.PatientAppointments == null || results.PatientAppointments.length === 0) {
-                     this.messageService.info('No appointments found.');
-                     this.appointments = [];
-                     this.totalItems = 0;
-                     this.cdr.detectChanges();
-                  }
-                  else {
-                     // this.messageService.success('Appointments loaded successfully.');
-                     this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results.PatientAppointments);
-                     this.totalItems = results.TotalCount;
-                     this.addEventsToScheduler(this.appointments);
-                     this.cdr.detectChanges();
-                  }
-               },
-               error: (error) => {
-                  console.error('Error fetching appointments:', error);
-                  this.messageService.error('Error fetching appointments:', error);
-                  this.appointments = [];
-                  this.totalItems = 0;
+               else {
+                  // this.messageService.success('Appointments loaded successfully.');
+                  this.appointments = this.patientAppointmentService.setPatinetAppointmentTime(results.PatientAppointments);
+                  this.totalItems = results.TotalCount;
+                  this.addEventsToScheduler(this.appointments);
                   this.cdr.detectChanges();
                }
-            });
-      }
+            },
+            error: (error) => {
+               console.error('Error fetching appointments:', error);
+               this.messageService.error('Error fetching appointments:', error);
+               this.appointments = [];
+               this.totalItems = 0;
+               this.cdr.detectChanges();
+            }
+         });
+
    }
+
 
    private addEventsToScheduler(appointments: PatientAppointment[]): void {
       if (appointments == null || appointments === undefined || appointments.length === 0) {
@@ -174,7 +127,7 @@ export class DashboardComponent implements OnInit, OnChanges {
    SaveAppointment() {
       // Create a temporary appointment object
       const appointmentToSave = { ...this.newAppointment };
-      
+
       // Build StartDateTime from the date string and start time
       if (this.newStartDateString && this.newAppointment?.StartTime) {
          appointmentToSave.StartDateTime = this.util.createAppointmentDateTimeFromString(
@@ -251,7 +204,7 @@ export class DashboardComponent implements OnInit, OnChanges {
                   }
                   // Refresh scheduler events so the calendar shows the updated appointment
                   this.addEventsToScheduler(this.appointments);
-                   // If the global user state contains this patient, update it so other components refresh
+                  // If the global user state contains this patient, update it so other components refresh
                   try {
                      const user: any = this.dataService.getUser();
                      if (user && user.Patients && user.Patients.length) {
@@ -270,7 +223,7 @@ export class DashboardComponent implements OnInit, OnChanges {
                   } catch (e) {
                      // ignore if no global user
                   }
-                   this.cdr.detectChanges();
+                  this.cdr.detectChanges();
                },
                error: (error) => {
                   this.messageService.error('Error updating appointment:');
@@ -392,7 +345,7 @@ export class DashboardComponent implements OnInit, OnChanges {
       } else {
          this.selectedPatient = null;
       }
-      
+
       this.selectedDoctor = null;
 
       if (loginUser?.user?.UserType === UserType.Doctor) {
