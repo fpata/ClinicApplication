@@ -4,76 +4,76 @@
     <a class="navbar-brand fw-bold fs-5" href="#" style="letter-spacing: 0.5px;">
       <i class="bi bi-hospital me-2"></i>CM - Clinic Manager
     </a>
-    
+
     <!-- Toggler Button -->
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+      aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    
+
     <!-- Navigation Content -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <!-- Left Navigation Items -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="isLoggedIn && !isLoginURL">
         <li class="nav-item" *ngIf="showDashboardLink">
           <a class="nav-link px-3 rounded-pill transition-all" aria-current="page" href="#" id="navDashBoard"
-            routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+            (click)="hideAllSubnavs()">
             <i class="bi bi-speedometer2 me-2"></i>Dashboard
           </a>
         </li>
-         <li class="nav-item" *ngIf="showUserMenu">
-          <a
-            class="nav-link px-3 rounded-pill transition-all"
-            href="#"
-            role="button"
-            (click)="toggleUserSubnav($event)">
+        <li class="nav-item" *ngIf="showUserMenu">
+          <a class="nav-link px-3 rounded-pill transition-all" routerLink="/user-search" routerLinkActive="active"
+            role="button">
             <i class="bi bi-people-fill me-2"></i>User
           </a>
         </li>
         <li class="nav-item" *ngIf="showPatientMenu">
-          <a
-            class="nav-link px-3 rounded-pill transition-all"
-            href="#"
-            role="button"
-            (click)="togglePatientSubnav($event)">
+          <a class="nav-link px-3 rounded-pill transition-all"
+            [routerLink]="isPatientRole ? ['/patient', patientId ?? 0, 'appointment'] : '/patient/search'"
+            routerLinkActive="active" role="button">
             <i class="bi bi-people me-2"></i>Patient
           </a>
         </li>
-       
+
         <li class="nav-item" *ngIf="showSchedulerLink">
-          <a class="nav-link px-3 rounded-pill transition-all" href="/doctorAppointments" id="navAppointment" 
-            routerLink="/doctorAppointments" routerLinkActive="active">
+          <a class="nav-link px-3 rounded-pill transition-all" href="/doctorAppointments" id="navAppointment"
+            routerLink="/doctorAppointments" routerLinkActive="active" (click)="hideAllSubnavs()">
             <i class="bi bi-calendar-event me-2"></i>Appointment
           </a>
         </li>
         <li class="nav-item" *ngIf="showConfigLink">
-          <a class="nav-link px-3 rounded-pill transition-all" href="#" tabindex="-1" id="navReports">
+          <a class="nav-link px-3 rounded-pill transition-all" href="#" tabindex="-1" id="navReports"
+            (click)="hideAllSubnavs()">
             <i class="bi bi-file-earmark-text me-2"></i>Reports
           </a>
         </li>
         <li class="nav-item" *ngIf="showBillingLink">
-          <a class="nav-link px-3 rounded-pill transition-all" href="#" role="button" (click)="toggleBillingSubnav($event)">
+          <a class="nav-link px-3 rounded-pill transition-all" href="#" role="button"
+            (click)="toggleBillingSubnav($event)">
             <i class="bi bi-credit-card me-2"></i>Billing
           </a>
         </li>
         <li class="nav-item" *ngIf="showConfigLink">
-          <a class="nav-link px-3 rounded-pill transition-all" href="/appconfig" id="navAppConfig" routerLink="/appconfig" 
-            routerLinkActive="active">
+          <a class="nav-link px-3 rounded-pill transition-all" href="/appconfig" id="navAppConfig"
+            routerLink="/appconfig" routerLinkActive="active" (click)="hideAllSubnavs()">
             <i class="bi bi-gear me-2"></i>Configuration
           </a>
         </li>
       </ul>
-      
-      
+
+
       <!-- Right Navigation Items (User Menu) -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item d-flex align-items-center me-2">
-          <button class="btn btn-sm btn-outline-light theme-toggle-btn" (click)="toggleTheme()" [attr.aria-pressed]="isDarkTheme" title="Toggle theme">
+          <button class="btn btn-sm btn-outline-light theme-toggle-btn" (click)="toggleTheme()"
+            [attr.aria-pressed]="isDarkTheme" title="Toggle theme">
             <i class="bi" [ngClass]="isDarkTheme ? 'bi-moon-fill' : 'bi-sun-fill'"></i>
           </button>
         </li>
         <li class="nav-item dropdown" *ngIf="isLoggedIn && !isLoginURL">
-          <a class="nav-link dropdown-toggle px-3 rounded-pill transition-all" href="#" data-bs-toggle="dropdown" 
+          <a class="nav-link dropdown-toggle px-3 rounded-pill transition-all" href="#" data-bs-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false" id="navbarDropdownMenuLink" role="button">
             <i class="bi bi-person-circle me-2"></i>
             <span class="d-lg-inline d-none">{{loginUser?.user?.FirstName || 'User'}}</span>
@@ -115,32 +115,38 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="navPatientAppointment" [routerLink]="['/patient', patientId ?? 0, 'appointment']" routerLinkActive="active">
+        <a class="nav-link" id="navPatientAppointment" [routerLink]="['/patient', patientId ?? 0, 'appointment']"
+          routerLinkActive="active">
           <i class="bi bi-calendar-event me-1"></i>Appointments
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="navPatientTreatment" [routerLink]="['/patient', patientId ?? 0, 'treatment']" routerLinkActive="active">
+        <a class="nav-link" id="navPatientTreatment" [routerLink]="['/patient', patientId ?? 0, 'treatment']"
+          routerLinkActive="active">
           <i class="bi bi-bandaid me-1"></i>Treatments
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="navPatientHistory" [routerLink]="['/patient', patientId ?? 0, 'history']" routerLinkActive="active">
+        <a class="nav-link" id="navPatientHistory" [routerLink]="['/patient', patientId ?? 0, 'history']"
+          routerLinkActive="active">
           <i class="bi bi-clock-history me-1"></i>History
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="navPatientVitals" [routerLink]="['/patient', patientId ?? 0, 'vitals']" routerLinkActive="active">
+        <a class="nav-link" id="navPatientVitals" [routerLink]="['/patient', patientId ?? 0, 'vitals']"
+          routerLinkActive="active">
           <i class="bi bi-heart-pulse me-1"></i>Vitals
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="navPatientReports" [routerLink]="['/patient', patientId ?? 0, 'reports']" routerLinkActive="active">
+        <a class="nav-link" id="navPatientReports" [routerLink]="['/patient', patientId ?? 0, 'reports']"
+          routerLinkActive="active">
           <i class="bi bi-file-earmark-text me-1"></i>Reports
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="navPatientPreviousTreatments" [routerLink]="['/patient', patientId ?? 0, 'previous-treatments']" routerLinkActive="active">
+        <a class="nav-link" id="navPatientPreviousTreatments"
+          [routerLink]="['/patient', patientId ?? 0, 'previous-treatments']" routerLinkActive="active">
           <i class="bi bi-archive me-1"></i>Previous Treatments
         </a>
       </li>
@@ -152,7 +158,7 @@
 <div *ngIf="showUserSubnav && !isLoginURL" class="w-100 bg-white shadow-sm subnav">
   <div class="container-fluid">
     <ul class="nav py-2">
-       <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" id="navUserSearch" routerLink="/user-search" routerLinkActive="active">
           <i class="bi bi-search me-1"></i>User Search
         </a>

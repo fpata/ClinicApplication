@@ -225,13 +225,6 @@ namespace ClinicManager.Controllers
                     var newBilling = new BillingRecord
                     {
                         TreatmentID = patientTreatmentId.Value,
-                        PatientID = treatment.PatientID,
-                        DoctorID = treatment.DoctorID,
-                        PatientName = patientName,
-                        DoctorName = doctorName,
-                        TreatmentName = treatment.TreatmentPlan,
-                        ServiceDate = DateTime.Now,
-                        PostedDate = DateTime.Now,
                         Subtotal = totalDetailCost,
                         TaxTotal = 0,
                         DiscountTotal = 0,

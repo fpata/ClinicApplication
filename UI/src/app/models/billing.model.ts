@@ -2,32 +2,32 @@ import { Payment } from "./payment.model";
 import { BaseEntity } from "./base.model";
 
 export class BillingRecord extends BaseEntity {
+  TreatmentID: number;
 
- TreatmentID?: number;
- PatientID?: number;
- DoctorID?: number;
-
-  // Snapshot fields (denormalized for historical accuracy)
-  PatientName?: string;
-  DoctorName?: string;
-  TreatmentName?: string;
-
-  ServiceDate?: string;            // ISO date (from StartApptDate)
-  PostedDate?: string;             // When the bill was generated
   Status?: BillingStatus;
-
-
   Subtotal?: number;
   TaxTotal?: number;
   DiscountTotal?: number;
-  AdjustmentTotal?: number;
   Total?: number;                  // (Subtotal + Tax - Discount + Adjustment)
   AmountPaid?: number;
   BalanceDue?: number;
 
-  Insurance?: InsuranceSegment;
-  Payments?: Payment[];
+  Payments: Payment[] = [];
   Notes?: string;
+
+  PageNumber: number = 1;
+  PageSize: number = 10;
+
+  // UI-only properties (Not mapped in the server-side BillingRecord database schema)
+  PatientID?: number;
+  DoctorID?: number;
+  PatientName?: string;
+  DoctorName?: string;
+  TreatmentName?: string;
+  ServiceDate?: string;            // ISO date (from StartApptDate)
+  PostedDate?: string;             // When the bill was generated
+  AdjustmentTotal?: number;
+  Insurance?: InsuranceSegment;
 }
 
 export enum BillingStatus {
@@ -61,9 +61,9 @@ export enum InsuranceStatus {
   Partial = 'Partial'
 }
 
-export class SearchResultBillingRecord extends BillingRecord{
-   TotalCount:number;
-  HasMoreRecords:boolean
-  Message:string;
-  billingRecords:BillingRecord[] ;  
+export class SearchResultBillingRecord {
+  TotalCount: number = 0;
+  HasMoreRecords: boolean = false;
+  Message: string = '';
+  billingRecords: BillingRecord[] = [];  
 }

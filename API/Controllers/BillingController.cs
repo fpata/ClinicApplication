@@ -102,18 +102,18 @@ namespace ClinicManager.Controllers
 
 
         [HttpPost("search")]
-        public async Task<ActionResult<IEnumerable<BillingRecord>>> Search([FromBody] BillingRecord searchCriteria)
+        public async Task<ActionResult<IEnumerable<BillingRecord>>> Search([FromBody] BillingSearchCriteria searchCriteria)
         {
             _logger.LogInformation("Searching billing records with provided criteria");
             IQueryable<BillingRecord> query = _context.BillingRecords;
 
             if (searchCriteria.PatientID != 0 && searchCriteria.PatientID != null)
             {
-                query = query.Where(br => br.PatientID == searchCriteria.PatientID);
+                query = query.Where(br => _context.PatientTreatments.Any(pt => pt.ID == br.TreatmentID && pt.PatientID == searchCriteria.PatientID));
             }
             if (searchCriteria.DoctorID != 0  && searchCriteria.DoctorID != null)
             {
-                query = query.Where(br => br.DoctorID == searchCriteria.DoctorID);
+                query = query.Where(br => _context.PatientTreatments.Any(pt => pt.ID == br.TreatmentID && pt.DoctorID == searchCriteria.DoctorID));
             }
             if(searchCriteria.TreatmentID != 0 && searchCriteria.TreatmentID != null)
             {
@@ -127,13 +127,20 @@ namespace ClinicManager.Controllers
             {
                 query = query.Where(br => br.BalanceDue == searchCriteria.BalanceDue );
             }
-            if (searchCriteria.Status != null && searchCriteria.Status != null)
+            if (searchCriteria.Status != null)
             {
                 query = query.Where(br => br.Status == searchCriteria.Status);
             }
             if(!String.IsNullOrWhiteSpace(searchCriteria.PatientName))
             {
-                query = query.Where(br => br.PatientName!.Contains(searchCriteria.PatientName!));
+                query = query.Where(br => _context.PatientTreatments.Any(pt =>
+                    pt.ID == br.TreatmentID &&
+                    _context.Patients.Any(p =>
+                        p.ID == pt.PatientID &&
+                        _context.Users.Any(u =>
+                            u.ID == p.UserID &&
+                            ((u.FirstName + " " + u.LastName).Contains(searchCriteria.PatientName) ||
+                             (u.MiddleName != null && u.MiddleName.Contains(searchCriteria.PatientName)))))));
             }
             // Add more criteria as needed
             // Get total count before pagination
@@ -156,6 +163,18 @@ namespace ClinicManager.Controllers
             };
             return Ok(response);
         }
-         
+    }
+
+    public class BillingSearchCriteria
+    {
+        public int? PatientID { get; set; }
+        public int? DoctorID { get; set; }
+        public int? TreatmentID { get; set; }
+        public float? Total { get; set; }
+        public float? BalanceDue { get; set; }
+        public ClinicManager.Models.Enums.BillingStatus? Status { get; set; }
+        public string? PatientName { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
     }
 }

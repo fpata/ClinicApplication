@@ -56,13 +56,13 @@ export class Header implements OnInit, OnDestroy {
 
     this.routerSub = this.router.events.subscribe(e => {
       if (e instanceof NavigationStart) {
-        const match = e.url.match(/\/patient\/(\d+)/);
-        if (match && match[1]) {
-          this.patientId = Number(match[1]);
-        }
+        this.updateSubnavsBasedOnUrl(e.url);
         this.cdr.markForCheck();
       }
     });
+
+    // Initialize subnavs based on current active URL
+    this.updateSubnavsBasedOnUrl(this.router.url);
 
     // Load theme preference
     try {
@@ -165,6 +165,46 @@ export class Header implements OnInit, OnDestroy {
       console.error('Error setting login user in dataService:', e);
     }
     this.loginUser = null;
+  }
+
+  hideAllSubnavs(): void {
+    if (!this.isPatientRole) {
+      this.showPatientSubnav = false;
+    }
+    this.showUserSubnav = false;
+    this.showBillingSubnav = false;
+    this.cdr.markForCheck();
+  }
+
+  updateSubnavsBasedOnUrl(url: string): void {
+    const match = url.match(/\/patient\/(\d+)/);
+    if (match && match[1]) {
+      this.patientId = Number(match[1]);
+    }
+
+    if (url.includes('/dashboard') || url.includes('/doctorAppointments') || url.includes('/appconfig') || url === '/' || url === '') {
+      this.showUserSubnav = false;
+      this.showBillingSubnav = false;
+      if (!this.isPatientRole) {
+        this.showPatientSubnav = false;
+      }
+    } else if (url.includes('/user-')) {
+      this.showUserSubnav = true;
+      this.showBillingSubnav = false;
+      if (!this.isPatientRole) {
+        this.showPatientSubnav = false;
+      }
+    } else if (url.includes('/patient')) {
+      this.showPatientSubnav = true;
+      this.showUserSubnav = false;
+      this.showBillingSubnav = false;
+    } else if (url.includes('/billing')) {
+      this.showBillingSubnav = true;
+      this.showUserSubnav = false;
+      if (!this.isPatientRole) {
+        this.showPatientSubnav = false;
+      }
+    }
   }
 
   togglePatientSubnav(event: Event): void {

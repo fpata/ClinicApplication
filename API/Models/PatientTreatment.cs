@@ -44,6 +44,6 @@ namespace ClinicManager.Models
 
         public virtual ICollection<PatientTreatmentDetail>? PatientTreatmentDetails { get; set; } = new List<PatientTreatmentDetail>();
 
-   
+        public BillingRecord BillingRecord { get; set; }
     }
 }

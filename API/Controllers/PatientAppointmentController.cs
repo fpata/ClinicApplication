@@ -25,7 +25,7 @@ namespace ClinicManager.Controllers
             _logger = logger;
         }
       
-        [HttpGet]
+       [HttpGet]
         public async Task<ActionResult<AppointmentSearchResponse>> GetAll(UserType userType, int userID, DateTime startDate, DateTime endDate,int pageNumber = 1, int pageSize = 10)
         {
             _logger.LogInformation($"Fetching patient appointments page {pageNumber} with size {pageSize}");

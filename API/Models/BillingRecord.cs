@@ -6,23 +6,9 @@ namespace ClinicManager.Models
     [Table("BillingRecord")]
     public class BillingRecord : BaseEntity
     {
+        public int TreatmentID { get; set; }
 
-        public int? TreatmentID { get; set; }
-
-        public int? PatientID { get; set; }
-        public int? DoctorID { get; set; }
-
-        // Snapshot fields (denormalized for historical accuracy)
-        public string? PatientName { get; set; }
-        public string? DoctorName { get; set; }
-
-        public string? TreatmentName { get; set; }
-
-        public DateTime? ServiceDate { get; set; }         // ISO date (from StartApptDate)
-        public DateTime? PostedDate { get; set; }             // When the bill was generated
         public BillingStatus? Status { get; set; }
-
-
         public float? Subtotal { get; set; }
         public float? TaxTotal { get; set; }
         public float? DiscountTotal { get; set; }
@@ -30,8 +16,8 @@ namespace ClinicManager.Models
         public float? AmountPaid { get; set; }
         public float? BalanceDue { get; set; }
 
-        //public InsuranceSegment? Insurance { get; set; } //TO DO 
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
         public string? Notes { get; set; }
         [NotMapped]
         public int PageNumber   { get; set; }=1;

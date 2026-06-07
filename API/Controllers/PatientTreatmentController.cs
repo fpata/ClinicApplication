@@ -134,13 +134,6 @@ namespace ClinicManager.Controllers
                 var billingRecord = new BillingRecord
                 {
                     TreatmentID = treatmentId,
-                    PatientID = treatment.PatientID,
-                    DoctorID = treatment.DoctorID,
-                    PatientName = patientName,
-                    DoctorName = doctorName,
-                    TreatmentName = treatment.TreatmentPlan,
-                    ServiceDate = DateTime.Now,
-                    PostedDate = DateTime.Now,
                     BalanceDue = treatment.EstimatedCost ?? 0,
                     CreatedBy = treatment.CreatedBy,
                     CreatedDate = DateTime.Now,
@@ -160,7 +153,7 @@ namespace ClinicManager.Controllers
             else
             {
                 BillingRecord? bilrec = await _context.BillingRecords
-                    .FirstOrDefaultAsync(br => br.TreatmentID == treatmentId && br.PatientID == treatment.PatientID);
+                    .FirstOrDefaultAsync(br => br.TreatmentID == treatmentId);
                 if (bilrec != null)
                 {
                     if (treatment.EstimatedCost.HasValue && treatment.EstimatedCost.Value != bilrec.Total)

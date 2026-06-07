@@ -56,7 +56,7 @@ export class PatientAppointmentService {
       pageNumber: currentPage,
       pageSize: pageSize
     };
-    return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}/all`, { headers: this.getAuthHeaders(), params });
+    return this.http.get<AppointmentSearchResponse>(`${this.apiUrl}`, { headers: this.getAuthHeaders(), params });
   }
 
   setPatinetAppointmentTime(appointments: PatientAppointment[]): PatientAppointment[] {
