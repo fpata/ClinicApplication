@@ -19,6 +19,13 @@ namespace ClinicManager.Models
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
         public string? Notes { get; set; }
+        public string? PatientName { get; set; }
+        
+        public string? DoctorName { get; set; }
+        
+        public string? TreatmentName { get; set; }
+        
+        public DateTime? ServiceDate { get; set; }
         [NotMapped]
         public int PageNumber   { get; set; }=1;
         [NotMapped]
@@ -34,7 +41,20 @@ namespace ClinicManager.Models
 
     }
 
-
+    public class BillingSearchCriteria
+    {
+        public int? PatientID { get; set; }
+        public int? DoctorID { get; set; }
+        public int? TreatmentID { get; set; }
+        public float? Total { get; set; }
+        public float? BalanceDue { get; set; }
+        public ClinicManager.Models.Enums.BillingStatus? Status { get; set; }
+        public string? PatientName { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+    }
 
     public class InsuranceSegment:BaseEntity
     {

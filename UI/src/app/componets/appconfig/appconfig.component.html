@@ -83,9 +83,9 @@
                       <label for="txtPerPatientSlot" class="form-label">
                         <i class="bi bi-hourglass-split me-1"></i>Per Patient Slot (Minutes)
                       </label>
-                      <input type="time" id="txtPerPatientSlot" class="form-control form-control-lg" placeholder="Per Patient Slot"
+                      <input type="number" id="txtPerPatientSlot" class="form-control form-control-lg" placeholder="Per Patient Slot"
                         [ngModel]="config?.PerPatientSlotInMinutes" (ngModelChange)="config && (config.PerPatientSlotInMinutes = $event)"
-                        name="perPatientSlot" minlength="1" maxlength="3" required>
+                        name="perPatientSlot" min="1" max="180" required>
                       <div class="invalid-feedback">Please fill out this field.</div>
                     </div>
                   </div>

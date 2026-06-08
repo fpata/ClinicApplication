@@ -5,10 +5,13 @@ import { BillingrecordComponent } from './billingrecord.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BillingRecord, BillingStatus } from '../../../models/billing.model';
 import { ChangeDetectionStrategy } from '@angular/core';
+import { PatientTreatmentService } from '../../../services/patient-treatment.service';
+import { of } from 'rxjs';
 
 describe('BillingrecordComponent', () => {
   let component: BillingrecordComponent;
   let fixture: ComponentFixture<BillingrecordComponent>;
+  let mockPatientTreatmentService: jasmine.SpyObj<PatientTreatmentService>;
 
   const mockBillingRecord: BillingRecord = {
     ID: 1,
@@ -28,12 +31,22 @@ describe('BillingrecordComponent', () => {
     CreatedBy: 1,
     ModifiedBy: 1,
     CreatedDate: new Date().toDateString(),
-    ModifiedDate: new Date().toDateString()
+    ModifiedDate: new Date().toDateString(),
+    TreatmentID: 0,
+    Payments: [],
+    PageNumber: 1,
+    PageSize: 10
   };
 
   beforeEach(async () => {
+    mockPatientTreatmentService = jasmine.createSpyObj('PatientTreatmentService', ['getPatientTreatment']);
+    mockPatientTreatmentService.getPatientTreatment.and.returnValue(of({} as any));
+
     await TestBed.configureTestingModule({
-      imports: [ BillingrecordComponent, FormsModule, HttpClientTestingModule ]
+      imports: [ BillingrecordComponent, FormsModule, HttpClientTestingModule ],
+      providers: [
+        { provide: PatientTreatmentService, useValue: mockPatientTreatmentService }
+      ]
     })
     .overrideComponent(BillingrecordComponent, {
       set: { changeDetection: ChangeDetectionStrategy.Default }
@@ -110,5 +123,17 @@ describe('BillingrecordComponent', () => {
     fixture.detectChanges();
 
     expect(component.billingRecord.TreatmentName).toBe(newTreatmentName);
+  });
+
+  it('should call patientTreatmentService.getPatientTreatment and set selectedTreatment when viewTreatmentDetails is called', () => {
+    const testRecord = { ...mockBillingRecord, TreatmentID: 42 };
+    const mockTreatment = { ID: 42, ChiefComplaint: 'Pain' };
+    mockPatientTreatmentService.getPatientTreatment.and.returnValue(of(mockTreatment as any));
+
+    component.viewTreatmentDetails(testRecord);
+
+    expect(mockPatientTreatmentService.getPatientTreatment).toHaveBeenCalledWith(42);
+    expect(component.selectedTreatment).toEqual(mockTreatment as any);
+    expect(component.selectedBillingRecord).toEqual(testRecord);
   });
 });

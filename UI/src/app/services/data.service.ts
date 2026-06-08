@@ -9,6 +9,7 @@ import { Address } from '../models/address.model';
 import { AppConfig } from '../models/appconfig.model';
 import { AuthService } from './auth.service';
 import { Token } from '@angular/compiler';
+import { BillingRecord } from '../models/billing.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,7 @@ export class DataService {
   private configSource = new BehaviorSubject<AppConfig | null>(null);
   private userId = new BehaviorSubject<number | null>(null);
   private IsQuickCreateMode = new BehaviorSubject<boolean>(false);
+  private billingRecordSource = new BehaviorSubject<BillingRecord | null>(null);
 
   readonly patient$: Observable<Patient> = this.patientSource.asObservable();
   readonly user$: Observable<User> = this.userSource.asObservable();
@@ -29,6 +31,7 @@ export class DataService {
   readonly config$: Observable<AppConfig> = this.configSource.asObservable();
   readonly userId$: Observable<number | null> = this.userId.asObservable();
   readonly IsQuickCreateMode$: Observable<boolean> = this.IsQuickCreateMode.asObservable();
+  readonly billingRecord$: Observable<BillingRecord | null> = this.billingRecordSource.asObservable();
 
   private tokenKey = 'token';
   private userKey = 'user';
@@ -95,5 +98,13 @@ export class DataService {
 
   getQuickCreateMode(): boolean {
     return this.IsQuickCreateMode.value;
+  }
+
+  setBillingRecord(record: BillingRecord | null): void {
+    this.billingRecordSource.next(record);
+  }
+
+  getBillingRecord(): BillingRecord | null {
+    return this.billingRecordSource.value;
   }
 }

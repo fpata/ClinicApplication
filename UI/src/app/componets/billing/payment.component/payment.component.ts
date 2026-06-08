@@ -7,6 +7,7 @@ import { Payment, PaymentMethod } from '../../../models/payment.model';
 import { BillingService } from '../../../services/blling.service';
 import { PaymentService } from '../../../services/payment.service';
 import { MessageService } from '../../../services/message.service';
+import { DataService } from '../../../services/data.service';
 
 @Component({
   selector: 'app-payment',
@@ -29,11 +30,12 @@ export class PaymentComponent implements OnInit, OnDestroy {
     private billingService: BillingService,
     private paymentService: PaymentService,
     private messageService: MessageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dataService: DataService
   ) { }
 
   ngOnInit(): void {
-    this.subscription = this.billingService.selectedBillingRecord$.subscribe({
+    this.subscription = this.dataService.billingRecord$.subscribe({
       next: (record: BillingRecord | null) => {
         if (record && record.ID) {
           this.loadBillingRecordDetails(record.ID);
@@ -150,5 +152,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
 
   ClearSelectedRecord(): void {
     this.billingService.setSelectedBillingRecord(null);
+    this.dataService.setBillingRecord(null);
   }
 }

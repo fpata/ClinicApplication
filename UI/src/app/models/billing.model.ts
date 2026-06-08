@@ -28,6 +28,8 @@ export class BillingRecord extends BaseEntity {
   PostedDate?: string;             // When the bill was generated
   AdjustmentTotal?: number;
   Insurance?: InsuranceSegment;
+  StartDate?: string;
+  EndDate?: string;
 }
 
 export enum BillingStatus {

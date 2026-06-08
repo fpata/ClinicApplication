@@ -50,8 +50,8 @@
           </a>
         </li>
         <li class="nav-item" *ngIf="showBillingLink">
-          <a class="nav-link px-3 rounded-pill transition-all" href="#" role="button"
-            (click)="toggleBillingSubnav($event)">
+          <a class="nav-link px-3 rounded-pill transition-all" routerLink="/billing/records" routerLinkActive="active"
+            role="button">
             <i class="bi bi-credit-card me-2"></i>Billing
           </a>
         </li>

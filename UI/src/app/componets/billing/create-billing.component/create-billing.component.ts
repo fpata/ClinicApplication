@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BillingRecord, BillingStatus } from '../../../models/billing.model';
@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { Patient } from '../../../models/patient.model';
 import { PatientTreatmentDetail } from '../../../models/patient-treatment-detail.model';
+import { DataService } from '../../../services/data.service';
 
 @Component({
   selector: 'app-create-billing',
@@ -34,6 +35,8 @@ export class CreateBillingComponent {
   selectedDoctor: any | null = null;
   treatmentDetails: any[] = [];
 
+  @Output() onBillingCreated = new EventEmitter<BillingRecord>();
+
   constructor(
     private billingService: BillingService,
     private messageService: MessageService,
@@ -42,7 +45,8 @@ export class CreateBillingComponent {
     private searchService: SearchService,
     private util: UtilityService,
     private patientTreatmentService: PatientTreatmentService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private dataService: DataService
   ) {}
 
   private initBillingRecord(): BillingRecord {
@@ -274,6 +278,8 @@ export class CreateBillingComponent {
         this.formSubmitted = false;
         // Select the newly created record and navigate
         this.billingService.setSelectedBillingRecord(createdRecord);
+        this.dataService.setBillingRecord(createdRecord);
+        this.onBillingCreated.emit(createdRecord);
         this.router.navigate(['/billing/payment']);
         this.newBilling = this.initBillingRecord();
         this.selectedPatient = null;

@@ -1,4 +1,6 @@
-﻿namespace ClinicManager.Tests;
+using Xunit;
+
+namespace ClinicManager.Tests;
 
 public class UnitTest1
 {

@@ -73,7 +73,9 @@ namespace ClinicManager.Controllers
         public async Task<ActionResult<PatientTreatment>> Get(int id)
         {
             _logger.LogInformation($"Fetching patient treatment with ID: {id}");
-            var entity = await _context.PatientTreatments.FindAsync(id);
+            var entity = await _context.PatientTreatments
+                .Include(pt => pt.PatientTreatmentDetails)
+                .FirstOrDefaultAsync(pt => pt.ID == id);
             if (entity == null)
             {
                 _logger.LogWarning($"Patient treatment with ID: {id} not found");

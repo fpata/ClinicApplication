@@ -28,6 +28,7 @@ namespace ClinicManager.Controllers
         {
             _logger.LogInformation($"Fetching billing records page {pageNumber} with size {pageSize}");
             var records = await _context.BillingRecords
+                .Include(br => br.Payments)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -38,7 +39,9 @@ namespace ClinicManager.Controllers
         public async Task<ActionResult<BillingRecord>> Get(int id)
         {
             _logger.LogInformation($"Fetching billing record with ID: {id}");
-            var entity = await _context.BillingRecords.FindAsync(id);
+            var entity = await _context.BillingRecords
+                .Include(br => br.Payments)
+                .FirstOrDefaultAsync(br => br.ID == id);
             if (entity == null)
             {
                 _logger.LogWarning($"Billing record with ID: {id} not found");
@@ -50,6 +53,7 @@ namespace ClinicManager.Controllers
         [HttpPost]
         public async Task<ActionResult<BillingRecord>> Post(BillingRecord billingRecord)
         {
+            await PopulateBillingRecordFields(billingRecord);
             _context.BillingRecords.Add(billingRecord);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Created new billing record with ID: {billingRecord.ID}");
@@ -64,6 +68,7 @@ namespace ClinicManager.Controllers
                 _logger.LogWarning($"Billing record ID mismatch: {id} != {billingRecord.ID}");
                 return BadRequest();
             }
+            await PopulateBillingRecordFields(billingRecord);
             _context.Entry(billingRecord).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Updated billing record with ID: {id}");
@@ -80,6 +85,7 @@ namespace ClinicManager.Controllers
                 return NotFound();
             }
             patchDoc.ApplyTo(entity);
+            await PopulateBillingRecordFields(entity);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Patched billing record with ID: {id}");
             return NoContent();
@@ -133,25 +139,89 @@ namespace ClinicManager.Controllers
             }
             if(!String.IsNullOrWhiteSpace(searchCriteria.PatientName))
             {
-                query = query.Where(br => _context.PatientTreatments.Any(pt =>
-                    pt.ID == br.TreatmentID &&
-                    _context.Patients.Any(p =>
-                        p.ID == pt.PatientID &&
-                        _context.Users.Any(u =>
-                            u.ID == p.UserID &&
-                            ((u.FirstName + " " + u.LastName).Contains(searchCriteria.PatientName) ||
-                             (u.MiddleName != null && u.MiddleName.Contains(searchCriteria.PatientName)))))));
+                // Optimize search results by filtering directly on the flattened column in the DB
+                query = query.Where(br => br.PatientName != null && br.PatientName.Contains(searchCriteria.PatientName));
             }
-            // Add more criteria as needed
+            if (searchCriteria.StartDate != null)
+            {
+                query = query.Where(br => br.CreatedDate >= searchCriteria.StartDate);
+            }
+            if (searchCriteria.EndDate != null)
+            {
+                query = query.Where(br => br.CreatedDate <= searchCriteria.EndDate);
+            }
+            
             // Get total count before pagination
             var totalCount = await query.CountAsync();
             var results = await query
+                .Include(br => br.Payments)
                 .Select(model => model)
                 .AsNoTracking()
                 .OrderByDescending(a => a.TreatmentID)
                 .Skip((searchCriteria.PageNumber - 1) * searchCriteria.PageSize)
                 .Take(searchCriteria.PageSize)
                 .ToListAsync();
+
+            // For backward compatibility, dynamically populate any missing flattened fields for older database records in results in bulk
+            var missingFieldsRecords = results.Where(r => string.IsNullOrEmpty(r.PatientName) || string.IsNullOrEmpty(r.DoctorName) || string.IsNullOrEmpty(r.TreatmentName) || r.ServiceDate == null).ToList();
+            if (missingFieldsRecords.Any())
+            {
+                var treatmentIds = missingFieldsRecords.Select(r => r.TreatmentID).Distinct().ToList();
+                var treatments = await _context.PatientTreatments
+                    .Include(pt => pt.PatientTreatmentDetails)
+                    .Where(pt => treatmentIds.Contains(pt.ID))
+                    .ToListAsync();
+
+                var patientIds = treatments.Select(t => t.PatientID).Where(id => id.HasValue).Select(id => id!.Value).Distinct().ToList();
+                var doctorIds = treatments.Select(t => t.DoctorID).Where(id => id.HasValue).Select(id => id!.Value).Distinct().ToList();
+
+                var patients = await _context.Patients
+                    .Where(p => patientIds.Contains(p.ID))
+                    .ToListAsync();
+
+                var patientUserIds = patients.Select(p => p.UserID).Distinct().ToList();
+                var userIdsToFetch = patientUserIds.Concat(doctorIds).Distinct().ToList();
+
+                var users = await _context.Users
+                    .Where(u => userIdsToFetch.Contains(u.ID))
+                    .ToListAsync();
+
+                var treatmentsDict = treatments.ToDictionary(t => t.ID);
+                var patientsDict = patients.ToDictionary(p => p.ID);
+                var usersDict = users.ToDictionary(u => u.ID);
+
+                foreach (var record in missingFieldsRecords)
+                {
+                    if (treatmentsDict.TryGetValue(record.TreatmentID, out var treatment))
+                    {
+                        if (string.IsNullOrEmpty(record.TreatmentName))
+                        {
+                            record.TreatmentName = treatment.PatientTreatmentDetails != null && treatment.PatientTreatmentDetails.Any()
+                                ? string.Join(", ", treatment.PatientTreatmentDetails.Select(d => d.Procedure))
+                                : treatment.TreatmentPlan;
+                        }
+
+                        if (string.IsNullOrEmpty(record.PatientName) && treatment.PatientID.HasValue && patientsDict.TryGetValue(treatment.PatientID.Value, out var patient))
+                        {
+                            if (usersDict.TryGetValue(patient.UserID, out var pUser))
+                            {
+                                record.PatientName = $"{pUser.FirstName} {pUser.LastName}".Trim();
+                            }
+                        }
+
+                        if (string.IsNullOrEmpty(record.DoctorName) && treatment.DoctorID.HasValue && usersDict.TryGetValue(treatment.DoctorID.Value, out var dUser))
+                        {
+                            record.DoctorName = $"{dUser.FirstName} {dUser.LastName}".Trim();
+                        }
+
+                        if (record.ServiceDate == null)
+                        {
+                            record.ServiceDate = treatment.CreatedDate;
+                        }
+                    }
+                }
+            }
+
             var hasMoreRecords = (searchCriteria.PageNumber * searchCriteria.PageSize) < totalCount;
             var message = results.Count > 0 ? "Records found." : "No Billing Information found.";
             var response = new SearchResultsBillingRecord
@@ -163,18 +233,42 @@ namespace ClinicManager.Controllers
             };
             return Ok(response);
         }
-    }
 
-    public class BillingSearchCriteria
-    {
-        public int? PatientID { get; set; }
-        public int? DoctorID { get; set; }
-        public int? TreatmentID { get; set; }
-        public float? Total { get; set; }
-        public float? BalanceDue { get; set; }
-        public ClinicManager.Models.Enums.BillingStatus? Status { get; set; }
-        public string? PatientName { get; set; }
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
+        private async Task PopulateBillingRecordFields(BillingRecord billingRecord)
+        {
+            var treatment = await _context.PatientTreatments
+                .Include(pt => pt.PatientTreatmentDetails)
+                .FirstOrDefaultAsync(pt => pt.ID == billingRecord.TreatmentID);
+            if (treatment != null)
+            {
+                billingRecord.TreatmentName = treatment.PatientTreatmentDetails != null && treatment.PatientTreatmentDetails.Any()
+                    ? string.Join(", ", treatment.PatientTreatmentDetails.Select(d => d.Procedure))
+                    : treatment.TreatmentPlan;
+
+                // Get Patient User
+                var patient = await _context.Patients.FirstOrDefaultAsync(p => p.ID == treatment.PatientID);
+                if (patient != null)
+                {
+                    var pUser = await _context.Users.FirstOrDefaultAsync(u => u.ID == patient.UserID);
+                    if (pUser != null)
+                    {
+                        billingRecord.PatientName = $"{pUser.FirstName} {pUser.LastName}".Trim();
+                    }
+                }
+
+                // Get Doctor User
+                if (treatment.DoctorID != null)
+                {
+                    var dUser = await _context.Users.FirstOrDefaultAsync(u => u.ID == treatment.DoctorID);
+                    if (dUser != null)
+                    {
+                        billingRecord.DoctorName = $"{dUser.FirstName} {dUser.LastName}".Trim();
+                    }
+                }
+
+                // Get ServiceDate from CreatedDate of treatment
+                billingRecord.ServiceDate = treatment.CreatedDate;
+            }
+        }
     }
 }

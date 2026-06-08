@@ -4,7 +4,7 @@ export interface AppConfig {
   ClinicEndTime?: string;
   ClinicName?: string;
   ClinicProp?: string;
-  PerPatientSlotInMinutes?: string;
+  PerPatientSlotInMinutes?: number;
   LunchTime?: string;
   pageSize?: number;
 }

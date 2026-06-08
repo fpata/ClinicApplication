@@ -22,10 +22,24 @@ namespace ClinicManager.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppConfig>>> Get()
+        public async Task<ActionResult<AppConfig>> Get()
         {
-            var configs = await _context.AppConfigs.AsNoTracking().ToListAsync();
-            return Ok(configs);
+            var config = await _context.AppConfigs.AsNoTracking().FirstOrDefaultAsync();
+            if (config == null)
+            {
+                config = new AppConfig
+                {
+                    ClinicName = "Relief Dental Clinic",
+                    ClinicOpenTime = "09:00",
+                    ClinicEndTime = "18:00",
+                    PerPatientSlotInMinutes = 15,
+                    LunchTime = "13:00",
+                    pageSize = 10
+                };
+                _context.AppConfigs.Add(config);
+                await _context.SaveChangesAsync();
+            }
+            return Ok(config);
         }
 
         [HttpGet("{id}")]

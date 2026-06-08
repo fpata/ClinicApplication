@@ -70,7 +70,7 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     const patientAppointmentServiceSpy = jasmine.createSpyObj('PatientAppointmentService', 
-      ['getAllAppointments', 'setPatinetAppointmentTime']);
+      ['getAppointments', 'setPatinetAppointmentTime']);
 
     await TestBed.configureTestingModule({
       imports: [DashboardComponent, HttpClientTestingModule, MockSchedulerComponent],
@@ -93,7 +93,7 @@ describe('DashboardComponent', () => {
   });
 
   it('should load appointments on init', () => {
-    patientAppointmentService.getAllAppointments.and.returnValue(of(mockAppointmentResponse));
+    patientAppointmentService.getAppointments.and.returnValue(of(mockAppointmentResponse));
     patientAppointmentService.setPatinetAppointmentTime.and.returnValue(mockAppointmentResponse.PatientAppointments);
     spyOn(component as any, 'addEventsToScheduler');
     spyOn(component as any, 'loadAppointments');
@@ -105,7 +105,7 @@ describe('DashboardComponent', () => {
 
   it('should handle error when loading appointments', () => {
     spyOn(console, 'error');
-    patientAppointmentService.getAllAppointments.and.returnValue(throwError('Load error'));
+    patientAppointmentService.getAppointments.and.returnValue(throwError('Load error'));
     spyOn(component as any, 'loadAppointments');
 
     component.ngOnInit();

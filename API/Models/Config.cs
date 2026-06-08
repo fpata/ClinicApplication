@@ -18,13 +18,11 @@ namespace ClinicManager.Models
         [StringLength(255)]
         public string? ClinicProp { get; set; }
 
-        [StringLength(45)]
-        public string? PerPatientSlotInMinutes { get; set; }
+        public int? PerPatientSlotInMinutes { get; set; }
 
         [StringLength(45)]
         public string? LunchTime { get; set; }
 
-        [StringLength(45)]
         public int pageSize { get; set; } = 10;
         
     }
