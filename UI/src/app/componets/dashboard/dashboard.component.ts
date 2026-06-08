@@ -15,11 +15,11 @@ import { Patient } from '../../models/patient.model';
 import { map, Observable } from 'rxjs';
 import { TypeaheadComponent } from '../../common/typeahead/typeahead';
 import { LoginResponse } from '../../services/login.service';
-import { DatePipe } from '@angular/common';
+import { AppDatePipe } from '../../common/app-date.pipe';
 import { AppointmentHelper } from '../../common/appointment-helper';
 @Component({
    selector: 'app-dashboard',
-   imports: [SchedulerComponent, PagingComponent, FormsModule, TypeaheadComponent, DatePipe],
+   imports: [SchedulerComponent, PagingComponent, FormsModule, TypeaheadComponent, AppDatePipe],
    templateUrl: './dashboard.component.html',
    styleUrls: ['./dashboard.component.css'],
    providers: [],

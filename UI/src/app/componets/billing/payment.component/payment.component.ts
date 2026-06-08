@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { AppDatePipe } from '../../../common/app-date.pipe';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { BillingRecord } from '../../../models/billing.model';
@@ -11,7 +12,7 @@ import { DataService } from '../../../services/data.service';
 
 @Component({
   selector: 'app-payment',
-  imports: [FormsModule, CommonModule, CurrencyPipe, DatePipe],
+  imports: [FormsModule, CommonModule, CurrencyPipe, AppDatePipe],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css',
   standalone: true,

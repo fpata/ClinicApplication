@@ -34,7 +34,9 @@ namespace ClinicManager.Controllers
                     ClinicEndTime = "18:00",
                     PerPatientSlotInMinutes = 15,
                     LunchTime = "13:00",
-                    pageSize = 10
+                    pageSize = 10,
+                    DateFormat = "MM/dd/yyyy",
+                    Currency = "USD"
                 };
                 _context.AppConfigs.Add(config);
                 await _context.SaveChangesAsync();

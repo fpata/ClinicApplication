@@ -77,7 +77,7 @@
                 </div>
 
                 <!-- Row 3: Per Patient Slot & Lunch Time -->
-                <div class="row g-3 mb-4">
+                <div class="row g-3 mb-3">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="txtPerPatientSlot" class="form-label">
@@ -98,6 +98,46 @@
                         [ngModel]="config?.LunchTime" (ngModelChange)="config && (config.LunchTime = $event)"
                         name="lunchTime" required>
                       <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 4: Date Format & Currency (Dropdowns) -->
+                <div class="row g-3 mb-4">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="selDateFormat" class="form-label">
+                        <i class="bi bi-calendar-date me-1"></i>Date Format
+                      </label>
+                      <select id="selDateFormat" class="form-select form-select-lg"
+                        [ngModel]="config?.DateFormat" (ngModelChange)="config && (config.DateFormat = $event)"
+                        name="dateFormat" required>
+                        <option value="" disabled selected>Select Date Format</option>
+                        <option value="MM/dd/yyyy">MM/dd/yyyy</option>
+                        <option value="dd/MM/yyyy">dd/MM/yyyy</option>
+                        <option value="yyyy-MM-dd">yyyy-MM-dd</option>
+                        <option value="yyyy/MM/dd">yyyy/MM/dd</option>
+                      </select>
+                      <div class="invalid-feedback">Please select a date format.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="selCurrency" class="form-label">
+                        <i class="bi bi-currency-exchange me-1"></i>Currency
+                      </label>
+                      <select id="selCurrency" class="form-select form-select-lg"
+                        [ngModel]="config?.Currency" (ngModelChange)="config && (config.Currency = $event)"
+                        name="currency" required>
+                        <option value="" disabled selected>Select Currency</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="INR">INR (₹)</option>
+                        <option value="CAD">CAD ($)</option>
+                        <option value="AUD">AUD ($)</option>
+                      </select>
+                      <div class="invalid-feedback">Please select a currency.</div>
                     </div>
                   </div>
                 </div>

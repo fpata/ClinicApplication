@@ -6,6 +6,11 @@ import { Router, RouterModule, NavigationStart } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Patient } from '../../models/patient.model';
 import { AuthService } from '../../services/auth.service';
+import { AppConfigService } from '../../services/config.service';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user.model';
+import { Address } from '../../models/address.model';
+import { Contact } from '../../models/contact.model';
 
 @Component({
   selector: 'app-header',
@@ -18,16 +23,25 @@ import { AuthService } from '../../services/auth.service';
 export class Header implements OnInit, OnDestroy {
   loginUser: LoginResponse | null = null;
   isDarkTheme = false;
+  clinicName = 'CM - Clinic Manager';
   private subscription?: Subscription;
   private patientSub?: Subscription;
   private routerSub?: Subscription;
+  private configSub?: Subscription;
   patient: Patient | null = null;
   patientId: number | null = null;
   isNewPatient = false;
   showPatientSubnav = false;
   showUserSubnav = false;
   showBillingSubnav = false;
-  constructor(private dataService: DataService, private router: Router, private cdr: ChangeDetectorRef, private authService: AuthService) {}
+  constructor(
+    private dataService: DataService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private configService: AppConfigService,
+    private userService: UserService
+  ) {}
 
   get isLoginURL(): boolean {
     return this.router.url.includes('login');
@@ -61,6 +75,26 @@ export class Header implements OnInit, OnDestroy {
       }
     });
 
+    this.configSub = this.dataService.config$.subscribe(config => {
+      if (config && config.ClinicName) {
+        this.clinicName = config.ClinicName;
+      } else {
+        this.clinicName = 'CM - Clinic Manager';
+      }
+      this.cdr.markForCheck();
+    });
+
+    if (this.isLoggedIn && !this.dataService.getConfig()) {
+      this.configService.getConfigs().subscribe({
+        next: (config) => {
+          this.dataService.setConfig(config);
+        },
+        error: (err) => {
+          console.error('Error fetching app config in header:', err);
+        }
+      });
+    }
+
     // Initialize subnavs based on current active URL
     this.updateSubnavsBasedOnUrl(this.router.url);
 
@@ -82,6 +116,7 @@ export class Header implements OnInit, OnDestroy {
     this.subscription?.unsubscribe();
     this.patientSub?.unsubscribe();
     this.routerSub?.unsubscribe();
+    this.configSub?.unsubscribe();
   }
 
   get userRole(): string | null {
@@ -153,6 +188,13 @@ export class Header implements OnInit, OnDestroy {
     return r === 'patient' || r === '1';
   }
 
+  get isAdmin(): boolean {
+    const role = this.userRole;
+    if (!role) return false;
+    const r = role.toString().toLowerCase();
+    return r === 'admin' || r === 'administrator' || r === '5';
+  }
+
   logout(): void {
     try {
       this.authService.logout();
@@ -204,6 +246,28 @@ export class Header implements OnInit, OnDestroy {
       if (!this.isPatientRole) {
         this.showPatientSubnav = false;
       }
+    }
+  }
+
+  goToProfile(event: Event): void {
+    event.preventDefault();
+    const userId = this.loginUser?.user?.ID;
+    if (userId) {
+      this.userService.getUser(userId).subscribe({
+        next: (user: User) => {
+          if (user.Address == null || user.Address == undefined) {
+            user.Address = new Address();
+          }
+          if (user.Contact == null || user.Contact == undefined) {
+            user.Contact = new Contact();
+          }
+          this.dataService.setUser(user);
+          this.router.navigate(['/user-create']);
+        },
+        error: (err: any) => {
+          console.error('Error fetching user profile data:', err);
+        }
+      });
     }
   }
 

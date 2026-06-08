@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <!-- Brand -->
     <a class="navbar-brand fw-bold fs-5" href="#" style="letter-spacing: 0.5px;">
-      <i class="bi bi-hospital me-2"></i>CM - Clinic Manager
+      <i class="bi bi-hospital me-2"></i>{{ clinicName }}
     </a>
 
     <!-- Toggler Button -->
@@ -83,10 +83,10 @@
               <strong>{{loginUser?.user?.FirstName || 'User'}}</strong>
             </div>
             <hr class="dropdown-divider">
-            <a class="dropdown-item px-3" href="#">
+            <a class="dropdown-item px-3" href="#" (click)="goToProfile($event)">
               <i class="bi bi-person me-2"></i>Profile
             </a>
-            <a class="dropdown-item px-3" href="#">
+            <a class="dropdown-item px-3" routerLink="/appconfig" *ngIf="isAdmin">
               <i class="bi bi-gear me-2"></i>Settings
             </a>
             <hr class="dropdown-divider">

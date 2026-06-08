@@ -7,4 +7,6 @@ export interface AppConfig {
   PerPatientSlotInMinutes?: number;
   LunchTime?: string;
   pageSize?: number;
+  DateFormat?: string;
+  Currency?: string;
 }

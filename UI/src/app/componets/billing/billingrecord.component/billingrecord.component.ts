@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
+import { AppDatePipe } from '../../../common/app-date.pipe';
 import { BillingRecord, SearchResultBillingRecord, BillingStatus } from '../../../models/billing.model';
 import { FormsModule } from '@angular/forms';
 import { BillingService } from '../../../services/blling.service';
@@ -11,7 +12,7 @@ import { PatientTreatment } from '../../../models/patient-treatment.model';
 
 @Component({
   selector: 'app-billingrecord',
-  imports: [FormsModule, CurrencyPipe, DatePipe, CommonModule],
+  imports: [FormsModule, CurrencyPipe, AppDatePipe, CommonModule],
   templateUrl: './billingrecord.component.html',
   styleUrl: './billingrecord.component.css',
   standalone: true,

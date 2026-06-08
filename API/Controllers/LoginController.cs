@@ -8,6 +8,7 @@ using System.Text;
 using ClinicManager.DAL;
 using Castle.Core.Smtp;
 using ClinicManager.Models.Enums;
+using ClinicManager.Services;
 
 namespace ClinicManager.Controllers
 {
@@ -17,10 +18,15 @@ namespace ClinicManager.Controllers
     {
         private readonly ClinicDbContext _context;
         private readonly ILogger<LoginController> _logger;
-        public LoginController(ClinicDbContext context, ILogger<LoginController> logger)
+        private readonly IEmailService _emailService;
+        private readonly ISmsService _smsService;
+
+        public LoginController(ClinicDbContext context, ILogger<LoginController> logger, IEmailService emailService, ISmsService smsService)
         {
             _context = context;
             _logger = logger;
+            _emailService = emailService;
+            _smsService = smsService;
         }
 
         public class LoginRequest
@@ -118,18 +124,70 @@ namespace ClinicManager.Controllers
 
         [HttpGet]
         [Route("forgotpassword")]
-        public string  forgotpassword(string sendTo,bool isMobile=false )
+        public async Task<IActionResult> forgotpassword(string sendTo, bool isMobile = false)
         {
+            _logger.LogInformation("Forgot password requested for {SendTo} (isMobile: {IsMobile})", sendTo, isMobile);
 
-            if(isMobile)
+            if (string.IsNullOrWhiteSpace(sendTo))
             {
-                return "OTP sent to mobile number "+sendTo;
+                return BadRequest("Contact information cannot be empty.");
+            }
+
+            var user = await _context.Users
+                .Include(u => u.Contact)
+                .FirstOrDefaultAsync(u => u.IsActive == 1 && (isMobile
+                    ? (u.Contact != null && (u.Contact.PrimaryPhone == sendTo || u.Contact.SecondaryPhone == sendTo))
+                    : (u.Contact != null && (u.Contact.PrimaryEmail == sendTo || u.Contact.SecondaryEmail == sendTo))
+                ));
+
+            if (user == null)
+            {
+                _logger.LogWarning("Forgot password failed: No active user found for contact {SendTo}", sendTo);
+                return NotFound("No active user found with the provided contact information.");
+            }
+
+            // Generate a secure temporary password/OTP
+            string tempPassword = GenerateTemporaryPassword();
+
+            // Update user password in database
+            user.Password = tempPassword;
+            user.ModifiedDate = DateTime.Now;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            if (isMobile)
+            {
+                string message = $"Your Clinic Manager temporary password/OTP is: {tempPassword}. Please use this to log in.";
+                await _smsService.SendSmsAsync(sendTo, message);
+                return Ok($"OTP sent to mobile number {sendTo}");
             }
             else
             {
-               
-                return "Reset link sent to email "+sendTo;
+                string subject = "Clinic Manager Password Reset";
+                string body = $@"
+                    <h3>Clinic Manager Password Reset</h3>
+                    <p>Hello {user.FirstName},</p>
+                    <p>Your password has been reset. Please use the following temporary password to log in:</p>
+                    <p><strong>{tempPassword}</strong></p>
+                    <p>For security, we recommend changing your password after logging in.</p>
+                    <br>
+                    <p>Regards,<br>Relief Dental Clinic Team</p>";
+
+                await _emailService.SendEmailAsync(sendTo, subject, body);
+                return Ok($"Reset link sent to email {sendTo}");
             }
+        }
+
+        private string GenerateTemporaryPassword()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var result = new char[8];
+            for (int i = 0; i < 8; i++)
+            {
+                result[i] = chars[random.Next(chars.Length)];
+            }
+            return new string(result);
         }
     }
 }

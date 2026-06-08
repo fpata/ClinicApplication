@@ -78,8 +78,8 @@ export class UserInfoComponent {
   }
 
   onUserTypeChange($event: any) {
-    if (this.user && $event === "2") {
-      this.user.UserType = UserType.Doctor;
+    if (this.user) {
+      this.user.UserType = $event ? Number($event) : undefined;
     }
   }
 

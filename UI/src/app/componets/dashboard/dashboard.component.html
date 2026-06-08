@@ -42,7 +42,7 @@
               @for( appointment of appointments; track appointment.ID) {
               <tr class="align-middle">
                 <td class="text-nowrap">
-                  <span class="badge bg-info text-dark fs-7">{{appointment.StartDateTime | date:'mediumDate'}}</span>
+                  <span class="badge bg-info text-dark fs-7">{{appointment.StartDateTime | appDate:'mediumDate'}}</span>
                 </td>
                 <td class="text-nowrap"><strong>{{appointment.StartTime}}</strong></td>
                 <td class="text-nowrap">{{appointment.EndTime}}</td>
@@ -80,7 +80,7 @@
             <div class="row g-2">
               <div class="col-6">
                 <small class="text-muted d-block">Date</small>
-                <strong>{{appointment.StartDateTime | date:'mediumDate'}}</strong>
+                <strong>{{appointment.StartDateTime | appDate:'mediumDate'}}</strong>
               </div>
               <div class="col-6">
                 <small class="text-muted d-block">Time</small>

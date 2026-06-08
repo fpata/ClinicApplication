@@ -60,7 +60,7 @@
               </div>
               <div class="col-md-6 col-sm-12 mt-2">
                 <small class="text-uppercase text-muted fw-bold d-block mb-1">Service Date</small>
-                <span class="fs-6 text-dark">{{ billingRecord.ServiceDate | date:'fullDate' }}</span>
+                <span class="fs-6 text-dark">{{ billingRecord.ServiceDate | appDate:'fullDate' }}</span>
               </div>
             </div>
 
@@ -128,7 +128,7 @@
                 <tbody>
                   @for (pay of paymentList; track pay.PaymentID) {
                   <tr>
-                    <td>{{ pay.TransactionDate | date:'short' }}</td>
+                    <td>{{ pay.TransactionDate | appDate:'short' }}</td>
                     <td>
                       <span class="badge bg-light text-dark border px-2 py-1.5">{{ pay.PaymentMethod }}</span>
                     </td>
@@ -147,7 +147,7 @@
               @for (pay of paymentList; track pay.PaymentID) {
               <div class="result-card p-3 border-start-success">
                 <div class="d-flex justify-content-between mb-2">
-                  <span class="fw-bold text-dark">{{ pay.TransactionDate | date:'mediumDate' }}</span>
+                  <span class="fw-bold text-dark">{{ pay.TransactionDate | appDate:'mediumDate' }}</span>
                   <span class="fw-bold text-success">{{ pay.Amount | currency }}</span>
                 </div>
                 <div class="info-row py-1">

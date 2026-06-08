@@ -173,7 +173,7 @@
                 <td class="fw-medium">{{ record.PatientName }}</td>
                 <td>{{ record.DoctorName }}</td>
                 <td>{{ record.TreatmentName }}</td>
-                <td>{{ record.ServiceDate | date:'shortDate' }}</td>
+                <td>{{ record.ServiceDate | appDate:'shortDate' }}</td>
                 <td>
                   <span class="badge rounded-pill px-2.5 py-1.5" 
                     [class.bg-success]="record.Status === 'Paid'" 
@@ -247,7 +247,7 @@
             </div>
             <div class="info-row">
               <span class="info-label"><i class="bi bi-calendar me-1"></i>Date:</span>
-              <span class="info-value">{{record.ServiceDate | date:'shortDate'}}</span>
+              <span class="info-value">{{record.ServiceDate | appDate:'shortDate'}}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Paid:</span>
@@ -346,7 +346,7 @@
             </div>
             <div class="col-md-6" *ngIf="selectedTreatment.TreatmentDate">
               <span class="text-muted small d-block">Treatment Date</span>
-              <span class="text-dark fw-medium">{{ selectedTreatment.TreatmentDate | date:'shortDate' }}</span>
+              <span class="text-dark fw-medium">{{ selectedTreatment.TreatmentDate | appDate:'shortDate' }}</span>
             </div>
           </div>
         </div>
@@ -386,7 +386,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let detail of selectedTreatment.PatientTreatmentDetails">
-                  <td>{{ detail.TreatmentDate | date:'shortDate' }}</td>
+                  <td>{{ detail.TreatmentDate | appDate:'shortDate' }}</td>
                   <td class="fw-bold text-center">{{ detail.Tooth || '-' }}</td>
                   <td>{{ detail.Procedure || '-' }}</td>
                   <td class="text-end fw-bold text-dark">{{ (detail.ProcedureTreatmentCost || 0) | currency }}</td>

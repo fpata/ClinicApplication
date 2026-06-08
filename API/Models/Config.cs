@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicManager.Models
 {
-    [Table("configs")]
+    [Table("config")]
     public class AppConfig : BaseEntity
     {
         [StringLength(45)]
@@ -24,6 +24,11 @@ namespace ClinicManager.Models
         public string? LunchTime { get; set; }
 
         public int pageSize { get; set; } = 10;
-        
+
+        [StringLength(45)]
+        public string? DateFormat { get; set; }
+
+        [StringLength(45)]
+        public string? Currency { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Patient } from '../models/patient.model';
-import { User } from '../models/user.model';
+import { User, UserType, Gender } from '../models/user.model';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { LoginResponse } from './login.service';
 import { Contact } from '../models/contact.model';
@@ -39,8 +39,56 @@ export class DataService {
 
 
 
-  setUser(newUser: User): void {
+  setUser(newUser: User | null): void {
+    if (newUser) {
+      newUser.Gender = this.mapGender(newUser.Gender);
+      newUser.UserType = this.mapUserType(newUser.UserType);
+      if (newUser.Patients && Array.isArray(newUser.Patients)) {
+        newUser.Patients.forEach(p => {
+          if (p && p.user) {
+            p.user.Gender = this.mapGender(p.user.Gender);
+            p.user.UserType = this.mapUserType(p.user.UserType);
+          }
+        });
+      }
+    }
     this.userSource.next(newUser);
+  }
+
+  private mapGender(gender: any): any {
+    if (gender === undefined || gender === null) {
+      return gender;
+    }
+    if (typeof gender === 'number') {
+      return gender;
+    }
+    if (typeof gender === 'string') {
+      const g = gender.trim().toLowerCase();
+      if (g === 'male' || g === '1') return Gender.Male;
+      if (g === 'female' || g === '2') return Gender.Female;
+      if (g === 'other' || g === '3') return Gender.Other;
+      if (g === 'prefernot' || g === 'prefernottosay' || g === 'prefer not to say' || g === '4') return Gender.PreferNotToSay;
+    }
+    return gender;
+  }
+
+  private mapUserType(userType: any): any {
+    if (userType === undefined || userType === null) {
+      return userType;
+    }
+    if (typeof userType === 'number') {
+      return userType;
+    }
+    if (typeof userType === 'string') {
+      const u = userType.trim().toLowerCase();
+      if (u === 'patient' || u === '1') return UserType.Patient;
+      if (u === 'doctor' || u === '2') return UserType.Doctor;
+      if (u === 'nurse' || u === '3') return UserType.Nurse;
+      if (u === 'receptionist' || u === '4') return UserType.Receptionist;
+      if (u === 'administrator' || u === 'admin' || u === '5') return UserType.Administrator;
+      if (u === 'technician' || u === '6') return UserType.Technician;
+    }
+    return userType;
   }
 
   getUser(): User | null {

@@ -5,10 +5,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using ClinicManager.DAL;
+using ClinicManager.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<ISmsService, SmsService>();
 
 builder.Services.AddControllers()
      .AddJsonOptions(options =>
