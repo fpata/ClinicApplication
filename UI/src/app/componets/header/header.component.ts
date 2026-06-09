@@ -24,6 +24,7 @@ export class Header implements OnInit, OnDestroy {
   loginUser: LoginResponse | null = null;
   isDarkTheme = false;
   clinicName = 'CM - Clinic Manager';
+  clinicLogo: string | null = null;
   private subscription?: Subscription;
   private patientSub?: Subscription;
   private routerSub?: Subscription;
@@ -81,6 +82,11 @@ export class Header implements OnInit, OnDestroy {
         this.clinicName = config.ClinicName;
       } else {
         this.clinicName = 'CM - Clinic Manager';
+      }
+      if (config && config.ClinicLogo) {
+        this.clinicLogo = config.ClinicLogo;
+      } else {
+        this.clinicLogo = null;
       }
       this.cdr.markForCheck();
     });

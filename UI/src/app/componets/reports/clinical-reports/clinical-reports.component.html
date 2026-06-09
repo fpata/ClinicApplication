@@ -42,7 +42,7 @@
 
                 <button type="button" class="btn btn-lg btn-info text-white w-100" [disabled]="isHistoryLoading" (click)="downloadMedicalHistory()">
                   <span *ngIf="isHistoryLoading" class="spinner-border spinner-border-sm me-2"></span>
-                  <i class="bi bi-file-earmark-arrow-down me-2"></i>Download Comprehensive History (RTF)
+                  <i class="bi bi-printer me-2"></i>Print Comprehensive History (HTML)
                 </button>
               </form>
             </div>
@@ -116,7 +116,7 @@
                 <div class="button-group d-flex gap-2 flex-wrap">
                   <button type="button" class="btn btn-lg btn-primary flex-grow-1" [disabled]="isReferralLoading" (click)="downloadReferral()">
                     <span *ngIf="isReferralLoading" class="spinner-border spinner-border-sm me-2"></span>
-                    <i class="bi bi-file-earmark-text me-2"></i>Generate Referral Letter (RTF)
+                    <i class="bi bi-printer me-2"></i>Print Referral Letter (HTML)
                   </button>
                   <button type="button" class="btn btn-lg btn-outline-secondary flex-grow-1" (click)="clearReferralFilters()">
                     <i class="bi bi-arrow-counterclockwise me-2"></i>Clear Filters

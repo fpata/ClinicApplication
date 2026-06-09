@@ -24,6 +24,15 @@ namespace ClinicManager.Controllers
         [HttpGet]
         public async Task<ActionResult<AppConfig>> Get()
         {
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync("ALTER TABLE config MODIFY COLUMN ClinicLogo LONGTEXT NULL;");
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not run self-healing DB alter for ClinicLogo. It might not be MySQL or the column/table is not ready.");
+            }
+
             var config = await _context.AppConfigs.AsNoTracking().FirstOrDefaultAsync();
             if (config == null)
             {

@@ -260,10 +260,22 @@ namespace ClinicManager.Controllers
             rtf.AppendLine(@"\margl1440\margr1440\margt1440\margb1440");
             rtf.AppendLine(@"\viewkind4\uc1\pard\plain\f0\fs22\cf2");
 
+            if (clinicConfig != null && !string.IsNullOrEmpty(clinicConfig.ClinicLogo))
+            {
+                string logoRtf = ClinicManager.Services.PrescriptionService.GetImageRtfCode(clinicConfig.ClinicLogo);
+                if (!string.IsNullOrEmpty(logoRtf))
+                {
+                    rtf.AppendLine(logoRtf);
+                }
+            }
             rtf.AppendLine(@"\qc\fs36\b\cf1 " + EscapeRtf(clinicName) + @"\b0\par");
             if (!string.IsNullOrEmpty(clinicProp))
             {
                 rtf.AppendLine(@"\fs20\cf3 " + EscapeRtf(clinicProp) + @"\par");
+            }
+            if (clinicConfig != null && !string.IsNullOrEmpty(clinicConfig.ClinicAddress))
+            {
+                rtf.AppendLine(@"\fs16\cf3 " + EscapeRtf(clinicConfig.ClinicAddress) + @"\par");
             }
             rtf.AppendLine(@"\pard\brdrb\brdrs\brdrw15\brsp80\cf4\par\par");
 
@@ -417,10 +429,22 @@ namespace ClinicManager.Controllers
             rtf.AppendLine(@"\margl1440\margr1440\margt1440\margb1440");
             rtf.AppendLine(@"\viewkind4\uc1\pard\plain\f0\fs22\cf2");
 
+            if (clinicConfig != null && !string.IsNullOrEmpty(clinicConfig.ClinicLogo))
+            {
+                string logoRtf = ClinicManager.Services.PrescriptionService.GetImageRtfCode(clinicConfig.ClinicLogo);
+                if (!string.IsNullOrEmpty(logoRtf))
+                {
+                    rtf.AppendLine(logoRtf);
+                }
+            }
             rtf.AppendLine(@"\qc\fs36\b\cf1 " + EscapeRtf(clinicName) + @"\b0\par");
             if (!string.IsNullOrEmpty(clinicProp))
             {
                 rtf.AppendLine(@"\fs20\cf3 " + EscapeRtf(clinicProp) + @"\par");
+            }
+            if (clinicConfig != null && !string.IsNullOrEmpty(clinicConfig.ClinicAddress))
+            {
+                rtf.AppendLine(@"\fs16\cf3 " + EscapeRtf(clinicConfig.ClinicAddress) + @"\par");
             }
             rtf.AppendLine(@"\pard\brdrb\brdrs\brdrw15\brsp80\cf4\par\par");
 

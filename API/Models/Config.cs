@@ -31,7 +31,6 @@ namespace ClinicManager.Models
         [StringLength(45)]
         public string? Currency { get; set; }
 
-        [StringLength(500)]
         public string? ClinicLogo { get; set; }
 
         [StringLength(1000)]

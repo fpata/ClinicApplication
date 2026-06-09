@@ -8,6 +8,7 @@ import { PatientAppointmentService } from '../../services/patient-appointment.se
 import { PatientAppointment, AppointmentSearchResponse } from '../../models/patient-appointment.model';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { AppointmentHelper } from '../../common/appointment-helper';
+import { DataService } from '../../services/data.service';
 
 // Mock SchedulerComponent
 @Component({
@@ -25,6 +26,7 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let patientAppointmentService: jasmine.SpyObj<PatientAppointmentService>;
+  let dataServiceSpy: jasmine.SpyObj<DataService>;
 
   const mockAppointmentResponse: AppointmentSearchResponse = {
     TotalCount: 2,
@@ -72,10 +74,20 @@ describe('DashboardComponent', () => {
     const patientAppointmentServiceSpy = jasmine.createSpyObj('PatientAppointmentService', 
       ['getAppointments', 'setPatinetAppointmentTime']);
 
+    dataServiceSpy = jasmine.createSpyObj('DataService', ['getLoginUser', 'getConfig', 'getUser', 'setUser']);
+    dataServiceSpy.getConfig.and.returnValue({ pageSize: 10 } as any);
+    dataServiceSpy.getLoginUser.and.returnValue({
+      user: {
+        ID: 1,
+        UserType: 'Admin'
+      }
+    } as any);
+
     await TestBed.configureTestingModule({
       imports: [DashboardComponent, HttpClientTestingModule, MockSchedulerComponent],
       providers: [
-        { provide: PatientAppointmentService, useValue: patientAppointmentServiceSpy }
+        { provide: PatientAppointmentService, useValue: patientAppointmentServiceSpy },
+        { provide: DataService, useValue: dataServiceSpy }
       ]
     }).compileComponents();
 

@@ -12,6 +12,9 @@ import { User, UserType, Gender } from '../../../models/user.model';
 import { Patient } from '../../../models/patient.model';
 import { PatientTreatment } from '../../../models/patient-treatment.model';
 import { PatientTreatmentDetail } from '../../../models/patient-treatment-detail.model';
+import { UserService } from '../../../services/user.service';
+import { PatientTreatmentService } from '../../../services/patient-treatment.service';
+import { PrintService } from '../../../services/print.service';
 
 describe('PatientTreatmentComponent', () => {
   let component: PatientTreatmentComponent;
@@ -22,6 +25,9 @@ describe('PatientTreatmentComponent', () => {
   let utilityServiceSpy: jasmine.SpyObj<UtilityService>;
   let messageServiceSpy: jasmine.SpyObj<MessageService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let userServiceSpy: jasmine.SpyObj<UserService>;
+  let patientTreatmentServiceSpy: jasmine.SpyObj<PatientTreatmentService>;
+  let printServiceSpy: jasmine.SpyObj<PrintService>;
   let activatedRouteStub: any;
   let userSubject: BehaviorSubject<User | null>;
 
@@ -107,7 +113,24 @@ describe('PatientTreatmentComponent', () => {
 
     userSubject = new BehaviorSubject<User | null>(mockUser);
 
-    dataServiceSpy = jasmine.createSpyObj('DataService', ['setPatient', 'getPatient', 'getUser', 'setUser', 'setQuickCreateMode', 'setUserId']);
+    dataServiceSpy = jasmine.createSpyObj('DataService', ['setPatient', 'getPatient', 'getUser', 'setUser', 'setQuickCreateMode', 'setUserId', 'getLoginUser', 'getConfig']);
+    dataServiceSpy.getConfig.and.returnValue({
+      ID: 1,
+      ClinicName: 'Test Dental Clinic',
+      ClinicProp: 'Premium Oral Care',
+      ClinicAddress: '456 Test St, City',
+      ClinicLogo: 'data:image/png;base64,iVBORw0KGgoAAAANS'
+    });
+    dataServiceSpy.getLoginUser.and.returnValue({
+      token: 'mock-token',
+      user: {
+        ID: mockUser.ID,
+        UserName: mockUser.UserName || 'johndoe',
+        UserType: mockUser.UserType,
+        FirstName: mockUser.FirstName,
+        LastName: mockUser.LastName || 'Doe'
+      }
+    });
     // Mock user$ observable
     Object.defineProperty(dataServiceSpy, 'user$', {
       value: userSubject.asObservable()
@@ -122,6 +145,9 @@ describe('PatientTreatmentComponent', () => {
 
     messageServiceSpy = jasmine.createSpyObj('MessageService', ['success', 'error', 'warn', 'info']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    userServiceSpy = jasmine.createSpyObj('UserService', ['getUser', 'createUser', 'updateUser', 'deleteUser']);
+    patientTreatmentServiceSpy = jasmine.createSpyObj('PatientTreatmentService', ['downloadPrescription']);
+    printServiceSpy = jasmine.createSpyObj('PrintService', ['printPrescription', 'printMedicalHistory', 'printReferralLetter']);
     
     activatedRouteStub = {
       snapshot: {
@@ -141,7 +167,10 @@ describe('PatientTreatmentComponent', () => {
         { provide: UtilityService, useValue: utilityServiceSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
         { provide: Router, useValue: routerSpy },
-        { provide: MessageService, useValue: messageServiceSpy }
+        { provide: MessageService, useValue: messageServiceSpy },
+        { provide: UserService, useValue: userServiceSpy },
+        { provide: PatientTreatmentService, useValue: patientTreatmentServiceSpy },
+        { provide: PrintService, useValue: printServiceSpy }
       ]
     }).compileComponents();
 

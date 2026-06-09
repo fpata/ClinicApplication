@@ -26,8 +26,41 @@ export class AppconfigComponent {
   resetForm() {
     this.configService.getConfigs().subscribe((config: AppConfig) => {
       this.config = config;
+      // Also clear file input element in DOM if reset
+      const fileInput = document.getElementById('txtClinicLogo') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
     });
   }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        this.messageService.error('Please select a valid image file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        if (this.config) {
+          this.config.ClinicLogo = e.target.result;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearLogo(): void {
+    if (this.config) {
+      this.config.ClinicLogo = '';
+      const fileInput = document.getElementById('txtClinicLogo') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    }
+  }
+
   saveConfig() {
     if (this.config.ID === 0 || this.config.ID == null || this.config.ID === undefined) {
       this.configService.createConfig(this.config).subscribe(() => {

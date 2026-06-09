@@ -5,6 +5,8 @@ import { ReportService } from '../../../services/report.service';
 import { PatientService } from '../../../services/patient.service';
 import { MessageService } from '../../../services/message.service';
 import { Patient } from '../../../models/patient.model';
+import { DataService } from '../../../services/data.service';
+import { PrintService } from '../../../services/print.service';
 
 @Component({
   selector: 'app-clinical-reports',
@@ -32,6 +34,8 @@ export class ClinicalReportsComponent implements OnInit {
     private reportService: ReportService,
     private patientService: PatientService,
     private messageService: MessageService,
+    private dataService: DataService,
+    private printService: PrintService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -65,20 +69,27 @@ export class ClinicalReportsComponent implements OnInit {
       return;
     }
 
+    const patId = Number(this.historyPatientId);
+    const selectedPatient = this.patients.find(p => p.ID === patId);
+    if (!selectedPatient || !selectedPatient.UserID) {
+      this.messageService.error('Selected patient has no associated user account.');
+      return;
+    }
+
     this.isHistoryLoading = true;
     this.cdr.markForCheck();
 
-    const patId = Number(this.historyPatientId);
-    this.reportService.downloadMedicalHistory(patId).subscribe({
-      next: (blob) => {
-        this.saveBlob(blob, `medical_history_patient_${patId}.rtf`);
-        this.messageService.success('Medical history document generated successfully.');
+    this.patientService.getCompletePatient(selectedPatient.UserID).subscribe({
+      next: (patientUser) => {
+        const config = this.dataService.getConfig();
+        this.printService.printMedicalHistory(patientUser, config);
+        this.messageService.success('Medical history print view loaded.');
         this.isHistoryLoading = false;
         this.cdr.markForCheck();
       },
       error: (err) => {
-        console.error('Medical history error:', err);
-        this.messageService.error('Failed to generate medical history document.');
+        console.error('Medical history print error:', err);
+        this.messageService.error('Failed to load patient medical history details.');
         this.isHistoryLoading = false;
         this.cdr.markForCheck();
       }
@@ -103,25 +114,33 @@ export class ClinicalReportsComponent implements OnInit {
       return;
     }
 
+    const patId = Number(this.referralPatientId);
+    const selectedPatient = this.patients.find(p => p.ID === patId);
+    if (!selectedPatient || !selectedPatient.UserID) {
+      this.messageService.error('Selected patient has no associated user account.');
+      return;
+    }
+
     this.isReferralLoading = true;
     this.cdr.markForCheck();
 
-    const patId = Number(this.referralPatientId);
-    this.reportService.downloadReferralLetter(
-      patId,
-      this.referralDoctorName,
-      this.referralClinicName,
-      this.referralReason
-    ).subscribe({
-      next: (blob) => {
-        this.saveBlob(blob, `referral_letter_patient_${patId}.rtf`);
-        this.messageService.success('Referral letter template generated successfully.');
+    this.patientService.getCompletePatient(selectedPatient.UserID).subscribe({
+      next: (patientUser) => {
+        const config = this.dataService.getConfig();
+        this.printService.printReferralLetter(
+          patientUser,
+          config,
+          this.referralDoctorName,
+          this.referralClinicName,
+          this.referralReason
+        );
+        this.messageService.success('Referral letter print view loaded.');
         this.isReferralLoading = false;
         this.cdr.markForCheck();
       },
       error: (err) => {
-        console.error('Referral letter error:', err);
-        this.messageService.error('Failed to generate referral letter.');
+        console.error('Referral letter print error:', err);
+        this.messageService.error('Failed to load patient details for referral.');
         this.isReferralLoading = false;
         this.cdr.markForCheck();
       }

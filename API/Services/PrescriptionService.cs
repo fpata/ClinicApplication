@@ -90,10 +90,22 @@ namespace ClinicManager.Services
             // Clinic Header Banner
             if (includeHeader)
             {
+                if (clinicConfig != null && !string.IsNullOrEmpty(clinicConfig.ClinicLogo))
+                {
+                    string logoRtf = GetImageRtfCode(clinicConfig.ClinicLogo);
+                    if (!string.IsNullOrEmpty(logoRtf))
+                    {
+                        rtf.AppendLine(logoRtf);
+                    }
+                }
                 rtf.AppendLine(@"\qc\fs36\b\cf1 " + EscapeRtf(clinicName) + @"\b0\par");
                 if (!string.IsNullOrEmpty(clinicProp))
                 {
                     rtf.AppendLine(@"\fs20\cf3 " + EscapeRtf(clinicProp) + @"\par");
+                }
+                if (clinicConfig != null && !string.IsNullOrEmpty(clinicConfig.ClinicAddress))
+                {
+                    rtf.AppendLine(@"\fs16\cf3 " + EscapeRtf(clinicConfig.ClinicAddress) + @"\par");
                 }
                 // Clinic header bottom line
                 rtf.AppendLine(@"\pard\brdrb\brdrs\brdrw15\brsp80\cf4\par");
@@ -253,6 +265,42 @@ namespace ClinicManager.Services
                 }
             }
             return sb.ToString();
+        }
+
+        public static string GetImageRtfCode(string base64DataUri)
+        {
+            if (string.IsNullOrWhiteSpace(base64DataUri)) return string.Empty;
+
+            try
+            {
+                string base64String = base64DataUri;
+                string imageType = "pngblip";
+
+                if (base64DataUri.Contains(","))
+                {
+                    int commaIndex = base64DataUri.IndexOf(',');
+                    string header = base64DataUri.Substring(0, commaIndex);
+                    if (header.Contains("image/jpeg") || header.Contains("image/jpg"))
+                    {
+                        imageType = "jpegblip";
+                    }
+                    base64String = base64DataUri.Substring(commaIndex + 1);
+                }
+
+                byte[] bytes = Convert.FromBase64String(base64String.Trim());
+                var hex = new StringBuilder(bytes.Length * 2);
+                foreach (byte b in bytes)
+                {
+                    hex.AppendFormat("{0:x2}", b);
+                }
+
+                // Centered picture inside a paragraph, with picwgoal and pichgoal set to 1440 twips (1 inch)
+                return @"\pard\qc{\pict\" + imageType + @"\picwgoal1440\pichgoal1440 " + hex.ToString() + @"}\par";
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
     }
 }
