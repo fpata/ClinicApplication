@@ -44,8 +44,7 @@
           </a>
         </li>
         <li class="nav-item" *ngIf="showConfigLink">
-          <a class="nav-link px-3 rounded-pill transition-all" href="#" tabindex="-1" id="navReports"
-            (click)="hideAllSubnavs()">
+          <a class="nav-link px-3 rounded-pill transition-all" routerLink="/reports/financial" routerLinkActive="active" id="navReports">
             <i class="bi bi-file-earmark-text me-2"></i>Reports
           </a>
         </li>
@@ -194,6 +193,29 @@
       <li class="nav-item">
         <a class="nav-link" id="navPayment" routerLink="/billing/payment" routerLinkActive="active">
           <i class="bi bi-credit-card me-1"></i>Payment & Settlement
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Reports Sub-navbar (placed below main navbar) -->
+<div *ngIf="showReportsSubnav && !isLoginURL" class="w-100 bg-white shadow-sm subnav">
+  <div class="container-fluid">
+    <ul class="nav py-2">
+      <li class="nav-item">
+        <a class="nav-link" id="navFinancialReports" routerLink="/reports/financial" routerLinkActive="active">
+          <i class="bi bi-wallet2 me-1"></i>Financial Reports
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navAppointmentReports" routerLink="/reports/appointments" routerLinkActive="active">
+          <i class="bi bi-calendar-event me-1"></i>Appointment Reports
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="navClinicalReports" routerLink="/reports/clinical" routerLinkActive="active">
+          <i class="bi bi-file-earmark-medical me-1"></i>Clinical Reports
         </a>
       </li>
     </ul>

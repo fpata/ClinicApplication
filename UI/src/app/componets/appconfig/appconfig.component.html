@@ -102,6 +102,34 @@
                   </div>
                 </div>
 
+                <!-- Row 3.5: Clinic Logo & Clinic Address -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtClinicLogo" class="form-label">
+                        <i class="bi bi-image me-1"></i>Clinic Logo URL
+                      </label>
+                      <input type="text" id="txtClinicLogo" class="form-control form-control-lg" placeholder="e.g. https://example.com/logo.png"
+                        [ngModel]="config?.ClinicLogo" (ngModelChange)="config && (config.ClinicLogo = $event)"
+                        name="clinicLogo">
+                      <!-- Simple logo preview helper -->
+                      <div class="logo-preview mt-2" *ngIf="config?.ClinicLogo">
+                        <img [src]="config?.ClinicLogo" alt="Clinic Logo Preview" style="max-height: 50px; border-radius: 0.25rem; border: 1px solid var(--border);">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="txtClinicAddress" class="form-label">
+                        <i class="bi bi-geo-alt me-1"></i>Clinic Address
+                      </label>
+                      <textarea id="txtClinicAddress" class="form-control form-control-lg" placeholder="Enter clinic address"
+                        [ngModel]="config?.ClinicAddress" (ngModelChange)="config && (config.ClinicAddress = $event)"
+                        name="clinicAddress" rows="2"></textarea>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Row 4: Date Format & Currency (Dropdowns) -->
                 <div class="row g-3 mb-4">
                   <div class="col-md-6">

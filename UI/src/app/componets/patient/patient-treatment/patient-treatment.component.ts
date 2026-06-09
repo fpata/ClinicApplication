@@ -12,6 +12,7 @@ import { PatientBaseComponent } from '../patient-base.component';
 import { MessageService } from '../../../services/message.service';
 import { User } from '../../../models/user.model';
 import { UserService } from '../../../services/user.service';
+import { PatientTreatmentService } from '../../../services/patient-treatment.service';
 
 @Component({
   selector: 'app-patient-treatment',
@@ -35,6 +36,7 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
     dataService: DataService,
     userService: UserService,
     patientService: PatientService,
+    private patientTreatmentService: PatientTreatmentService,
     router: Router,
     cdr: ChangeDetectorRef,
     messageService: MessageService,
@@ -302,5 +304,31 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
     }
     this.cdr.markForCheck();
   }
-}
 
+  printPrescription(treatmentDetailId?: number) {
+    if (!this.treatment || !this.treatment.ID) {
+      alert('Please save the treatment record before printing the prescription.');
+      return;
+    }
+
+    const treatmentId = this.treatment.ID;
+
+    this.patientTreatmentService.downloadPrescription(treatmentId, treatmentDetailId).subscribe({
+      next: (blob: Blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = fileURL;
+        a.download = `Prescription_${treatmentId}${treatmentDetailId ? '_' + treatmentDetailId : ''}.rtf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(fileURL);
+        this.messageService.success('Prescription downloaded successfully for printing.');
+      },
+      error: (err) => {
+        console.error('Error downloading prescription:', err);
+        this.messageService.error('Failed to generate prescription.');
+      }
+    });
+  }
+}

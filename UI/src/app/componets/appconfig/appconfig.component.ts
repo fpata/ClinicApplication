@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { AppConfigService } from '../../services/config.service';
 import { AppConfig } from '../../models/appconfig.model';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-appconfig.component',
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './appconfig.component.html',
   styleUrl: './appconfig.component.css'
 })
@@ -23,7 +24,9 @@ export class AppconfigComponent {
   }
 
   resetForm() {
-    this.config = { ...this.config };
+    this.configService.getConfigs().subscribe((config: AppConfig) => {
+      this.config = config;
+    });
   }
   saveConfig() {
     if (this.config.ID === 0 || this.config.ID == null || this.config.ID === undefined) {

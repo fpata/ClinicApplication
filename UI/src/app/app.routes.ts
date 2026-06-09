@@ -22,6 +22,9 @@ import { PatientHistoryComponent } from './componets/patient/patient-history/pat
 import { PatientTreatmentComponent } from './componets/patient/patient-treatment/patient-treatment.component';
 import { PatientAppointmentComponent } from './componets/patient/patient-appointment/patient-appointment.component';
 import { PatientReportComponent } from './componets/patient/patient-report/patient-report.component';
+import { FinancialReportsComponent } from './componets/reports/financial-reports/financial-reports.component';
+import { AppointmentReportsComponent } from './componets/reports/appointment-reports/appointment-reports.component';
+import { ClinicalReportsComponent } from './componets/reports/clinical-reports/clinical-reports.component';
 
 
 export const routes: Routes = [
@@ -73,5 +76,16 @@ export const routes: Routes = [
     ]
   },
   { path: 'appconfig', component: AppconfigComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
+  {
+    path: 'reports',
+    canActivate: [authGuard],
+    data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Nurse', 'Accountant'] },
+    children: [
+      { path: 'financial', component: FinancialReportsComponent },
+      { path: 'appointments', component: AppointmentReportsComponent },
+      { path: 'clinical', component: ClinicalReportsComponent },
+      { path: '', redirectTo: 'financial', pathMatch: 'full' }
+    ]
+  },
   // Add other routes here
 ];

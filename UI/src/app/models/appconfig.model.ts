@@ -9,4 +9,6 @@ export interface AppConfig {
   pageSize?: number;
   DateFormat?: string;
   Currency?: string;
+  ClinicLogo?: string;
+  ClinicAddress?: string;
 }

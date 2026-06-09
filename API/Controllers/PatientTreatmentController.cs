@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using ClinicManager.Services;
 
 namespace ClinicManager.Controllers
 {
@@ -16,11 +17,13 @@ namespace ClinicManager.Controllers
     {
         private readonly ClinicDbContext _context;
         private readonly ILogger<PatientTreatmentController> _logger;
+        private readonly IPrescriptionService _prescriptionService;
 
-        public PatientTreatmentController(ClinicDbContext context, ILogger<PatientTreatmentController> logger)
+        public PatientTreatmentController(ClinicDbContext context, ILogger<PatientTreatmentController> logger, IPrescriptionService prescriptionService)
         {
             _context = context;
             _logger = logger;
+            _prescriptionService = prescriptionService;
         }
 
         private bool IsAuthorizedForPatient(int? patientUserId)
@@ -254,6 +257,56 @@ namespace ClinicManager.Controllers
                 return NotFound();
             }
             return Ok(entity);
+        }
+
+        [HttpGet("{treatmentId}/prescription/print")]
+        public async Task<IActionResult> PrintPrescription(
+            int treatmentId, 
+            [FromQuery] int? treatmentDetailId = null,
+            [FromQuery] bool includeHeader = true,
+            [FromQuery] string? doctorNotes = null)
+        {
+            _logger.LogInformation($"Generating prescription RTF for Treatment ID: {treatmentId}, Detail ID: {treatmentDetailId}");
+
+            var treatment = await _context.PatientTreatments.FindAsync(treatmentId);
+            if (treatment == null)
+            {
+                _logger.LogWarning($"Treatment with ID {treatmentId} not found");
+                return NotFound($"Treatment with ID {treatmentId} not found.");
+            }
+
+            if (!IsAuthorizedForPatient(treatment.UserID))
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                var rtfBytes = await _prescriptionService.GeneratePrescriptionRtfAsync(
+                    treatmentId, 
+                    treatmentDetailId, 
+                    includeHeader, 
+                    doctorNotes);
+                
+                string filename = $"Prescription_{treatmentId}";
+                if (treatmentDetailId.HasValue)
+                {
+                    filename += $"_{treatmentDetailId.Value}";
+                }
+                filename += ".rtf";
+
+                return File(rtfBytes, "application/rtf", filename);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating prescription RTF.");
+                return StatusCode(500, "Internal server error generating prescription.");
+            }
         }
     }
 }

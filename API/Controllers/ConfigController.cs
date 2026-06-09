@@ -36,7 +36,9 @@ namespace ClinicManager.Controllers
                     LunchTime = "13:00",
                     pageSize = 10,
                     DateFormat = "MM/dd/yyyy",
-                    Currency = "USD"
+                    Currency = "USD",
+                    ClinicLogo = "",
+                    ClinicAddress = "123 Main Street, Suite A"
                 };
                 _context.AppConfigs.Add(config);
                 await _context.SaveChangesAsync();

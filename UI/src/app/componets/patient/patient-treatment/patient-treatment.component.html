@@ -76,8 +76,14 @@
               <div class="row mb-3 align-items-start">
                 <label for="txtPrescription" class="col-sm-2 col-form-label">Prescription</label>
                 <div class="col-sm-10">
-                  <textarea id="txtPrescription" class="form-control" rows="2" [ngModel]="treatment?.Prescription"
-                    (ngModelChange)="treatment.Prescription = $event"></textarea>
+                  <div class="input-group">
+                    <textarea id="txtPrescription" class="form-control" rows="2" [ngModel]="treatment?.Prescription"
+                      (ngModelChange)="treatment.Prescription = $event" placeholder="Enter general prescription medication"></textarea>
+                    <button class="btn btn-outline-primary d-flex align-items-center justify-content-center" type="button" 
+                      (click)="printPrescription()" title="Print General Prescription">
+                      <i class="bi bi-printer me-1"></i> Print Rx
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -148,6 +154,8 @@
                       <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="modal"
                         data-bs-target="#addTreatmentModal" (click)="EditTreatmentDetails(treatmentdetail.ID)"
                         title="Edit Treatment"><i class="bi bi-pencil"></i></button>
+                      <button class="btn btn-sm btn-outline-success" type="button" (click)="printPrescription(treatmentdetail.ID)"
+                        title="Print Prescription"><i class="bi bi-printer"></i></button>
                       <button class="btn btn-sm btn-outline-danger" type="button" title="Delete Treatment"
                         (click)="DeleteTreatmentDetails(treatmentdetail.ID)"><i class="bi bi-trash"></i></button>
                     </div>
@@ -185,10 +193,13 @@
                   <h6 class="mb-1">{{treatmentdetail.Procedure}}</h6>
                   <span class="badge bg-info">Date: {{treatmentdetail.TreatmentDate}}</span>
                 </div>
-                <div class="action-buttons-mobile">
+                <div class="action-buttons-mobile d-flex gap-1">
                   <button type="button" class="btn btn-sm btn-outline-primary"
                     (click)="EditTreatmentDetails(treatmentdetail.ID)" title="Edit"><i
                       class="bi bi-pencil"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-success"
+                    (click)="printPrescription(treatmentdetail.ID)" title="Print"><i
+                      class="bi bi-printer"></i></button>
                   <button type="button" class="btn btn-sm btn-outline-danger"
                     (click)="DeleteTreatmentDetails(treatmentdetail.ID)" title="Delete"><i
                       class="bi bi-trash"></i></button>

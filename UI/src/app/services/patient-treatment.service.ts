@@ -39,4 +39,15 @@ export class PatientTreatmentService {
   getAllTreatmentsForUser(userId: number): Observable<PatientTreatment[]> {
     return this.http.get<PatientTreatment[]>(`${this.apiUrl}/user/${userId}`, { headers: this.getAuthHeaders() });
   }
+
+  downloadPrescription(treatmentId: number, treatmentDetailId?: number, includeHeader: boolean = true, doctorNotes?: string): Observable<Blob> {
+    let url = `${this.apiUrl}/${treatmentId}/prescription/print?includeHeader=${includeHeader}`;
+    if (treatmentDetailId) {
+      url += `&treatmentDetailId=${treatmentDetailId}`;
+    }
+    if (doctorNotes) {
+      url += `&doctorNotes=${encodeURIComponent(doctorNotes)}`;
+    }
+    return this.http.get(url, { headers: this.getAuthHeaders(), responseType: 'blob' });
+  }
 }

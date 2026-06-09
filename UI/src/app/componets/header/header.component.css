@@ -239,7 +239,7 @@
 }
 
 .subnav .nav-link {
-  color: #374151 !important;
+  color: var(--text-secondary) !important;
   padding: 0.6rem 1rem;
   font-weight: 600;
   font-size: 0.95rem;
@@ -250,19 +250,19 @@
 }
 
 .subnav .nav-link i {
-  color: #6366f1;
+  color: var(--primary-500);
   font-size: 1rem;
 }
 
 .subnav .nav-link:hover {
   background-color: rgba(99, 102, 241, 0.05);
-  color: #6366f1 !important;
+  color: var(--primary-500) !important;
 }
 
 .subnav .nav-link.active {
-  color: #6366f1 !important;
+  color: var(--primary-500) !important;
   background: transparent;
-  border-bottom: 3px solid #6366f1;
+  border-bottom: 3px solid var(--primary-500);
   padding-bottom: calc(0.6rem - 3px);
   font-weight: 700;
 }

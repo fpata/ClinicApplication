@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<ISmsService, SmsService>();
+builder.Services.AddTransient<IPrescriptionService, PrescriptionService>();
 
 builder.Services.AddControllers()
      .AddJsonOptions(options =>
