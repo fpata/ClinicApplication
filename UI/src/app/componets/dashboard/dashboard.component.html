@@ -17,10 +17,12 @@
       <h5 class="mb-0">
         <i class="bi bi-calendar-event"></i> Scheduled Appointments
       </h5>
+      @if (!isPatientRole) {
       <button type="button" id="btnAddNewAppointment" class="btn btn-light btn-sm" data-bs-toggle="modal"
         data-bs-target="#addAppointmentModal" (click)="InitializeNewAppointment()">
         <i class="bi bi-plus-circle"></i> Add New
       </button>
+      }
     </div>
     <div class="card-body p-0">
       <!-- Desktop Version Table -->
@@ -35,7 +37,9 @@
                 <th class="text-nowrap fw-semibold">Doctor</th>
                 <th class="text-nowrap fw-semibold">Patient</th>
                 <th class="text-nowrap fw-semibold">Treatment</th>
+                @if (!isPatientRole) {
                 <th class="text-center fw-semibold">Actions</th>
+                }
               </tr>
             </thead>
             <tbody>
@@ -55,6 +59,7 @@
                 <td>
                   <small>{{appointment.TreatmentName}}</small>
                 </td>
+                @if (!isPatientRole) {
                 <td class="text-center">
                   <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal"
                     (click)="EditAppointment(appointment.ID)" title="Edit appointment" type="button">
@@ -65,6 +70,7 @@
                     <i class="bi bi-trash3"></i>
                   </button>
                 </td>
+                }
               </tr>
               }
             </tbody>
@@ -98,6 +104,7 @@
                 <small class="text-muted d-block">Treatment</small>
                 <p class="mb-0">{{appointment.TreatmentName}}</p>
               </div>
+              @if (!isPatientRole) {
               <div class="col-12 pt-2 d-flex gap-2">
                 <button class="btn btn-sm btn-outline-primary flex-grow-1" data-bs-toggle="modal" 
                   data-bs-target="#addAppointmentModal"
@@ -109,6 +116,7 @@
                   <i class="bi bi-trash3"></i> Delete
                 </button>
               </div>
+              }
             </div>
           </div>
         </div>

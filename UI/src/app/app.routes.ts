@@ -62,7 +62,7 @@ export const routes: Routes = [
   { path: 'doctorAppointments', component: DoctorAppointmentsComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
   { path: 'patienthistory', component: PatientCompleteHistoryComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Nurse', 'Patient', 'Accountant'] } },
   { path: 'user-search', component: UserSearch, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
-  { path: 'user-create', component: UserInfoComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
+  { path: 'user-create', component: UserInfoComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor', 'Patient'] } },
   { path: 'user-quick-create', component: UserQuickCreateComponent, canActivate: [authGuard], data: { expectedRoles: ['Admin', 'Administrator', 'Doctor'] } },
   {
     path: 'billing',

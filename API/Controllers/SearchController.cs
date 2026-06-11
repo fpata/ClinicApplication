@@ -106,6 +106,9 @@ namespace ClinicManager.Controllers
 
                 var results = await groupedQuery
                     .AsNoTracking()
+                    .OrderBy(x => x.LastName)
+                    .ThenBy(x => x.FirstName)
+                    .ThenBy(x => x.UserID)
                     .Skip((model.pageNumber - 1) * model.pageSize)
                     .Take(model.pageSize)
                     .ToListAsync()

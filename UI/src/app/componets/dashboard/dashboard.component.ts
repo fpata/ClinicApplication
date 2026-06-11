@@ -47,6 +47,12 @@ export class DashboardComponent implements OnInit, OnChanges {
 
    @ViewChild(SchedulerComponent) scheduler!: SchedulerComponent;
 
+   get isPatientRole(): boolean {
+      const loginUser = this.dataService.getLoginUser();
+      const userType = loginUser?.user?.UserType as any;
+      return userType === UserType.Patient || userType === 'Patient' || userType === 1 || userType === '1';
+   }
+
    constructor(private patientAppointmentService: PatientAppointmentService,
       private dataService: DataService,
       private searchService: SearchService,
@@ -348,7 +354,9 @@ export class DashboardComponent implements OnInit, OnChanges {
 
       this.selectedDoctor = null;
 
-      if (loginUser?.user?.UserType === UserType.Doctor) {
+      const userType = loginUser?.user?.UserType as any;
+      const isDoctor = userType === UserType.Doctor || userType === 'Doctor' || userType === 2 || userType === '2';
+      if (isDoctor) {
          this.newAppointment.DoctorID = loginUser.user?.ID || 0;
          this.newAppointment.DoctorName = loginUser.user?.FirstName + ' ' + loginUser.user?.LastName;
          this.selectedDoctor = {
@@ -388,7 +396,10 @@ export class DashboardComponent implements OnInit, OnChanges {
       this.loadAppointments(startDate, endDate);
    }
 
-   onTimeRangeSelectedEvent($event: any) {
+    onTimeRangeSelectedEvent($event: any) {
+      if (this.isPatientRole) {
+         return;
+      }
       document.getElementById('btnAddNewAppointment')!.click();
       this.newAppointment!.StartDateTime = $event.startDateTime.toDate();
       this.newAppointment!.EndDateTime = $event.endDateTime.toDate();
@@ -398,8 +409,6 @@ export class DashboardComponent implements OnInit, OnChanges {
       this.newAppointment!.EndTime = this.util.format(this.newAppointment!.EndDateTime, 'HH:mm');
       document.getElementById('appointmentDatePicker')!.setAttribute('value', this.util.formatAppointmentDateTime(this.newAppointment!.StartDateTime));
       this.cdr.detectChanges();
-      // document.getElementById('txtAppointmentTime')!.setAttribute('value', this.newAppointment!.StartDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.StartDateTime.getMinutes().toString().padStart(2, '0'));
-      //document.getElementById('txtAppointmentEndTime')!.setAttribute('value', this.newAppointment!.EndDateTime.getHours().toString().padStart(2, '0') + ':' + this.newAppointment!.EndDateTime.getMinutes().toString().padStart(2, '0'));
    }
 
    onStartTimeChanged(newTime: string) {

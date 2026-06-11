@@ -19,7 +19,8 @@ namespace ClinicManager.Models.Enums
         Receptionist = 4,
         Administrator = 5,
         Technician = 6,
-        Accountant = 7
+        Accountant = 7,
+        DentalAssistant = 8
     }
 
     public enum Gender

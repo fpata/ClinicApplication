@@ -159,17 +159,17 @@
 <div *ngIf="showUserSubnav && !isLoginURL" class="w-100 bg-white shadow-sm subnav">
   <div class="container-fluid">
     <ul class="nav py-2">
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isPatientRole">
         <a class="nav-link" id="navUserSearch" routerLink="/user-search" routerLinkActive="active">
           <i class="bi bi-search me-1"></i>User Search
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" id="navUserRegistration" routerLink="/user-create" routerLinkActive="active">
-          <i class="bi bi-person-plus me-1"></i>User Registration
+          <i class="bi bi-person-plus me-1"></i>{{ isPatientRole ? 'Profile' : 'User Registration' }}
         </a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isPatientRole">
         <a class="nav-link" id="navUserQuickRegistration" routerLink="/user-quick-create" routerLinkActive="active">
           <i class="bi bi-person-plus me-1"></i>Quick User Registration
         </a>

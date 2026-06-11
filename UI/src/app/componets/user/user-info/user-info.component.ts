@@ -28,6 +28,11 @@ export class UserInfoComponent {
 
   private userSubscription: Subscription;
 
+  get isPatientRole(): boolean {
+    const loginUser = this.dataService.getLoginUser();
+    const userType = loginUser?.user?.UserType as any;
+    return userType === UserType.Patient || userType === 'Patient' || userType === 1 || userType === '1';
+  }
 
   constructor(private dataService: DataService, private messageService: MessageService, private userService: UserService,
     private cdRef: ChangeDetectorRef

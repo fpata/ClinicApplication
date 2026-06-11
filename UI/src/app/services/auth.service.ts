@@ -85,7 +85,9 @@ export class AuthService {
           3: 'Nurse',
           4: 'Receptionist',
           5: 'Admin',
-          6: 'Technician'
+          6: 'Technician',
+          7: 'Accountant',
+          8: 'DentalAssistant'
         };
         return mapping[user.UserType] || null;
       }

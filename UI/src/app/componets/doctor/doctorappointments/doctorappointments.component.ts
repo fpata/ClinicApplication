@@ -212,8 +212,8 @@ export class DoctorAppointmentsComponent {
             const ev: DayPilot.EventData = {
               id: appt.ID.toString(),
               text: appt.PatientName || 'Unknown Patient',
-              start: new DayPilot.Date(appt.StartDateTime),
-              end: new DayPilot.Date(appt.EndDateTime),
+              start: new DayPilot.Date(new Date(appt.StartDateTime), true),
+              end: new DayPilot.Date(new Date(appt.EndDateTime), true),
               resource: appt.DoctorName || 'General',
               backColor: '#3c8dbc'
             };
@@ -242,8 +242,8 @@ export class DoctorAppointmentsComponent {
               const ev: DayPilot.EventData = {
                 id: appt.ID.toString(),
                 text: appt.PatientName || 'Unknown Patient',
-                start: new DayPilot.Date(appt.StartDateTime),
-                end: new DayPilot.Date(appt.EndDateTime),
+                start: new DayPilot.Date(new Date(appt.StartDateTime), true),
+                end: new DayPilot.Date(new Date(appt.EndDateTime), true),
                 resource: appt.DoctorName || 'General',
                 backColor: '#3c8dbc'
               };
@@ -274,8 +274,8 @@ export class DoctorAppointmentsComponent {
       events.push({
         id: appointment.ID.toString(),
         text: appointment.PatientName || 'Unknown Patient',
-        start: new DayPilot.Date(appointment.StartDateTime),
-        end: new DayPilot.Date(appointment.EndDateTime),
+        start: new DayPilot.Date(new Date(appointment.StartDateTime), true),
+        end: new DayPilot.Date(new Date(appointment.EndDateTime), true),
         resource: appointment.DoctorName || 'General',
         backColor: '#3c8dbc',
       });

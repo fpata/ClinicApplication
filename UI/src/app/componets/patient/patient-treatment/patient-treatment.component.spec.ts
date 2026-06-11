@@ -343,7 +343,7 @@ describe('PatientTreatmentComponent', () => {
     expect(component.treatment?.ActualCost).toBe(650); // 150 + 300 + 200 = 650
     expect(dataServiceSpy.setPatient).toHaveBeenCalled();
     expect(component.newTreatmentDetail).toBeNull();
-    expect(window.alert).toHaveBeenCalledWith('Treatment detail saved. Click the Save Changes button in the main form to persist changes to the database.');
+    expect(window.alert).not.toHaveBeenCalled();
   });
 
   it('should update an existing treatment detail successfully', async () => {
@@ -361,7 +361,7 @@ describe('PatientTreatmentComponent', () => {
     expect(component.treatment?.PatientTreatmentDetails?.[0].Procedure).toBe('Root Canal');
     expect(component.treatment?.ActualCost).toBe(800); // 500 + 300 = 800
     expect(dataServiceSpy.setPatient).toHaveBeenCalled();
-    expect(window.alert).toHaveBeenCalledWith('Treatment detail saved. Click the Save Changes button in the main form to persist changes to the database.');
+    expect(window.alert).not.toHaveBeenCalled();
   });
 
   it('should sync treatment details with server', async () => {

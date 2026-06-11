@@ -52,7 +52,7 @@
                 <label for="txtChiefComplaint" class="col-sm-2 col-form-label">Chief Complaint</label>
                 <div class="col-sm-10">
                   <textarea id="txtChiefComplaint" class="form-control" rows="2" [ngModel]="treatment?.ChiefComplaint"
-                    (ngModelChange)="treatment.ChiefComplaint = $event" placeholder="Enter chief complaint"></textarea>
+                    (ngModelChange)="treatment.ChiefComplaint = $event" placeholder="Enter chief complaint" [disabled]="isPatientRole"></textarea>
                 </div>
               </div>
 
@@ -61,7 +61,7 @@
                 <div class="col-sm-10">
                   <textarea id="txtClinicalFindings" class="form-control" rows="2"
                     [ngModel]="treatment?.ClinicalFindings"
-                    (ngModelChange)="treatment.ClinicalFindings = $event"></textarea>
+                    (ngModelChange)="treatment.ClinicalFindings = $event" [disabled]="isPatientRole"></textarea>
                 </div>
               </div>
 
@@ -69,7 +69,7 @@
                 <label for="txtDiagnosis" class="col-sm-2 col-form-label">Diagnosis</label>
                 <div class="col-sm-10">
                   <textarea id="txtDiagnosis" class="form-control" rows="2" [ngModel]="treatment?.Diagnosis"
-                    (ngModelChange)="treatment.Diagnosis = $event"></textarea>
+                    (ngModelChange)="treatment.Diagnosis = $event" [disabled]="isPatientRole"></textarea>
                 </div>
               </div>
 
@@ -78,7 +78,7 @@
                 <div class="col-sm-10">
                   <div class="input-group">
                     <textarea id="txtPrescription" class="form-control" rows="2" [ngModel]="treatment?.Prescription"
-                      (ngModelChange)="treatment.Prescription = $event" placeholder="Enter general prescription medication"></textarea>
+                      (ngModelChange)="treatment.Prescription = $event" placeholder="Enter general prescription medication" [disabled]="isPatientRole"></textarea>
                     <button class="btn btn-outline-primary d-flex align-items-center justify-content-center" type="button" 
                       (click)="printPrescription()" title="Print General Prescription">
                       <i class="bi bi-printer me-1"></i> Print Rx
@@ -91,7 +91,7 @@
                 <label for="txtTreatmentPlan" class="col-sm-2 col-form-label">Treatment Plan</label>
                 <div class="col-sm-10">
                   <textarea id="txtTreatmentPlan" class="form-control" rows="2" [ngModel]="treatment?.TreatmentPlan"
-                    (ngModelChange)="treatment.TreatmentPlan = $event"></textarea>
+                    (ngModelChange)="treatment.TreatmentPlan = $event" [disabled]="isPatientRole"></textarea>
                 </div>
               </div>
 
@@ -101,13 +101,13 @@
                 <label for="txtEstimatedCost" class="col-sm-2 col-form-label">Estimated Cost</label>
                 <div class="col-sm-3">
                   <input type="number" id="txtEstimatedCost" class="form-control" [ngModel]="treatment?.EstimatedCost"
-                    (ngModelChange)="treatment.EstimatedCost = $event" placeholder="0.00">
+                    (ngModelChange)="treatment.EstimatedCost = $event" placeholder="0.00" [disabled]="isPatientRole">
                 </div>
                 <div class="col-sm-2 d-none d-sm-block"></div>
                 <label for="txtActualCost" class="col-sm-2 col-form-label">Actual Cost</label>
                 <div class="col-sm-3">
                   <input type="number" id="txtActualCost" class="form-control" [ngModel]="treatment?.ActualCost"
-                    (ngModelChange)="treatment.ActualCost = $event" placeholder="0.00">
+                    (ngModelChange)="treatment.ActualCost = $event" placeholder="0.00" [disabled]="isPatientRole">
                 </div>
               </div>
 
@@ -124,12 +124,14 @@
             <span class="results-title">Treatment Entries</span>
             <span class="badge bg-primary rounded-pill ms-2">{{treatment?.PatientTreatmentDetails?.length || 0}}</span>
           </h5>
+          @if (!isPatientRole) {
           <div class="action-buttons-mobile d-flex gap-2">
             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
               data-bs-target="#addTreatmentModal" data-id="{{-1}}" (click)="AddNewTreatmentDetails()">
               <i class="bi bi-plus-lg me-1"></i> Add Treatment
             </button>
           </div>
+          }
         </div>
 
         <div class="table-view d-none d-md-block">
@@ -151,13 +153,17 @@
                 <tr class="table-row-hover">
                   <td class="text-center align-middle">
                     <div class="btn-group" role="group">
+                      @if (!isPatientRole) {
                       <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="modal"
                         data-bs-target="#addTreatmentModal" (click)="EditTreatmentDetails(treatmentdetail.ID)"
                         title="Edit Treatment"><i class="bi bi-pencil"></i></button>
+                      }
                       <button class="btn btn-sm btn-outline-success" type="button" (click)="printPrescription(treatmentdetail.ID)"
                         title="Print Prescription"><i class="bi bi-printer"></i></button>
+                      @if (!isPatientRole) {
                       <button class="btn btn-sm btn-outline-danger" type="button" title="Delete Treatment"
                         (click)="DeleteTreatmentDetails(treatmentdetail.ID)"><i class="bi bi-trash"></i></button>
+                      }
                     </div>
                   </td>
                   <td class="align-middle">{{treatmentdetail.TreatmentDate}}</td>
@@ -194,15 +200,19 @@
                   <span class="badge bg-info">Date: {{treatmentdetail.TreatmentDate}}</span>
                 </div>
                 <div class="action-buttons-mobile d-flex gap-1">
+                  @if (!isPatientRole) {
                   <button type="button" class="btn btn-sm btn-outline-primary"
                     (click)="EditTreatmentDetails(treatmentdetail.ID)" title="Edit"><i
                       class="bi bi-pencil"></i></button>
+                  }
                   <button type="button" class="btn btn-sm btn-outline-success"
                     (click)="printPrescription(treatmentdetail.ID)" title="Print"><i
                       class="bi bi-printer"></i></button>
+                  @if (!isPatientRole) {
                   <button type="button" class="btn btn-sm btn-outline-danger"
                     (click)="DeleteTreatmentDetails(treatmentdetail.ID)" title="Delete"><i
                       class="bi bi-trash"></i></button>
+                  }
                 </div>
               </div>
             </div>
@@ -230,6 +240,7 @@
 
 
         <!-- Action Buttons -->
+        @if (!isPatientRole) {
         <div class="action-buttons-section mt-4 mb-4">
           <div class="button-group d-flex gap-3 flex-wrap">
             <button type="button" id="btnTreatmentSave" class="btn btn-lg btn-primary flex-grow-1"
@@ -246,6 +257,7 @@
             </button>
           </div>
         </div>
+        }
       </div>
     </div>
 

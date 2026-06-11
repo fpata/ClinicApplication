@@ -24,6 +24,12 @@ export abstract class PatientBaseComponent implements OnDestroy {
   user: User | null = null;
   patient: Patient | null = null;
 
+  get isPatientRole(): boolean {
+    const loginUser = this.dataService.getLoginUser();
+    const userType = loginUser?.user?.UserType as any;
+    return userType === UserType.Patient || userType === 'Patient' || userType === 1 || userType === '1';
+  }
+
   protected patientSubscription: Subscription = new Subscription();
 
   constructor(

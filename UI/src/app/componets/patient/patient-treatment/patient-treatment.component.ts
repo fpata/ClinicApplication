@@ -217,7 +217,6 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
 
     this.newTreatmentDetail = null;
     this.isEditOperation = false;
-    alert('Treatment detail saved. Click the Save Changes button in the main form to persist changes to the database.');
     this.cdr.markForCheck();
   }
 
@@ -237,6 +236,7 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
       // Update the treatment details with server-generated IDs
       this.treatment = updatedPatient.PatientTreatment;
       this.patient = updatedPatient;
+      this.isNewPatient = (this.patient?.ID === 0);
       // ensure data service is updated with server-saved patient
       this.cdr.markForCheck();
     }
@@ -298,6 +298,7 @@ export class PatientTreatmentComponent extends PatientBaseComponent implements O
     if (!user.Patients?.length) { this.router.navigate(['/patient/search']); return; }
 
     this.patient = user.Patients[0] as Patient;
+    this.isNewPatient = (this.patient?.ID === 0);
     if (this.patient && this.patient.PatientTreatment) {
       this.treatment = this.patient.PatientTreatment;
     } else {

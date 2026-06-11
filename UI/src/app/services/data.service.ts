@@ -87,6 +87,8 @@ export class DataService {
       if (u === 'receptionist' || u === '4') return UserType.Receptionist;
       if (u === 'administrator' || u === 'admin' || u === '5') return UserType.Administrator;
       if (u === 'technician' || u === '6') return UserType.Technician;
+      if (u === 'accountant' || u === '7') return UserType.Accountant;
+      if (u === 'dentalassistant' || u === 'dental assistant' || u === '8') return UserType.DentalAssistant;
     }
     return userType;
   }

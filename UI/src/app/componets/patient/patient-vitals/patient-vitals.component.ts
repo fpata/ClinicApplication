@@ -43,6 +43,7 @@ export class PatientVitalsComponent extends PatientBaseComponent implements OnIn
 
   protected applyUserData(user: User): void {
     this.patient = user?.Patients?.[0] as Patient ?? null;
+    this.isNewPatient = (this.patient?.ID === 0);
     if (this.patient) {
       this.patient.UserID = this.dataService.getUser()?.ID ?? 0;
     }

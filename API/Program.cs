@@ -63,7 +63,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<ClinicDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 36))
+        new MySqlServerVersion(new Version(8, 0, 36)),
+        mySqlOptions => mySqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
     ));
 
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "KeyForClinicManagerJWTTokenForEncryptionPassKey";

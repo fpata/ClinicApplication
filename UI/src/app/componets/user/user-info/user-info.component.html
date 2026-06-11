@@ -148,11 +148,16 @@
                         <span class="required-star">*</span>
                       </label>
                       <select id="cbUserType" name="UserType" class="form-select form-select-lg"
-                        [ngModel]="user?.UserType" (ngModelChange)="onUserTypeChange($event)" required>
+                        [ngModel]="user?.UserType" (ngModelChange)="onUserTypeChange($event)" required [disabled]="isPatientRole">
                         <option value="">-- Select User Type --</option>
                         <option value="1">Patient</option>
                         <option value="2">Doctor</option>
+                        <option value="3">Nurse</option>
+                        <option value="4">Receptionist</option>
                         <option value="5">Administrator</option>
+                        <option value="6">Technician</option>
+                        <option value="7">Accountant</option>
+                        <option value="8">Dental Assistant</option>
                       </select>
                       <div class="invalid-feedback">
                         <i class="bi bi-exclamation-circle me-1"></i>Please select a user type.
@@ -577,10 +582,12 @@
             (click)="ClearUserInformation()">
             <i class="bi bi-arrow-counterclockwise me-2"></i>Clear Form
           </button>
+          @if (!isPatientRole) {
           <button type="button" id="btnPatientDelete" class="btn btn-lg btn-outline-danger flex-grow-1"
             (click)="DeleteUserInformation()">
             <i class="bi bi-trash me-2"></i>Delete User
           </button>
+          }
         </div>
       </div>
     </form>

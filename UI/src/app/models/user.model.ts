@@ -31,7 +31,9 @@ export class User extends BaseEntity {
      Nurse = 3,
      Receptionist = 4,
      Administrator = 5,
-     Technician = 6
+     Technician = 6,
+     Accountant = 7,
+     DentalAssistant = 8
  }
 
  export enum Gender

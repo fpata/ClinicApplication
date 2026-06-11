@@ -24,6 +24,7 @@
       }
 
       <!-- Action Buttons -->
+      @if (!isPatientRole) {
       <div class="action-buttons-section mt-4 mb-4">
         <div class="button-group d-flex gap-3 flex-wrap">
           <button type="button" id="btnAppointmentSave" class="btn btn-lg btn-primary flex-grow-1" (click)="onSave()">
@@ -39,6 +40,7 @@
           </button>
         </div>
       </div>
+      }
     </div>
   </div>
 </div>
